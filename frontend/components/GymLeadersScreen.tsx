@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
   findBreakdown,
@@ -19,6 +20,7 @@ export function GymLeadersScreen({
   onChallengeEliteFour,
   onViewResults,
 }: GymLeadersScreenProps) {
+  const [battleRevealed, setBattleRevealed] = useState(false);
   const gymBreakdowns = result.opponent_breakdown?.gym_leaders ?? [];
   const earnedBadges = new Set(result.badges_earned ?? []);
   const badgesRequired = result.badges_required ?? 8;
@@ -37,11 +39,31 @@ export function GymLeadersScreen({
           </p>
         </div>
 
+        <button
+          className="primary-action stage-action"
+          type="button"
+          onClick={
+            !battleRevealed
+              ? () => setBattleRevealed(true)
+              : canChallengeEliteFour
+                ? onChallengeEliteFour
+                : onViewResults
+          }
+        >
+          {!battleRevealed
+            ? "BATTLE"
+            : canChallengeEliteFour
+              ? "CHALLENGE ELITE FOUR"
+              : "VIEW FINAL RESULTS"}
+        </button>
+
         <div className="stage-card-grid gym-stage-grid">
           {GYM_LEADERS.map((leader) => {
             const breakdown = findBreakdown(gymBreakdowns, leader.name);
             const reached = reachedPrevious && Boolean(breakdown);
-            const status = getBattleStatus(breakdown, reached);
+            const status = battleRevealed
+              ? getBattleStatus(breakdown, reached)
+              : "pending";
             reachedPrevious = reached && status === "cleared";
 
             return (
@@ -55,14 +77,6 @@ export function GymLeadersScreen({
             );
           })}
         </div>
-
-        <button
-          className="primary-action stage-action"
-          type="button"
-          onClick={canChallengeEliteFour ? onChallengeEliteFour : onViewResults}
-        >
-          {canChallengeEliteFour ? "CHALLENGE ELITE FOUR" : "VIEW FINAL RESULTS"}
-        </button>
       </section>
     </main>
   );

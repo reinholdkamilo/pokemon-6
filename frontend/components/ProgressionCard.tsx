@@ -27,8 +27,8 @@ export function ProgressionCard({
   return (
     <article className={`progression-card ${status}`}>
       <div className="progression-card-top">
-        <span>{meta.number ? `GYM ${meta.number}` : meta.stage}</span>
-        <strong>{outcome}</strong>
+        {meta.number ? <span>{`GYM ${meta.number}`}</span> : <span>{meta.name}</span>}
+        {outcome ? <strong className="result-stamp">{outcome}</strong> : null}
       </div>
 
       <LocalSprite
@@ -39,7 +39,7 @@ export function ProgressionCard({
       />
 
       <h2>{meta.name}</h2>
-      <p>{meta.specialty} specialist</p>
+      <p>{meta.specialty}</p>
 
       {showBadge && meta.badge ? (
         <div className="stage-badge-row">
@@ -50,7 +50,6 @@ export function ProgressionCard({
             src={BADGE_IMAGE_PATHS[meta.badge]}
           />
           <span>{meta.badge}</span>
-          <strong>{status === "cleared" ? "Earned" : "Missing"}</strong>
         </div>
       ) : null}
 
@@ -59,10 +58,6 @@ export function ProgressionCard({
           <span className="pokeball-dot" key={index} aria-hidden="true" />
         ))}
       </div>
-
-      {typeof breakdown?.matchup_score === "number" && status !== "not-reached" ? (
-        <p className="stage-matchup">Matchup {breakdown.matchup_score}/100</p>
-      ) : null}
     </article>
   );
 }

@@ -10,7 +10,7 @@ export type OpponentMeta = {
   fallback: string;
 };
 
-export type BattleStatus = "cleared" | "failed" | "not-reached";
+export type BattleStatus = "pending" | "cleared" | "failed" | "not-reached";
 
 export const GYM_LEADERS: OpponentMeta[] = [
   {
@@ -152,9 +152,12 @@ export function formatBattleOutcome(
   status: BattleStatus,
   breakdown: OpponentBreakdown | undefined,
 ) {
+  if (status === "pending") {
+    return "";
+  }
   if (status === "not-reached") {
-    return "NOT REACHED";
+    return "";
   }
 
-  return breakdown?.outcome === "Beat" ? "CLEARED" : "FAILED";
+  return breakdown?.outcome === "Beat" ? "DEFEATED" : "WIPED OUT";
 }

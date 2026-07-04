@@ -6,13 +6,15 @@ import { ChampionScreen } from "@/components/ChampionScreen";
 import { EliteFourScreen } from "@/components/EliteFourScreen";
 import { EndResultsScreen } from "@/components/EndResultsScreen";
 import { GymLeadersScreen } from "@/components/GymLeadersScreen";
+import { TrainerCardScreen } from "@/components/TrainerCardScreen";
 import { TitleScreen } from "@/components/TitleScreen";
 import { scoreTeam } from "@/lib/api";
-import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
+import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
 type GameScreen =
   | "title"
+  | "trainer-card"
   | "select-team"
   | "gym-leaders"
   | "elite-four"
@@ -26,12 +28,11 @@ export default function Home() {
   );
   const [team, setTeam] = useState<Pokemon[]>([]);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
-  const [trainerName, setTrainerName] = useState("");
+  const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(null);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const teamRef = useRef<Pokemon[]>(team);
   teamRef.current = team;
-  const displayTrainerName = trainerName.trim() || "Trainer";
 
   function revealCard(slotIndex: number, pokemon: Pokemon) {
     setError("");
@@ -106,7 +107,18 @@ export default function Home() {
   }
 
   if (screen === "title") {
-    return <TitleScreen onStart={() => setScreen("select-team")} />;
+    return <TitleScreen onStart={() => setScreen("trainer-card")} />;
+  }
+
+  if (screen === "trainer-card") {
+    return (
+      <TrainerCardScreen
+        onTrainerSaved={(savedTrainerProfile) => {
+          setTrainerProfile(savedTrainerProfile);
+          setScreen("select-team");
+        }}
+      />
+    );
   }
 
   if (screen === "gym-leaders" && result) {
@@ -132,7 +144,7 @@ export default function Home() {
   if (screen === "champion" && result) {
     return (
       <ChampionScreen
-        playerName={displayTrainerName}
+        trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={team}
         onViewResults={() => setScreen("end-results")}
@@ -143,7 +155,7 @@ export default function Home() {
   if (screen === "end-results" && result) {
     return (
       <EndResultsScreen
-        playerName={displayTrainerName}
+        trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={team}
         onTryAgain={tryAgain}
@@ -157,10 +169,8 @@ export default function Home() {
         error={error}
         revealedCards={revealedCards}
         isSubmitting={isSubmitting}
-        trainerName={trainerName}
         selectedPokemon={team}
         onRevealCard={revealCard}
-        onTrainerNameChange={setTrainerName}
         onSubmitTeam={submitTeam}
         onResetRun={resetToTitle}
       />
@@ -170,4 +180,15 @@ export default function Home() {
 
 function createEmptyCards() {
   return Array.from({ length: TEAM_SIZE }, () => null);
+}
+
+function createFallbackTrainerProfile(): TrainerProfile {
+  return {
+    name: "Trainer",
+    dob: "",
+    email: "",
+    hometown: "Pallet Town",
+    sprite: "player-male",
+    created_at: "",
+  };
 }

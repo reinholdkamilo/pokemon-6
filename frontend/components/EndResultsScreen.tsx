@@ -1,6 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import {
+  BattleTrainerCard,
+  createPlayerBattleTrainerCardProps,
+} from "@/components/BattleTrainerCard";
 import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
@@ -11,17 +15,17 @@ import {
   getBattleStatus,
   GYM_LEADERS,
 } from "@/lib/progression";
-import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
+import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 type EndResultsScreenProps = {
-  playerName: string;
+  trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
   onTryAgain: () => void;
 };
 
 export function EndResultsScreen({
-  playerName,
+  trainerProfile,
   result,
   selectedPokemon,
   onTryAgain,
@@ -33,6 +37,8 @@ export function EndResultsScreen({
   const championBeaten = didBeatOpponent(championBreakdown);
   const gymBreakdowns = result.opponent_breakdown?.gym_leaders ?? [];
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
+  const playerName = trainerProfile.name || "Trainer";
+  const badgesEarned = result.badges_earned?.length ?? 0;
 
   return (
     <main className="game-shell stage-shell">
@@ -42,6 +48,17 @@ export function EndResultsScreen({
           <h1>{championBeaten ? "YOU ARE THE NEW POKEMON CHAMPION" : "RUN COMPLETE"}</h1>
           <p>{playerName}</p>
         </div>
+
+        <section className="results-team-section" aria-label="Player Trainer Card">
+          <h2>Trainer Card</h2>
+          <BattleTrainerCard
+            {...createPlayerBattleTrainerCardProps(trainerProfile)}
+            badges={badgesEarned}
+            className="results-battle-trainer-card"
+            pokemonCount={selectedPokemon.length}
+            team={selectedPokemon}
+          />
+        </section>
 
         <section className="results-team-section" aria-label="Final Pokemon team">
           <h2>Final Team</h2>

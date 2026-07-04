@@ -10,6 +10,7 @@ whether it is strong and balanced enough to win the Champion run.
 ## Core Features
 
 - Card-based Pokémon selection
+- Local Trainer Card creation
 - Pokémon search as a secondary/debug tool
 - Team of six selection slots
 - Challenge rules
@@ -17,6 +18,7 @@ whether it is strong and balanced enough to win the Champion run.
 - Win/Lose result
 - Pokémon details for each selected pick
 - Simple local Pokémon data
+- Simple local trainer profile storage for development
 - Clean GitHub and Codex workflow
 
 ## Development Rules
@@ -41,6 +43,11 @@ uvicorn app.main:app --reload
 ```
 
 The API runs at `http://127.0.0.1:8000`.
+
+Trainer profiles created in local development are appended to
+`backend/app/data/pokemon_trainers.json`. That file is ignored by Git so real
+player emails and dates of birth are not committed. The tracked template file is
+`backend/app/data/pokemon_trainers.example.json`.
 
 ## Running Backend Tests
 
@@ -122,6 +129,8 @@ Trainer placeholder files live in `frontend/public/images/trainers/`:
 - `agatha.svg`
 - `lance.svg`
 - `gary.svg`
+- `player-male.svg`
+- `player-female.svg`
 
 These placeholders can later be replaced by placing correctly named files in
 the same folders and updating `frontend/lib/imagePaths.ts` if the file extension
@@ -139,20 +148,27 @@ grids, buttons, headings, or panels.
 2. Start the frontend.
 3. Open `http://localhost:3000`.
 4. Confirm the title screen uses the local background image and card backs.
-5. Press CATCH EM ALL and confirm the six-card selection screen appears.
-6. Tap any unrevealed card and confirm it cycles through Pokemon names and types.
-7. Confirm the revealed card can be tapped again to re-spin that same team slot.
-8. Confirm duplicate Pokemon are not drawn across the six card slots.
-9. Repeat until all six cards are filled.
-10. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
-11. Submit the complete team and confirm the button shows a scoring state.
-12. Confirm the Gym Leaders screen shows only Gym Leader cards and marks
-   cleared, failed, and not reached leaders correctly.
-13. If all 8 badges are earned, continue to the Elite Four screen and confirm it
-   shows only Elite Four cards.
-14. If the Elite Four is beaten, continue to the Champion screen and confirm it
-   shows the player team against Champion Gary.
-15. Confirm the End Results screen shows the final team, Gym Leaders, Elite
-   Four, Champion Gary, and TRY AGAIN.
-16. Press TRY AGAIN and confirm it returns to Pokémon selection with empty cards,
+5. Press CATCH EM ALL and confirm the Trainer Card screen appears.
+6. Enter trainer name, date of birth, email, hometown, and choose a player
+   trainer sprite.
+7. Press CHOOSE YOUR POKEMON and confirm the six-card selection screen appears.
+8. Tap any unrevealed card and confirm it cycles through Pokemon names and types.
+9. Confirm the revealed card can be tapped again to re-spin that same team slot.
+10. Confirm duplicate Pokemon are not drawn across the six card slots.
+11. Repeat until all six cards are filled.
+12. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
+13. Submit the complete team and confirm the Gym Leaders screen appears with a
+   BATTLE button above the cards.
+14. Press BATTLE and confirm Gym Leader cards reveal DEFEATED, WIPED OUT, or
+   greyed-out unreached states without visible matchup scores.
+15. If all 8 badges are earned, continue to the Elite Four screen and confirm it
+   shows only Elite Four cards with a BATTLE button above them.
+16. If the Elite Four is beaten, continue to the Champion screen and confirm it
+   shows the player Battle Trainer Card against Champion Gary's Battle Trainer
+   Card without date of birth or email.
+17. Press BATTLE on the Champion screen and confirm Gary's result is revealed.
+18. Confirm the End Results screen shows the player Battle Trainer Card without
+   date of birth or email, final team, Gym Leaders, Elite Four, Champion Gary,
+   and TRY AGAIN.
+19. Press TRY AGAIN and confirm it returns to Pokémon selection with empty cards,
    not the title screen.

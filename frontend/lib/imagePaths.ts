@@ -23,4 +23,6 @@ export const TRAINER_IMAGE_PATHS: Record<string, string> = {
   Agatha: "/images/trainers/agatha.svg",
   Lance: "/images/trainers/lance.svg",
   Gary: "/images/trainers/gary.svg",
+  "player-male": "/images/trainers/player-male.svg",
+  "player-female": "/images/trainers/player-female.svg",
 };

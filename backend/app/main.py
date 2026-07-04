@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.health import router as health_router
 from app.routes.pokemon import router as pokemon_router
 from app.routes.teams import router as teams_router
+from app.routes.trainers import router as trainers_router
 
 
 app = FastAPI(title="Pokemon 6 API")
@@ -24,3 +25,4 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(pokemon_router)
 app.include_router(teams_router)
+app.include_router(trainers_router)

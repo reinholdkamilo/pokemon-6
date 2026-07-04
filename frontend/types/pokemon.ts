@@ -31,6 +31,10 @@ export type OpponentBreakdown = {
   matchup_score?: number;
   outcome?: string;
   badge_earned?: boolean;
+  win_type?: "normal" | "lucky" | "locked" | "loss";
+  lucky_win?: boolean;
+  lucky_win_chance?: number | null;
+  random_roll?: number | null;
   explanation?: string;
 };
 
@@ -53,4 +57,14 @@ export type TeamScoreResult = {
   };
   explanation?: string;
   warnings?: string[];
+};
+
+export type TrainerProfile = {
+  id?: string;
+  name: string;
+  dob: string;
+  email: string;
+  hometown: string;
+  sprite: "player-male" | "player-female";
+  created_at: string;
 };

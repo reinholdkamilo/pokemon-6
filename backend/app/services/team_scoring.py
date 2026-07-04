@@ -1,7 +1,9 @@
 import json
+import random
 from collections import Counter
 from functools import lru_cache
 from pathlib import Path
+from typing import Callable, Optional
 
 from app.services.pokemon_service import get_all_pokemon
 
@@ -16,6 +18,8 @@ MATCHUP_SPREAD_MAX_SCORE = 25
 GYM_WIN_THRESHOLD = 48
 ELITE_FOUR_WIN_THRESHOLD = 62
 CHAMPION_WIN_THRESHOLD = 70
+LUCKY_GYM_MIN_SCORE = 42
+LUCKY_GYM_MIN_AVERAGE_BST = 420
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 GYM_LEADERS_PATH = DATA_DIR / "gym_leaders.json"
@@ -23,16 +27,20 @@ ELITE_FOUR_PATH = DATA_DIR / "elite_four.json"
 CHAMPION_PATH = DATA_DIR / "champion.json"
 
 
-def score_team(pokemon_names: list[str]) -> dict:
+def score_team(
+    pokemon_names: list[str],
+    random_number_generator: Optional[Callable[[], float]] = None,
+) -> dict:
     selected_pokemon = _validate_team(pokemon_names)
     gym_opponents = _load_json(GYM_LEADERS_PATH)
     elite_four_opponents = _load_json(ELITE_FOUR_PATH)
     champion_opponents = _load_json(CHAMPION_PATH)
 
-    gym_breakdown = [
-        _score_opponent(selected_pokemon, opponent, GYM_WIN_THRESHOLD)
-        for opponent in gym_opponents
-    ]
+    gym_breakdown = _score_gym_leaders(
+        selected_pokemon,
+        gym_opponents,
+        random_number_generator=random_number_generator,
+    )
     badges_earned = [
         matchup["badge_name"]
         for matchup in gym_breakdown
@@ -158,27 +166,81 @@ def _validate_team(pokemon_names: list[str]) -> list[dict]:
     return selected_pokemon
 
 
+def _score_gym_leaders(
+    selected_pokemon: list[dict],
+    gym_opponents: list[dict],
+    random_number_generator: Optional[Callable[[], float]] = None,
+) -> list[dict]:
+    gym_breakdown = []
+    gym_progression_stopped = False
+
+    for opponent in gym_opponents:
+        breakdown = _score_opponent(
+            selected_pokemon,
+            opponent,
+            GYM_WIN_THRESHOLD,
+            locked=gym_progression_stopped,
+            locked_reason=(
+                "the player lost to an earlier Gym Leader"
+                if gym_progression_stopped
+                else None
+            ),
+            allow_lucky_win=not gym_progression_stopped,
+            random_number_generator=random_number_generator,
+        )
+        gym_breakdown.append(breakdown)
+
+        if breakdown["outcome"] == "Lost" and breakdown["win_type"] != "locked":
+            gym_progression_stopped = True
+
+    return gym_breakdown
+
+
 def _score_opponent(
     selected_pokemon: list[dict],
     opponent: dict,
     win_threshold: int,
     locked: bool = False,
+    locked_reason: Optional[str] = None,
+    allow_lucky_win: bool = False,
+    random_number_generator: Optional[Callable[[], float]] = None,
 ) -> dict:
     matchup_score = _calculate_matchup_score(selected_pokemon, opponent)
-    beat_opponent = not locked and matchup_score >= win_threshold
+    average_base_stat_total = _average_base_stat_total(selected_pokemon)
+    lucky_result = _get_lucky_win_result(
+        matchup_score,
+        average_base_stat_total,
+        locked=locked,
+        allow_lucky_win=allow_lucky_win,
+        random_number_generator=random_number_generator,
+    )
+    beat_opponent = (
+        not locked
+        and (
+            matchup_score >= win_threshold
+            or lucky_result["lucky_win"]
+        )
+    )
     badge_name = opponent.get("badge_name")
+    win_type = _get_win_type(locked, beat_opponent, lucky_result["lucky_win"])
 
     breakdown = {
         "opponent_name": opponent["name"],
         "stage": opponent["stage"],
         "matchup_score": matchup_score,
         "outcome": "Beat" if beat_opponent else "Lost",
+        "win_type": win_type,
+        "lucky_win": lucky_result["lucky_win"],
+        "lucky_win_chance": lucky_result["lucky_win_chance"],
+        "random_roll": lucky_result["random_roll"],
         "explanation": _build_opponent_explanation(
             selected_pokemon,
             opponent,
             matchup_score,
             beat_opponent,
             locked,
+            locked_reason,
+            lucky_result["lucky_win"],
         ),
     }
 
@@ -187,6 +249,66 @@ def _score_opponent(
         breakdown["badge_earned"] = beat_opponent
 
     return breakdown
+
+
+def _get_lucky_win_result(
+    matchup_score: int,
+    average_base_stat_total: float,
+    locked: bool = False,
+    allow_lucky_win: bool = False,
+    random_number_generator: Optional[Callable[[], float]] = None,
+) -> dict:
+    if locked or not allow_lucky_win:
+        return {
+            "lucky_win": False,
+            "lucky_win_chance": 0,
+            "random_roll": None,
+        }
+
+    lucky_win_chance = _get_lucky_win_chance(matchup_score, average_base_stat_total)
+    if lucky_win_chance <= 0:
+        return {
+            "lucky_win": False,
+            "lucky_win_chance": 0,
+            "random_roll": None,
+        }
+
+    roll = (
+        random_number_generator()
+        if random_number_generator is not None
+        else random.random()
+    )
+
+    return {
+        "lucky_win": roll < lucky_win_chance,
+        "lucky_win_chance": lucky_win_chance,
+        "random_roll": roll,
+    }
+
+
+def _get_lucky_win_chance(
+    matchup_score: int,
+    average_base_stat_total: float,
+) -> float:
+    if matchup_score < LUCKY_GYM_MIN_SCORE or matchup_score >= GYM_WIN_THRESHOLD:
+        return 0
+    if average_base_stat_total < LUCKY_GYM_MIN_AVERAGE_BST:
+        return 0
+    if average_base_stat_total >= 500:
+        return 0.5
+    if average_base_stat_total >= 460:
+        return 0.35
+    return 0.2
+
+
+def _get_win_type(locked: bool, beat_opponent: bool, lucky_win: bool) -> str:
+    if locked:
+        return "locked"
+    if lucky_win:
+        return "lucky"
+    if beat_opponent:
+        return "normal"
+    return "loss"
 
 
 def _calculate_matchup_score(selected_pokemon: list[dict], opponent: dict) -> int:
@@ -337,11 +459,21 @@ def _build_opponent_explanation(
     matchup_score: int,
     beat_opponent: bool,
     locked: bool,
+    locked_reason: Optional[str],
+    lucky_win: bool,
 ) -> str:
     if locked:
+        if locked_reason:
+            return f"{opponent['name']} was not reached because {locked_reason}."
         return (
             f"{opponent['name']} is locked because the team has not cleared the "
             "required earlier stage."
+        )
+
+    if lucky_win:
+        return (
+            f"The team scraped through against {opponent['name']} due to overall "
+            f"strength, turning a close {matchup_score}/100 matchup into a win."
         )
 
     team_types = _get_team_types(selected_pokemon)

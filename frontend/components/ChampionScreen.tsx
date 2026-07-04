@@ -1,6 +1,10 @@
 "use client";
 
-import { LocalSprite } from "@/components/LocalSprite";
+import { useState } from "react";
+import {
+  BattleTrainerCard,
+  createPlayerBattleTrainerCardProps,
+} from "@/components/BattleTrainerCard";
 import { TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
 import {
   CHAMPION,
@@ -9,27 +13,33 @@ import {
   formatBattleOutcome,
   getBattleStatus,
 } from "@/lib/progression";
-import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
+import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 type ChampionScreenProps = {
-  playerName: string;
+  trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
   onViewResults: () => void;
 };
 
 export function ChampionScreen({
-  playerName,
+  trainerProfile,
   result,
   selectedPokemon,
   onViewResults,
 }: ChampionScreenProps) {
+  const [battleRevealed, setBattleRevealed] = useState(false);
   const championBreakdown = findBreakdown(
     result.opponent_breakdown?.champion,
     CHAMPION.name,
   );
-  const championStatus = getBattleStatus(championBreakdown, Boolean(championBreakdown));
+  const championStatus = battleRevealed
+    ? getBattleStatus(championBreakdown, Boolean(championBreakdown))
+    : "pending";
   const championBeaten = didBeatOpponent(championBreakdown);
+  const playerName = trainerProfile.name || "Trainer";
+  const badgesEarned = result.badges_earned?.length ?? 0;
+  const championStamp = formatBattleOutcome(championStatus, championBreakdown);
 
   return (
     <main className="game-shell stage-shell">
@@ -40,61 +50,46 @@ export function ChampionScreen({
           <p>{playerName} versus Champion Gary</p>
         </div>
 
-        <div className="champion-versus">
-          <article className="versus-card player-card">
-            <div className="progression-card-top">
-              <span>CHALLENGER</span>
-              <strong>{playerName}</strong>
-            </div>
-            <h2>{playerName}</h2>
-            <div className="champion-team-grid" aria-label={`${playerName} team`}>
-              {selectedPokemon.map((pokemon) => (
-                <div className="champion-team-member" key={pokemon.id}>
-                  <LocalSprite
-                    alt={`${pokemon.name} sprite`}
-                    className="team-member-sprite"
-                    fallback={pokemon.name.slice(0, 2).toUpperCase()}
-                    src={pokemon.image}
-                  />
-                  <span>{pokemon.name}</span>
-                </div>
-              ))}
-            </div>
-          </article>
+        <button
+          className="primary-action stage-action"
+          type="button"
+          onClick={!battleRevealed ? () => setBattleRevealed(true) : onViewResults}
+        >
+          {!battleRevealed
+            ? "BATTLE"
+            : championBeaten
+              ? "VIEW CHAMPION RESULTS"
+              : "VIEW FINAL RESULTS"}
+        </button>
+
+        <div className="champion-versus-layout">
+          <BattleTrainerCard
+            {...createPlayerBattleTrainerCardProps(trainerProfile)}
+            badges={badgesEarned}
+            className="player-card"
+            pokemonCount={6}
+            team={selectedPokemon}
+          />
 
           <div className="versus-mark" aria-hidden="true">
             VS
           </div>
 
-          <article className={`versus-card champion-card ${championStatus}`}>
-            <div className="progression-card-top">
-              <span>{CHAMPION.stage}</span>
-              <strong>{formatBattleOutcome(championStatus, championBreakdown)}</strong>
-            </div>
-            <LocalSprite
-              alt="Champion Gary sprite"
-              className="trainer-sprite champion-trainer-sprite"
-              fallback={CHAMPION.fallback}
-              src={TRAINER_IMAGE_PATHS[CHAMPION.name]}
-            />
-            <h2>Champion Gary</h2>
-            <p>{CHAMPION.specialty} team</p>
-            <div className="pokeball-row" aria-label="6 Pokemon">
-              {Array.from({ length: CHAMPION.pokemonCount }, (_, index) => (
-                <span className="pokeball-dot" key={index} aria-hidden="true" />
-              ))}
-            </div>
-            {typeof championBreakdown?.matchup_score === "number" ? (
-              <p className="stage-matchup">
-                Matchup {championBreakdown.matchup_score}/100
-              </p>
+          <div className={`champion-card ${championStatus}`}>
+            {championStamp ? (
+              <strong className="result-stamp">{championStamp}</strong>
             ) : null}
-          </article>
+            <BattleTrainerCard
+              badges={8}
+              fallback={CHAMPION.fallback}
+              hometown="Pallet Town"
+              name="Gary"
+              pokemonCount={CHAMPION.pokemonCount}
+              role="Champion"
+              spriteSrc={TRAINER_IMAGE_PATHS[CHAMPION.name]}
+            />
+          </div>
         </div>
-
-        <button className="primary-action stage-action" type="button" onClick={onViewResults}>
-          {championBeaten ? "VIEW CHAMPION RESULTS" : "VIEW FINAL RESULTS"}
-        </button>
       </section>
     </main>
   );

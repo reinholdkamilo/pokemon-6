@@ -17,3 +17,6 @@ dist/
 # Database
 *.db
 *.sqlite
+
+# Local trainer profile data
+backend/app/data/pokemon_trainers.json

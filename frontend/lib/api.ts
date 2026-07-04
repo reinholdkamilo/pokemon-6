@@ -1,4 +1,4 @@
-import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
+import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
@@ -21,6 +21,18 @@ export async function scoreTeam(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ pokemon_names: pokemonNames }),
+  });
+}
+
+export async function saveTrainerProfile(
+  trainerProfile: TrainerProfile,
+): Promise<TrainerProfile> {
+  return fetchJson<TrainerProfile>(`${API_BASE_URL}/trainers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(trainerProfile),
   });
 }
 

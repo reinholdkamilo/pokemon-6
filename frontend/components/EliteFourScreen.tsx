@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
   didBeatOpponent,
@@ -20,6 +21,7 @@ export function EliteFourScreen({
   onChallengeChampion,
   onViewResults,
 }: EliteFourScreenProps) {
+  const [battleRevealed, setBattleRevealed] = useState(false);
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
   const eliteFourBeaten =
     eliteFourBreakdowns.length >= ELITE_FOUR.length &&
@@ -37,11 +39,31 @@ export function EliteFourScreen({
           <p>Defeat all four members to reach Champion Gary.</p>
         </div>
 
+        <button
+          className="primary-action stage-action"
+          type="button"
+          onClick={
+            !battleRevealed
+              ? () => setBattleRevealed(true)
+              : eliteFourBeaten
+                ? onChallengeChampion
+                : onViewResults
+          }
+        >
+          {!battleRevealed
+            ? "BATTLE"
+            : eliteFourBeaten
+              ? "CHALLENGE CHAMPION"
+              : "VIEW FINAL RESULTS"}
+        </button>
+
         <div className="stage-card-grid elite-stage-grid">
           {ELITE_FOUR.map((member) => {
             const breakdown = findBreakdown(eliteFourBreakdowns, member.name);
             const reached = reachedPrevious && Boolean(breakdown);
-            const status = getBattleStatus(breakdown, reached);
+            const status = battleRevealed
+              ? getBattleStatus(breakdown, reached)
+              : "pending";
             reachedPrevious = reached && status === "cleared";
 
             return (
@@ -54,14 +76,6 @@ export function EliteFourScreen({
             );
           })}
         </div>
-
-        <button
-          className="primary-action stage-action"
-          type="button"
-          onClick={eliteFourBeaten ? onChallengeChampion : onViewResults}
-        >
-          {eliteFourBeaten ? "CHALLENGE CHAMPION" : "VIEW FINAL RESULTS"}
-        </button>
       </section>
     </main>
   );
