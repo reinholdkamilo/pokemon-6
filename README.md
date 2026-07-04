@@ -89,36 +89,49 @@ python3 scripts/download_pokemon_images.py
 
 The script saves `1.png` through `151.png` in
 `frontend/public/images/pokemon/` and skips files that already exist.
+Pokémon sprites are locally stored in that folder, so the app does not rely on
+official artwork or remote image services at runtime.
 
-Place badge sprites in `frontend/public/images/badges/` with these filenames:
+The current trainer and badge assets are original fan-made placeholder SVGs.
+They are simple local sprites for the MVP and are not official artwork, logos,
+trainer sprites, or badge sprites.
 
-- `boulder.png`
-- `cascade.png`
-- `thunder.png`
-- `rainbow.png`
-- `soul.png`
-- `marsh.png`
-- `volcano.png`
-- `earth.png`
+Badge placeholder files live in `frontend/public/images/badges/`:
 
-Place trainer sprites in `frontend/public/images/trainers/` with these filenames:
+- `boulder.svg`
+- `cascade.svg`
+- `thunder.svg`
+- `rainbow.svg`
+- `soul.svg`
+- `marsh.svg`
+- `volcano.svg`
+- `earth.svg`
 
-- `brock.png`
-- `misty.png`
-- `lt-surge.png`
-- `erika.png`
-- `koga.png`
-- `sabrina.png`
-- `blaine.png`
-- `giovanni.png`
-- `lorelei.png`
-- `bruno.png`
-- `agatha.png`
-- `lance.png`
-- `gary.png`
+Trainer placeholder files live in `frontend/public/images/trainers/`:
 
-Missing badge or trainer sprites are handled by styled local fallbacks, so the
-app does not require those files to build or run.
+- `brock.svg`
+- `misty.svg`
+- `lt-surge.svg`
+- `erika.svg`
+- `koga.svg`
+- `sabrina.svg`
+- `blaine.svg`
+- `giovanni.svg`
+- `lorelei.svg`
+- `bruno.svg`
+- `agatha.svg`
+- `lance.svg`
+- `gary.svg`
+
+These placeholders can later be replaced by placing correctly named files in
+the same folders and updating `frontend/lib/imagePaths.ts` if the file extension
+changes. Missing or failed badge and trainer images are handled by styled local
+fallbacks, so the app does not show broken image icons.
+
+Sprite display sizing is handled by CSS in `frontend/app/globals.css`. Pokémon,
+trainer, and badge images are scaled within their existing card, avatar, and
+badge areas, so improving sprite fit should not require resizing card layouts,
+grids, buttons, headings, or panels.
 
 ## Manual MVP Test
 
