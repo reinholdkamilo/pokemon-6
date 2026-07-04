@@ -4,12 +4,12 @@ Pokémon 6 is a fan-made team-building strategy game where players build a team 
 
 ## MVP Challenge
 
-Spin to randomly receive six Generation 1 Pokémon, then submit that team to see
+Draw six Generation 1 Pokémon cards, then submit that team to see
 whether it is strong and balanced enough to win the Champion run.
 
 ## Core Features
 
-- Spin-based Pokémon selection
+- Card-based Pokémon selection
 - Pokémon search as a secondary/debug tool
 - Team of six selection slots
 - Challenge rules
@@ -84,14 +84,13 @@ npm run build
 1. Start the backend.
 2. Start the frontend.
 3. Open `http://localhost:3000`.
-4. Press Spin and confirm the name and type boxes cycle quickly.
-5. Confirm the stopped Pokemon is added to the next team slot automatically.
-6. Repeat until all six slots are filled.
-7. Confirm Spin is disabled once the team has six Pokemon.
-8. Confirm search results cannot add duplicate Pokemon or add a seventh Pokemon.
-9. Remove one Pokemon or press Reset Team to confirm the team can be changed and
-   Spin is available again.
-10. Confirm Submit Team is disabled until six Pokemon are selected.
-11. Submit the complete team and confirm the button shows a scoring state.
+4. Confirm the title screen uses the local background image and card backs.
+5. Press CATCH EM ALL and confirm the six-card selection screen appears.
+6. Tap any unrevealed card and confirm it cycles through Pokemon names and types.
+7. Confirm the revealed card locks and duplicate Pokemon are not drawn.
+8. Repeat until all six cards are filled.
+9. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
+10. Submit the complete team and confirm the button shows a scoring state.
+11. Confirm the Gym Leader journey screen marks earned badges as cleared.
 12. Confirm the result panel shows badges, journey progress, stage scores, total
    score, Win/Lose result, score breakdown, explanation, and warnings.

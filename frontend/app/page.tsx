@@ -1,17 +1,21 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { PokemonCard } from "@/components/PokemonCard";
-import { PokemonSearch } from "@/components/PokemonSearch";
+import { CardSelectionScreen } from "@/components/CardSelectionScreen";
+import { GymLeaderJourney } from "@/components/GymLeaderJourney";
 import { ResultPanel } from "@/components/ResultPanel";
-import { SpinSelector } from "@/components/SpinSelector";
-import { TeamSlots } from "@/components/TeamSlots";
+import { TitleScreen } from "@/components/TitleScreen";
 import { scoreTeam } from "@/lib/api";
 import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
+type GameScreen = "title" | "select-team" | "journey";
 
 export default function Home() {
+  const [screen, setScreen] = useState<GameScreen>("title");
+  const [revealedCards, setRevealedCards] = useState<(Pokemon | null)[]>(
+    createEmptyCards,
+  );
   const [team, setTeam] = useState<Pokemon[]>([]);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
   const [error, setError] = useState<string>("");
@@ -19,36 +23,38 @@ export default function Home() {
   const teamRef = useRef<Pokemon[]>(team);
   teamRef.current = team;
 
-  function addPokemon(pokemon: Pokemon) {
-    const currentTeam = teamRef.current;
+  function revealCard(slotIndex: number, pokemon: Pokemon) {
     setError("");
+    setResult(null);
 
-    if (currentTeam.length >= TEAM_SIZE) {
-      setError("Your team already has six Pokemon.");
+    if (teamRef.current.length >= TEAM_SIZE) {
+      setError("Your team can only have six Pokemon.");
       return;
     }
 
-    if (currentTeam.some((selected) => selected.id === pokemon.id)) {
+    if (teamRef.current.some((selected) => selected.id === pokemon.id)) {
       setError(`${pokemon.name} is already on your team.`);
       return;
     }
 
-    const nextTeam = [...currentTeam, pokemon];
-    teamRef.current = nextTeam;
-    setTeam(nextTeam);
-    setResult(null);
-  }
+    const nextCards = [...revealedCards];
+    if (nextCards[slotIndex]) {
+      setError("That card is already locked.");
+      return;
+    }
 
-  function removePokemon(pokemonId: number) {
-    const nextTeam = teamRef.current.filter((pokemon) => pokemon.id !== pokemonId);
+    nextCards[slotIndex] = pokemon;
+    const nextTeam = nextCards.filter((card): card is Pokemon => Boolean(card));
+    setRevealedCards(nextCards);
     teamRef.current = nextTeam;
     setTeam(nextTeam);
-    setResult(null);
-    setError("");
   }
 
   async function submitTeam() {
-    if (team.length !== TEAM_SIZE) {
+    const currentTeam = teamRef.current;
+
+    if (currentTeam.length !== TEAM_SIZE) {
+      setError("Reveal all six cards before starting the journey.");
       return;
     }
 
@@ -56,8 +62,9 @@ export default function Home() {
     setError("");
 
     try {
-      const scoreResult = await scoreTeam(team.map((pokemon) => pokemon.name));
+      const scoreResult = await scoreTeam(currentTeam.map((pokemon) => pokemon.name));
       setResult(scoreResult);
+      setScreen("journey");
     } catch (caughtError) {
       setResult(null);
       setError(
@@ -72,66 +79,41 @@ export default function Home() {
 
   function resetTeam() {
     teamRef.current = [];
+    setRevealedCards(createEmptyCards());
     setTeam([]);
     setResult(null);
     setError("");
+    setScreen("title");
+  }
+
+  if (screen === "title") {
+    return <TitleScreen onStart={() => setScreen("select-team")} />;
+  }
+
+  if (screen === "journey" && result) {
+    return (
+      <main className="game-shell journey-shell">
+        <GymLeaderJourney result={result} selectedPokemon={team} onReset={resetTeam} />
+        <ResultPanel result={result} />
+      </main>
+    );
   }
 
   return (
-    <main className="page-shell">
-      <section className="intro">
-        <p className="eyebrow">Generation 1 team challenge</p>
-        <h1>Pokemon 6</h1>
-        <p>
-          Spin for six random Generation 1 Pokemon, submit the team to the MVP
-          scoring system, and see whether it can clear the Champion run.
-        </p>
-      </section>
-
-      <section className="game-flow" aria-label="Team spinner">
-        <SpinSelector selectedPokemon={team} onAddPokemon={addPokemon} />
-
-        <div className="team-column">
-          <TeamSlots pokemon={team} onRemovePokemon={removePokemon} />
-
-          <button
-            className="secondary-button reset-button"
-            type="button"
-            disabled={team.length === 0 && !result}
-            onClick={resetTeam}
-          >
-            Reset Team
-          </button>
-
-          {team.length > 0 && (
-            <section className="selected-details" aria-label="Selected Pokemon details">
-              <h2>Selected Pokemon</h2>
-              <div className="card-grid">
-                {team.map((pokemon) => (
-                  <PokemonCard key={pokemon.id} pokemon={pokemon} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {error && <p className="error-message">{error}</p>}
-
-          <button
-            className="submit-button"
-            type="button"
-            disabled={team.length !== TEAM_SIZE || isSubmitting}
-            onClick={submitTeam}
-          >
-            {isSubmitting ? "Scoring Team..." : "Submit Team"}
-          </button>
-
-          <ResultPanel result={result} />
-        </div>
-      </section>
-
-      <section className="debug-search" aria-label="Secondary Pokemon search">
-        <PokemonSearch onSelectPokemon={addPokemon} selectedPokemon={team} />
-      </section>
+    <main className="game-shell">
+      <CardSelectionScreen
+        error={error}
+        revealedCards={revealedCards}
+        isSubmitting={isSubmitting}
+        selectedPokemon={team}
+        onRevealCard={revealCard}
+        onSubmitTeam={submitTeam}
+        onResetRun={resetTeam}
+      />
     </main>
   );
+}
+
+function createEmptyCards() {
+  return Array.from({ length: TEAM_SIZE }, () => null);
 }

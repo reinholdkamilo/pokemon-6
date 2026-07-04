@@ -11,6 +11,8 @@ export type Pokemon = {
   special_defense: number;
   speed: number;
   base_stat_total: number;
+  isLegendary?: boolean;
+  isShiny?: boolean;
 };
 
 export type ScoreBreakdown = {

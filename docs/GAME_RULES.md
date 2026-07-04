@@ -2,8 +2,8 @@
 
 ## Core Concept
 
-Players must build a team of six Pokémon from Generation 1 by spinning for
-random Pokémon.
+Players must build a team of six Pokémon from Generation 1 by revealing random
+team cards.
 
 The team must defeat:
 
@@ -15,13 +15,13 @@ The aim is to go undefeated.
 
 ## MVP Challenge
 
-Spin until six different Generation 1 Pokémon have been selected, then submit
-the team to the scoring system.
+Reveal six different Generation 1 Pokémon cards, then submit the team to the
+scoring system.
 
 ## MVP Rules
 
 1. Only Generation 1 Pokémon are allowed.
-2. The player receives Pokémon through the Spin button.
+2. The player receives Pokémon through the card reveal screen.
 3. No duplicate Pokémon are allowed.
 4. The player must select exactly six Pokémon before submitting the team.
 5. A balanced team should avoid repeated primary types.
@@ -31,15 +31,17 @@ the team to the scoring system.
 9. The result is either Win or Lose.
 10. The game must explain why the team won or lost.
 
-## Spin Selection
+## Card Selection
 
-1. The player presses Spin to start the selection animation.
-2. A Pokémon name box and type box rapidly cycle through available Pokémon.
-3. The spin stops after a short delay on one random Pokémon.
-4. The stopped Pokémon is added to the next open team slot automatically.
-5. Already selected Pokémon are excluded from future spins.
-6. Spinning stops being available once all six team slots are filled.
-7. The player can reset the team and spin again.
+1. The player starts from the title screen and presses CATCH EM ALL.
+2. The player sees six unrevealed team cards.
+3. Tapping an unrevealed card starts a card reveal animation.
+4. The card cycles through available Pokémon names and types.
+5. The reveal stops after a short delay on one random Pokémon.
+6. The revealed Pokémon is locked into that card until Reset Run.
+7. Already selected Pokémon are excluded from future card reveals.
+8. The player can submit once all six cards are revealed.
+9. The player can reset the run and start again.
 
 ## Scoring Areas
 
