@@ -22,32 +22,32 @@ export type ScoreBreakdown = {
 };
 
 export type OpponentBreakdown = {
-  opponent_name: string;
-  stage: string;
+  opponent_name?: string;
+  stage?: string;
   badge_name?: string;
-  matchup_score: number;
-  outcome: string;
+  matchup_score?: number;
+  outcome?: string;
   badge_earned?: boolean;
-  explanation: string;
+  explanation?: string;
 };
 
 export type TeamScoreResult = {
-  total_score: number;
-  result: string;
+  total_score?: number;
+  result?: string;
   selected_pokemon: Pokemon[];
-  score_breakdown: ScoreBreakdown;
-  gym_score: number;
-  elite_four_score: number;
-  champion_score: number;
-  badges_earned: string[];
-  badges_required: number;
-  elite_four_unlocked: boolean;
-  path_result: string;
-  opponent_breakdown: {
-    gym_leaders: OpponentBreakdown[];
-    elite_four: OpponentBreakdown[];
-    champion: OpponentBreakdown[];
+  score_breakdown?: Partial<ScoreBreakdown>;
+  gym_score?: number;
+  elite_four_score?: number;
+  champion_score?: number;
+  badges_earned?: string[];
+  badges_required?: number;
+  elite_four_unlocked?: boolean;
+  path_result?: string;
+  opponent_breakdown?: {
+    gym_leaders?: OpponentBreakdown[];
+    elite_four?: OpponentBreakdown[];
+    champion?: OpponentBreakdown[];
   };
-  explanation: string;
-  warnings: string[];
+  explanation?: string;
+  warnings?: string[];
 };

@@ -37,8 +37,23 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
 
 async function readErrorMessage(response: Response) {
   try {
-    const body = (await response.json()) as { detail?: string };
-    return body.detail ?? `Request failed with status ${response.status}.`;
+    const body = (await response.json()) as { detail?: unknown };
+
+    if (typeof body.detail === "string") {
+      return body.detail;
+    }
+
+    if (Array.isArray(body.detail)) {
+      return body.detail
+        .map((detail) =>
+          typeof detail === "object" && detail !== null && "msg" in detail
+            ? String(detail.msg)
+            : String(detail),
+        )
+        .join(" ");
+    }
+
+    return `Request failed with status ${response.status}.`;
   } catch {
     return `Request failed with status ${response.status}.`;
   }

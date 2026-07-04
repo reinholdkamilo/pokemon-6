@@ -10,10 +10,10 @@ const KANTO_BADGES = [
 ];
 
 type BadgeDisplayProps = {
-  earnedBadges: string[];
+  earnedBadges?: string[];
 };
 
-export function BadgeDisplay({ earnedBadges }: BadgeDisplayProps) {
+export function BadgeDisplay({ earnedBadges = [] }: BadgeDisplayProps) {
   const earnedBadgeSet = new Set(earnedBadges);
 
   return (

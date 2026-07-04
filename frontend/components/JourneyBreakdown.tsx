@@ -5,27 +5,27 @@ type JourneyBreakdownProps = {
 };
 
 export function JourneyBreakdown({ result }: JourneyBreakdownProps) {
+  const opponentBreakdown = result.opponent_breakdown ?? {};
+  const gymLeaders = opponentBreakdown.gym_leaders ?? [];
+  const eliteFour = opponentBreakdown.elite_four ?? [];
+  const champion = opponentBreakdown.champion ?? [];
   const eliteFourBeaten =
     result.elite_four_unlocked &&
-    result.opponent_breakdown.elite_four.every(
-      (opponent) => opponent.outcome === "Beat",
-    );
+    eliteFour.length > 0 &&
+    eliteFour.every((opponent) => opponent.outcome === "Beat");
 
   return (
     <div className="journey-breakdown">
-      <JourneySection
-        title="Gym Leaders"
-        opponents={result.opponent_breakdown.gym_leaders}
-      />
+      <JourneySection title="Gym Leaders" opponents={gymLeaders} />
       <JourneySection
         title="Elite Four"
-        opponents={result.opponent_breakdown.elite_four}
+        opponents={eliteFour}
         locked={!result.elite_four_unlocked}
         lockedMessage="Locked until all 8 Kanto badges are earned."
       />
       <JourneySection
         title="Champion Gary"
-        opponents={result.opponent_breakdown.champion}
+        opponents={champion}
         locked={!eliteFourBeaten}
         lockedMessage="Locked until the Elite Four is beaten."
       />
@@ -56,12 +56,16 @@ function JourneySection({
         <p className="muted journey-lock-message">{lockedMessage}</p>
       ) : null}
       <div className="opponent-list">
-        {opponents.map((opponent) => (
-          <OpponentCard
-            key={`${opponent.stage}-${opponent.opponent_name}`}
-            opponent={opponent}
-          />
-        ))}
+        {opponents.length > 0 ? (
+          opponents.map((opponent) => (
+            <OpponentCard
+              key={`${opponent.stage}-${opponent.opponent_name}`}
+              opponent={opponent}
+            />
+          ))
+        ) : (
+          <p className="muted">No opponent details returned.</p>
+        )}
       </div>
     </section>
   );
@@ -74,17 +78,22 @@ type OpponentCardProps = {
 function OpponentCard({ opponent }: OpponentCardProps) {
   const isBeat = opponent.outcome === "Beat";
   const outcomeClass = isBeat ? "pass" : "fail";
+  const opponentName = opponent.opponent_name || "Unknown opponent";
+  const stage = opponent.stage || "Unknown stage";
+  const matchupScore =
+    typeof opponent.matchup_score === "number" ? opponent.matchup_score : 0;
+  const outcome = opponent.outcome || "Unknown";
 
   return (
     <article className="opponent-card">
       <div className="opponent-card-main">
         <div>
-          <strong>{opponent.opponent_name}</strong>
-          <span className="muted">{opponent.stage}</span>
+          <strong>{opponentName}</strong>
+          <span className="muted">{stage}</span>
         </div>
         <div className="opponent-score">
-          <strong>{opponent.matchup_score}/100</strong>
-          <span className={outcomeClass}>{opponent.outcome}</span>
+          <strong>{matchupScore}/100</strong>
+          <span className={outcomeClass}>{outcome}</span>
         </div>
       </div>
 
@@ -97,7 +106,7 @@ function OpponentCard({ opponent }: OpponentCardProps) {
         </div>
       ) : null}
 
-      <p>{opponent.explanation}</p>
+      <p>{opponent.explanation || "No explanation returned for this matchup."}</p>
     </article>
   );
 }

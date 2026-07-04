@@ -79,6 +79,7 @@ export function PokemonSearch({
   }
 
   const selectedIds = new Set(selectedPokemon.map((pokemon) => pokemon.id));
+  const teamIsFull = selectedPokemon.length >= 6;
 
   return (
     <section className="panel" aria-label="Pokemon search">
@@ -104,12 +105,13 @@ export function PokemonSearch({
         <div className="search-results">
           {results.map((pokemon) => {
             const isSelected = selectedIds.has(pokemon.id);
+            const isDisabled = isSelected || teamIsFull;
             return (
               <button
                 className="result-button"
                 type="button"
                 key={pokemon.id}
-                disabled={isSelected}
+                disabled={isDisabled}
                 onClick={() => onSelectPokemon(pokemon)}
               >
                 <span>
@@ -119,7 +121,9 @@ export function PokemonSearch({
                     {formatTypes(pokemon)} | BST {pokemon.base_stat_total}
                   </span>
                 </span>
-                <span>{isSelected ? "Added" : "Add"}</span>
+                <span>
+                  {isSelected ? "Added" : teamIsFull ? "Team Full" : "Add"}
+                </span>
               </button>
             );
           })}

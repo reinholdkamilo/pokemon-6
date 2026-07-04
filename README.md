@@ -42,6 +42,20 @@ uvicorn app.main:app --reload
 
 The API runs at `http://127.0.0.1:8000`.
 
+## Running Backend Tests
+
+From the repository root, after installing the backend requirements:
+
+```bash
+backend/.venv/bin/python -m pytest
+```
+
+Or from inside `backend` with the virtualenv activated:
+
+```bash
+python -m pytest
+```
+
 ## Running the Frontend
 
 From the repository root:
@@ -55,6 +69,16 @@ npm run dev
 The frontend runs at `http://localhost:3000` and calls the backend at
 `http://127.0.0.1:8000`. Use Node.js 20 or newer.
 
+## Building the Frontend
+
+From the repository root:
+
+```bash
+cd frontend
+npm install
+npm run build
+```
+
 ## Manual MVP Test
 
 1. Start the backend.
@@ -64,7 +88,10 @@ The frontend runs at `http://localhost:3000` and calls the backend at
 5. Confirm the stopped Pokemon is added to the next team slot automatically.
 6. Repeat until all six slots are filled.
 7. Confirm Spin is disabled once the team has six Pokemon.
-8. Remove one Pokemon or press Reset Team to confirm the team can be changed.
-9. Submit the complete team.
-10. Confirm the result panel shows total score, Win/Lose result, score breakdown,
-   explanation, and warnings.
+8. Confirm search results cannot add duplicate Pokemon or add a seventh Pokemon.
+9. Remove one Pokemon or press Reset Team to confirm the team can be changed and
+   Spin is available again.
+10. Confirm Submit Team is disabled until six Pokemon are selected.
+11. Submit the complete team and confirm the button shows a scoring state.
+12. Confirm the result panel shows badges, journey progress, stage scores, total
+   score, Win/Lose result, score breakdown, explanation, and warnings.
