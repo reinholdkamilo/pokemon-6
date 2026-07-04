@@ -79,6 +79,47 @@ npm install
 npm run build
 ```
 
+## Local Sprite Assets
+
+Download the local Generation 1 Pokémon sprites with:
+
+```bash
+python3 scripts/download_pokemon_images.py
+```
+
+The script saves `1.png` through `151.png` in
+`frontend/public/images/pokemon/` and skips files that already exist.
+
+Place badge sprites in `frontend/public/images/badges/` with these filenames:
+
+- `boulder.png`
+- `cascade.png`
+- `thunder.png`
+- `rainbow.png`
+- `soul.png`
+- `marsh.png`
+- `volcano.png`
+- `earth.png`
+
+Place trainer sprites in `frontend/public/images/trainers/` with these filenames:
+
+- `brock.png`
+- `misty.png`
+- `lt-surge.png`
+- `erika.png`
+- `koga.png`
+- `sabrina.png`
+- `blaine.png`
+- `giovanni.png`
+- `lorelei.png`
+- `bruno.png`
+- `agatha.png`
+- `lance.png`
+- `gary.png`
+
+Missing badge or trainer sprites are handled by styled local fallbacks, so the
+app does not require those files to build or run.
+
 ## Manual MVP Test
 
 1. Start the backend.

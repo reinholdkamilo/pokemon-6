@@ -19,6 +19,7 @@ REQUIRED_FIELDS = {
     "special_defense",
     "speed",
     "base_stat_total",
+    "image",
 }
 STAT_FIELDS = {
     "hp",
@@ -62,6 +63,7 @@ def test_each_pokemon_has_required_fields() -> None:
         assert pokemon["base_stat_total"] == sum(
             pokemon[field] for field in STAT_FIELDS
         )
+        assert pokemon["image"] == f"/images/pokemon/{pokemon['id']}.png"
 
 
 def test_pokemon_endpoint_returns_151_pokemon() -> None:

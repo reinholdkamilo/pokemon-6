@@ -293,6 +293,20 @@ p {
   font-weight: 1000;
 }
 
+.pokemon-sprite {
+  width: min(96px, 100%);
+  height: min(96px, 100%);
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.sprite-fallback {
+  display: grid;
+  place-items: center;
+  color: rgba(29, 33, 27, 0.74);
+  font-weight: 1000;
+}
+
 .card-name {
   min-height: 2.4em;
   font-size: clamp(0.82rem, 3.8vw, 1.45rem);
@@ -395,6 +409,26 @@ p {
   padding: 12px;
 }
 
+.trainer-sprite {
+  display: grid;
+  place-items: center;
+  border: 3px solid rgba(52, 42, 32, 0.52);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.16)),
+    rgba(255, 255, 255, 0.44);
+  color: rgba(29, 33, 27, 0.76);
+  object-fit: contain;
+}
+
+.gym-trainer-sprite {
+  justify-self: center;
+  width: 92px;
+  height: 92px;
+  padding: 6px;
+  image-rendering: pixelated;
+}
+
 .gym-card.cleared {
   border-color: var(--success);
 }
@@ -443,6 +477,24 @@ p {
   border-top: 2px solid rgba(52, 42, 32, 0.36);
   padding-top: 9px;
   font-weight: 1000;
+  justify-content: flex-start;
+}
+
+.mini-badge-sprite {
+  flex: 0 0 auto;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 2px solid rgba(52, 42, 32, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 1000;
+  object-fit: contain;
+  padding: 3px;
+  image-rendering: pixelated;
 }
 
 .pokeball-row {
@@ -574,6 +626,12 @@ p {
   font-weight: 1000;
 }
 
+.badge-sprite {
+  object-fit: contain;
+  padding: 3px;
+  image-rendering: pixelated;
+}
+
 .badge-item.earned .badge-token {
   background: var(--success);
   color: #fff;
@@ -642,6 +700,26 @@ p {
   align-items: start;
 }
 
+.opponent-trainer-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.opponent-trainer-row > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.opponent-trainer-sprite {
+  width: 64px;
+  height: 64px;
+  padding: 5px;
+  image-rendering: pixelated;
+}
+
 .opponent-card-main > div:first-child,
 .opponent-score {
   display: grid;
@@ -653,7 +731,24 @@ p {
 }
 
 .badge-result {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
   padding: 8px 10px;
+}
+
+.pokeball-row.compact {
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.pokeball-row.compact .pokeball-dot {
+  width: 16px;
+  height: 16px;
+}
+
+.opponent-card.locked {
+  opacity: 0.76;
 }
 
 .opponent-card p {

@@ -11,6 +11,7 @@ export type Pokemon = {
   special_defense: number;
   speed: number;
   base_stat_total: number;
+  image?: string;
   isLegendary?: boolean;
   isShiny?: boolean;
 };

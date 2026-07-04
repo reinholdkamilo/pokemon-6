@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalSprite } from "@/components/LocalSprite";
+import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
 import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
 
 type GymLeaderJourneyProps = {
@@ -111,9 +113,21 @@ export function GymLeaderJourney({
                 <span>GYM {leader.number}</span>
                 <strong>{isCleared ? "CLEARED" : "FAILED"}</strong>
               </div>
+              <LocalSprite
+                alt={`${leader.name} sprite`}
+                className="trainer-sprite gym-trainer-sprite"
+                fallback={getInitials(leader.name)}
+                src={TRAINER_IMAGE_PATHS[leader.name]}
+              />
               <h2>{leader.name}</h2>
               <p>{leader.type} specialist</p>
               <div className="gym-badge-row">
+                <LocalSprite
+                  alt={`${leader.badge} sprite`}
+                  className="mini-badge-sprite"
+                  fallback={String(leader.number)}
+                  src={BADGE_IMAGE_PATHS[leader.badge]}
+                />
                 <span>{leader.badge}</span>
               </div>
               <div className="pokeball-row" aria-label={`${leader.pokemonCount} Pokemon`}>
@@ -127,4 +141,14 @@ export function GymLeaderJourney({
       </div>
     </section>
   );
+}
+
+function getInitials(name: string) {
+  return name
+    .replace(".", "")
+    .split(" ")
+    .map((part) => part.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }

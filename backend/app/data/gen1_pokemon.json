@@ -11,7 +11,8 @@
     "special_attack": 65,
     "special_defense": 65,
     "speed": 45,
-    "base_stat_total": 318
+    "base_stat_total": 318,
+    "image": "/images/pokemon/1.png"
   },
   {
     "id": 2,
@@ -25,7 +26,8 @@
     "special_attack": 80,
     "special_defense": 80,
     "speed": 60,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/2.png"
   },
   {
     "id": 3,
@@ -39,7 +41,8 @@
     "special_attack": 100,
     "special_defense": 100,
     "speed": 80,
-    "base_stat_total": 525
+    "base_stat_total": 525,
+    "image": "/images/pokemon/3.png"
   },
   {
     "id": 4,
@@ -53,7 +56,8 @@
     "special_attack": 60,
     "special_defense": 50,
     "speed": 65,
-    "base_stat_total": 309
+    "base_stat_total": 309,
+    "image": "/images/pokemon/4.png"
   },
   {
     "id": 5,
@@ -67,7 +71,8 @@
     "special_attack": 80,
     "special_defense": 65,
     "speed": 80,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/5.png"
   },
   {
     "id": 6,
@@ -81,7 +86,8 @@
     "special_attack": 109,
     "special_defense": 85,
     "speed": 100,
-    "base_stat_total": 534
+    "base_stat_total": 534,
+    "image": "/images/pokemon/6.png"
   },
   {
     "id": 7,
@@ -95,7 +101,8 @@
     "special_attack": 50,
     "special_defense": 64,
     "speed": 43,
-    "base_stat_total": 314
+    "base_stat_total": 314,
+    "image": "/images/pokemon/7.png"
   },
   {
     "id": 8,
@@ -109,7 +116,8 @@
     "special_attack": 65,
     "special_defense": 80,
     "speed": 58,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/8.png"
   },
   {
     "id": 9,
@@ -123,7 +131,8 @@
     "special_attack": 85,
     "special_defense": 105,
     "speed": 78,
-    "base_stat_total": 530
+    "base_stat_total": 530,
+    "image": "/images/pokemon/9.png"
   },
   {
     "id": 10,
@@ -137,7 +146,8 @@
     "special_attack": 20,
     "special_defense": 20,
     "speed": 45,
-    "base_stat_total": 195
+    "base_stat_total": 195,
+    "image": "/images/pokemon/10.png"
   },
   {
     "id": 11,
@@ -151,7 +161,8 @@
     "special_attack": 25,
     "special_defense": 25,
     "speed": 30,
-    "base_stat_total": 205
+    "base_stat_total": 205,
+    "image": "/images/pokemon/11.png"
   },
   {
     "id": 12,
@@ -165,7 +176,8 @@
     "special_attack": 90,
     "special_defense": 80,
     "speed": 70,
-    "base_stat_total": 395
+    "base_stat_total": 395,
+    "image": "/images/pokemon/12.png"
   },
   {
     "id": 13,
@@ -179,7 +191,8 @@
     "special_attack": 20,
     "special_defense": 20,
     "speed": 50,
-    "base_stat_total": 195
+    "base_stat_total": 195,
+    "image": "/images/pokemon/13.png"
   },
   {
     "id": 14,
@@ -193,7 +206,8 @@
     "special_attack": 25,
     "special_defense": 25,
     "speed": 35,
-    "base_stat_total": 205
+    "base_stat_total": 205,
+    "image": "/images/pokemon/14.png"
   },
   {
     "id": 15,
@@ -207,7 +221,8 @@
     "special_attack": 45,
     "special_defense": 80,
     "speed": 75,
-    "base_stat_total": 395
+    "base_stat_total": 395,
+    "image": "/images/pokemon/15.png"
   },
   {
     "id": 16,
@@ -221,7 +236,8 @@
     "special_attack": 35,
     "special_defense": 35,
     "speed": 56,
-    "base_stat_total": 251
+    "base_stat_total": 251,
+    "image": "/images/pokemon/16.png"
   },
   {
     "id": 17,
@@ -235,7 +251,8 @@
     "special_attack": 50,
     "special_defense": 50,
     "speed": 71,
-    "base_stat_total": 349
+    "base_stat_total": 349,
+    "image": "/images/pokemon/17.png"
   },
   {
     "id": 18,
@@ -249,7 +266,8 @@
     "special_attack": 70,
     "special_defense": 70,
     "speed": 101,
-    "base_stat_total": 479
+    "base_stat_total": 479,
+    "image": "/images/pokemon/18.png"
   },
   {
     "id": 19,
@@ -263,7 +281,8 @@
     "special_attack": 25,
     "special_defense": 35,
     "speed": 72,
-    "base_stat_total": 253
+    "base_stat_total": 253,
+    "image": "/images/pokemon/19.png"
   },
   {
     "id": 20,
@@ -277,7 +296,8 @@
     "special_attack": 50,
     "special_defense": 70,
     "speed": 97,
-    "base_stat_total": 413
+    "base_stat_total": 413,
+    "image": "/images/pokemon/20.png"
   },
   {
     "id": 21,
@@ -291,7 +311,8 @@
     "special_attack": 31,
     "special_defense": 31,
     "speed": 70,
-    "base_stat_total": 262
+    "base_stat_total": 262,
+    "image": "/images/pokemon/21.png"
   },
   {
     "id": 22,
@@ -305,7 +326,8 @@
     "special_attack": 61,
     "special_defense": 61,
     "speed": 100,
-    "base_stat_total": 442
+    "base_stat_total": 442,
+    "image": "/images/pokemon/22.png"
   },
   {
     "id": 23,
@@ -319,7 +341,8 @@
     "special_attack": 40,
     "special_defense": 54,
     "speed": 55,
-    "base_stat_total": 288
+    "base_stat_total": 288,
+    "image": "/images/pokemon/23.png"
   },
   {
     "id": 24,
@@ -333,7 +356,8 @@
     "special_attack": 65,
     "special_defense": 79,
     "speed": 80,
-    "base_stat_total": 448
+    "base_stat_total": 448,
+    "image": "/images/pokemon/24.png"
   },
   {
     "id": 25,
@@ -347,7 +371,8 @@
     "special_attack": 50,
     "special_defense": 50,
     "speed": 90,
-    "base_stat_total": 320
+    "base_stat_total": 320,
+    "image": "/images/pokemon/25.png"
   },
   {
     "id": 26,
@@ -361,7 +386,8 @@
     "special_attack": 90,
     "special_defense": 80,
     "speed": 110,
-    "base_stat_total": 485
+    "base_stat_total": 485,
+    "image": "/images/pokemon/26.png"
   },
   {
     "id": 27,
@@ -375,7 +401,8 @@
     "special_attack": 20,
     "special_defense": 30,
     "speed": 40,
-    "base_stat_total": 300
+    "base_stat_total": 300,
+    "image": "/images/pokemon/27.png"
   },
   {
     "id": 28,
@@ -389,7 +416,8 @@
     "special_attack": 45,
     "special_defense": 55,
     "speed": 65,
-    "base_stat_total": 450
+    "base_stat_total": 450,
+    "image": "/images/pokemon/28.png"
   },
   {
     "id": 29,
@@ -403,7 +431,8 @@
     "special_attack": 40,
     "special_defense": 40,
     "speed": 41,
-    "base_stat_total": 275
+    "base_stat_total": 275,
+    "image": "/images/pokemon/29.png"
   },
   {
     "id": 30,
@@ -417,7 +446,8 @@
     "special_attack": 55,
     "special_defense": 55,
     "speed": 56,
-    "base_stat_total": 365
+    "base_stat_total": 365,
+    "image": "/images/pokemon/30.png"
   },
   {
     "id": 31,
@@ -431,7 +461,8 @@
     "special_attack": 75,
     "special_defense": 85,
     "speed": 76,
-    "base_stat_total": 505
+    "base_stat_total": 505,
+    "image": "/images/pokemon/31.png"
   },
   {
     "id": 32,
@@ -445,7 +476,8 @@
     "special_attack": 40,
     "special_defense": 40,
     "speed": 50,
-    "base_stat_total": 273
+    "base_stat_total": 273,
+    "image": "/images/pokemon/32.png"
   },
   {
     "id": 33,
@@ -459,7 +491,8 @@
     "special_attack": 55,
     "special_defense": 55,
     "speed": 65,
-    "base_stat_total": 365
+    "base_stat_total": 365,
+    "image": "/images/pokemon/33.png"
   },
   {
     "id": 34,
@@ -473,7 +506,8 @@
     "special_attack": 85,
     "special_defense": 75,
     "speed": 85,
-    "base_stat_total": 505
+    "base_stat_total": 505,
+    "image": "/images/pokemon/34.png"
   },
   {
     "id": 35,
@@ -487,7 +521,8 @@
     "special_attack": 60,
     "special_defense": 65,
     "speed": 35,
-    "base_stat_total": 323
+    "base_stat_total": 323,
+    "image": "/images/pokemon/35.png"
   },
   {
     "id": 36,
@@ -501,7 +536,8 @@
     "special_attack": 95,
     "special_defense": 90,
     "speed": 60,
-    "base_stat_total": 483
+    "base_stat_total": 483,
+    "image": "/images/pokemon/36.png"
   },
   {
     "id": 37,
@@ -515,7 +551,8 @@
     "special_attack": 50,
     "special_defense": 65,
     "speed": 65,
-    "base_stat_total": 299
+    "base_stat_total": 299,
+    "image": "/images/pokemon/37.png"
   },
   {
     "id": 38,
@@ -529,7 +566,8 @@
     "special_attack": 81,
     "special_defense": 100,
     "speed": 100,
-    "base_stat_total": 505
+    "base_stat_total": 505,
+    "image": "/images/pokemon/38.png"
   },
   {
     "id": 39,
@@ -543,7 +581,8 @@
     "special_attack": 45,
     "special_defense": 25,
     "speed": 20,
-    "base_stat_total": 270
+    "base_stat_total": 270,
+    "image": "/images/pokemon/39.png"
   },
   {
     "id": 40,
@@ -557,7 +596,8 @@
     "special_attack": 85,
     "special_defense": 50,
     "speed": 45,
-    "base_stat_total": 435
+    "base_stat_total": 435,
+    "image": "/images/pokemon/40.png"
   },
   {
     "id": 41,
@@ -571,7 +611,8 @@
     "special_attack": 30,
     "special_defense": 40,
     "speed": 55,
-    "base_stat_total": 245
+    "base_stat_total": 245,
+    "image": "/images/pokemon/41.png"
   },
   {
     "id": 42,
@@ -585,7 +626,8 @@
     "special_attack": 65,
     "special_defense": 75,
     "speed": 90,
-    "base_stat_total": 455
+    "base_stat_total": 455,
+    "image": "/images/pokemon/42.png"
   },
   {
     "id": 43,
@@ -599,7 +641,8 @@
     "special_attack": 75,
     "special_defense": 65,
     "speed": 30,
-    "base_stat_total": 320
+    "base_stat_total": 320,
+    "image": "/images/pokemon/43.png"
   },
   {
     "id": 44,
@@ -613,7 +656,8 @@
     "special_attack": 85,
     "special_defense": 75,
     "speed": 40,
-    "base_stat_total": 395
+    "base_stat_total": 395,
+    "image": "/images/pokemon/44.png"
   },
   {
     "id": 45,
@@ -627,7 +671,8 @@
     "special_attack": 110,
     "special_defense": 90,
     "speed": 50,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/45.png"
   },
   {
     "id": 46,
@@ -641,7 +686,8 @@
     "special_attack": 45,
     "special_defense": 55,
     "speed": 25,
-    "base_stat_total": 285
+    "base_stat_total": 285,
+    "image": "/images/pokemon/46.png"
   },
   {
     "id": 47,
@@ -655,7 +701,8 @@
     "special_attack": 60,
     "special_defense": 80,
     "speed": 30,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/47.png"
   },
   {
     "id": 48,
@@ -669,7 +716,8 @@
     "special_attack": 40,
     "special_defense": 55,
     "speed": 45,
-    "base_stat_total": 305
+    "base_stat_total": 305,
+    "image": "/images/pokemon/48.png"
   },
   {
     "id": 49,
@@ -683,7 +731,8 @@
     "special_attack": 90,
     "special_defense": 75,
     "speed": 90,
-    "base_stat_total": 450
+    "base_stat_total": 450,
+    "image": "/images/pokemon/49.png"
   },
   {
     "id": 50,
@@ -697,7 +746,8 @@
     "special_attack": 35,
     "special_defense": 45,
     "speed": 95,
-    "base_stat_total": 265
+    "base_stat_total": 265,
+    "image": "/images/pokemon/50.png"
   },
   {
     "id": 51,
@@ -711,7 +761,8 @@
     "special_attack": 50,
     "special_defense": 70,
     "speed": 120,
-    "base_stat_total": 425
+    "base_stat_total": 425,
+    "image": "/images/pokemon/51.png"
   },
   {
     "id": 52,
@@ -725,7 +776,8 @@
     "special_attack": 40,
     "special_defense": 40,
     "speed": 90,
-    "base_stat_total": 290
+    "base_stat_total": 290,
+    "image": "/images/pokemon/52.png"
   },
   {
     "id": 53,
@@ -739,7 +791,8 @@
     "special_attack": 65,
     "special_defense": 65,
     "speed": 115,
-    "base_stat_total": 440
+    "base_stat_total": 440,
+    "image": "/images/pokemon/53.png"
   },
   {
     "id": 54,
@@ -753,7 +806,8 @@
     "special_attack": 65,
     "special_defense": 50,
     "speed": 55,
-    "base_stat_total": 320
+    "base_stat_total": 320,
+    "image": "/images/pokemon/54.png"
   },
   {
     "id": 55,
@@ -767,7 +821,8 @@
     "special_attack": 95,
     "special_defense": 80,
     "speed": 85,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/55.png"
   },
   {
     "id": 56,
@@ -781,7 +836,8 @@
     "special_attack": 35,
     "special_defense": 45,
     "speed": 70,
-    "base_stat_total": 305
+    "base_stat_total": 305,
+    "image": "/images/pokemon/56.png"
   },
   {
     "id": 57,
@@ -795,7 +851,8 @@
     "special_attack": 60,
     "special_defense": 70,
     "speed": 95,
-    "base_stat_total": 455
+    "base_stat_total": 455,
+    "image": "/images/pokemon/57.png"
   },
   {
     "id": 58,
@@ -809,7 +866,8 @@
     "special_attack": 70,
     "special_defense": 50,
     "speed": 60,
-    "base_stat_total": 350
+    "base_stat_total": 350,
+    "image": "/images/pokemon/58.png"
   },
   {
     "id": 59,
@@ -823,7 +881,8 @@
     "special_attack": 100,
     "special_defense": 80,
     "speed": 95,
-    "base_stat_total": 555
+    "base_stat_total": 555,
+    "image": "/images/pokemon/59.png"
   },
   {
     "id": 60,
@@ -837,7 +896,8 @@
     "special_attack": 40,
     "special_defense": 40,
     "speed": 90,
-    "base_stat_total": 300
+    "base_stat_total": 300,
+    "image": "/images/pokemon/60.png"
   },
   {
     "id": 61,
@@ -851,7 +911,8 @@
     "special_attack": 50,
     "special_defense": 50,
     "speed": 90,
-    "base_stat_total": 385
+    "base_stat_total": 385,
+    "image": "/images/pokemon/61.png"
   },
   {
     "id": 62,
@@ -865,7 +926,8 @@
     "special_attack": 70,
     "special_defense": 90,
     "speed": 70,
-    "base_stat_total": 510
+    "base_stat_total": 510,
+    "image": "/images/pokemon/62.png"
   },
   {
     "id": 63,
@@ -879,7 +941,8 @@
     "special_attack": 105,
     "special_defense": 55,
     "speed": 90,
-    "base_stat_total": 310
+    "base_stat_total": 310,
+    "image": "/images/pokemon/63.png"
   },
   {
     "id": 64,
@@ -893,7 +956,8 @@
     "special_attack": 120,
     "special_defense": 70,
     "speed": 105,
-    "base_stat_total": 400
+    "base_stat_total": 400,
+    "image": "/images/pokemon/64.png"
   },
   {
     "id": 65,
@@ -907,7 +971,8 @@
     "special_attack": 135,
     "special_defense": 95,
     "speed": 120,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/65.png"
   },
   {
     "id": 66,
@@ -921,7 +986,8 @@
     "special_attack": 35,
     "special_defense": 35,
     "speed": 35,
-    "base_stat_total": 305
+    "base_stat_total": 305,
+    "image": "/images/pokemon/66.png"
   },
   {
     "id": 67,
@@ -935,7 +1001,8 @@
     "special_attack": 50,
     "special_defense": 60,
     "speed": 45,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/67.png"
   },
   {
     "id": 68,
@@ -949,7 +1016,8 @@
     "special_attack": 65,
     "special_defense": 85,
     "speed": 55,
-    "base_stat_total": 505
+    "base_stat_total": 505,
+    "image": "/images/pokemon/68.png"
   },
   {
     "id": 69,
@@ -963,7 +1031,8 @@
     "special_attack": 70,
     "special_defense": 30,
     "speed": 40,
-    "base_stat_total": 300
+    "base_stat_total": 300,
+    "image": "/images/pokemon/69.png"
   },
   {
     "id": 70,
@@ -977,7 +1046,8 @@
     "special_attack": 85,
     "special_defense": 45,
     "speed": 55,
-    "base_stat_total": 390
+    "base_stat_total": 390,
+    "image": "/images/pokemon/70.png"
   },
   {
     "id": 71,
@@ -991,7 +1061,8 @@
     "special_attack": 100,
     "special_defense": 70,
     "speed": 70,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/71.png"
   },
   {
     "id": 72,
@@ -1005,7 +1076,8 @@
     "special_attack": 50,
     "special_defense": 100,
     "speed": 70,
-    "base_stat_total": 335
+    "base_stat_total": 335,
+    "image": "/images/pokemon/72.png"
   },
   {
     "id": 73,
@@ -1019,7 +1091,8 @@
     "special_attack": 80,
     "special_defense": 120,
     "speed": 100,
-    "base_stat_total": 515
+    "base_stat_total": 515,
+    "image": "/images/pokemon/73.png"
   },
   {
     "id": 74,
@@ -1033,7 +1106,8 @@
     "special_attack": 30,
     "special_defense": 30,
     "speed": 20,
-    "base_stat_total": 300
+    "base_stat_total": 300,
+    "image": "/images/pokemon/74.png"
   },
   {
     "id": 75,
@@ -1047,7 +1121,8 @@
     "special_attack": 45,
     "special_defense": 45,
     "speed": 35,
-    "base_stat_total": 390
+    "base_stat_total": 390,
+    "image": "/images/pokemon/75.png"
   },
   {
     "id": 76,
@@ -1061,7 +1136,8 @@
     "special_attack": 55,
     "special_defense": 65,
     "speed": 45,
-    "base_stat_total": 495
+    "base_stat_total": 495,
+    "image": "/images/pokemon/76.png"
   },
   {
     "id": 77,
@@ -1075,7 +1151,8 @@
     "special_attack": 65,
     "special_defense": 65,
     "speed": 90,
-    "base_stat_total": 410
+    "base_stat_total": 410,
+    "image": "/images/pokemon/77.png"
   },
   {
     "id": 78,
@@ -1089,7 +1166,8 @@
     "special_attack": 80,
     "special_defense": 80,
     "speed": 105,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/78.png"
   },
   {
     "id": 79,
@@ -1103,7 +1181,8 @@
     "special_attack": 40,
     "special_defense": 40,
     "speed": 15,
-    "base_stat_total": 315
+    "base_stat_total": 315,
+    "image": "/images/pokemon/79.png"
   },
   {
     "id": 80,
@@ -1117,7 +1196,8 @@
     "special_attack": 100,
     "special_defense": 80,
     "speed": 30,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/80.png"
   },
   {
     "id": 81,
@@ -1131,7 +1211,8 @@
     "special_attack": 95,
     "special_defense": 55,
     "speed": 45,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/81.png"
   },
   {
     "id": 82,
@@ -1145,7 +1226,8 @@
     "special_attack": 120,
     "special_defense": 70,
     "speed": 70,
-    "base_stat_total": 465
+    "base_stat_total": 465,
+    "image": "/images/pokemon/82.png"
   },
   {
     "id": 83,
@@ -1159,7 +1241,8 @@
     "special_attack": 58,
     "special_defense": 62,
     "speed": 60,
-    "base_stat_total": 377
+    "base_stat_total": 377,
+    "image": "/images/pokemon/83.png"
   },
   {
     "id": 84,
@@ -1173,7 +1256,8 @@
     "special_attack": 35,
     "special_defense": 35,
     "speed": 75,
-    "base_stat_total": 310
+    "base_stat_total": 310,
+    "image": "/images/pokemon/84.png"
   },
   {
     "id": 85,
@@ -1187,7 +1271,8 @@
     "special_attack": 60,
     "special_defense": 60,
     "speed": 110,
-    "base_stat_total": 470
+    "base_stat_total": 470,
+    "image": "/images/pokemon/85.png"
   },
   {
     "id": 86,
@@ -1201,7 +1286,8 @@
     "special_attack": 45,
     "special_defense": 70,
     "speed": 45,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/86.png"
   },
   {
     "id": 87,
@@ -1215,7 +1301,8 @@
     "special_attack": 70,
     "special_defense": 95,
     "speed": 70,
-    "base_stat_total": 475
+    "base_stat_total": 475,
+    "image": "/images/pokemon/87.png"
   },
   {
     "id": 88,
@@ -1229,7 +1316,8 @@
     "special_attack": 40,
     "special_defense": 50,
     "speed": 25,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/88.png"
   },
   {
     "id": 89,
@@ -1243,7 +1331,8 @@
     "special_attack": 65,
     "special_defense": 100,
     "speed": 50,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/89.png"
   },
   {
     "id": 90,
@@ -1257,7 +1346,8 @@
     "special_attack": 45,
     "special_defense": 25,
     "speed": 40,
-    "base_stat_total": 305
+    "base_stat_total": 305,
+    "image": "/images/pokemon/90.png"
   },
   {
     "id": 91,
@@ -1271,7 +1361,8 @@
     "special_attack": 85,
     "special_defense": 45,
     "speed": 70,
-    "base_stat_total": 525
+    "base_stat_total": 525,
+    "image": "/images/pokemon/91.png"
   },
   {
     "id": 92,
@@ -1285,7 +1376,8 @@
     "special_attack": 100,
     "special_defense": 35,
     "speed": 80,
-    "base_stat_total": 310
+    "base_stat_total": 310,
+    "image": "/images/pokemon/92.png"
   },
   {
     "id": 93,
@@ -1299,7 +1391,8 @@
     "special_attack": 115,
     "special_defense": 55,
     "speed": 95,
-    "base_stat_total": 405
+    "base_stat_total": 405,
+    "image": "/images/pokemon/93.png"
   },
   {
     "id": 94,
@@ -1313,7 +1406,8 @@
     "special_attack": 130,
     "special_defense": 75,
     "speed": 110,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/94.png"
   },
   {
     "id": 95,
@@ -1327,7 +1421,8 @@
     "special_attack": 30,
     "special_defense": 45,
     "speed": 70,
-    "base_stat_total": 385
+    "base_stat_total": 385,
+    "image": "/images/pokemon/95.png"
   },
   {
     "id": 96,
@@ -1341,7 +1436,8 @@
     "special_attack": 43,
     "special_defense": 90,
     "speed": 42,
-    "base_stat_total": 328
+    "base_stat_total": 328,
+    "image": "/images/pokemon/96.png"
   },
   {
     "id": 97,
@@ -1355,7 +1451,8 @@
     "special_attack": 73,
     "special_defense": 115,
     "speed": 67,
-    "base_stat_total": 483
+    "base_stat_total": 483,
+    "image": "/images/pokemon/97.png"
   },
   {
     "id": 98,
@@ -1369,7 +1466,8 @@
     "special_attack": 25,
     "special_defense": 25,
     "speed": 50,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/98.png"
   },
   {
     "id": 99,
@@ -1383,7 +1481,8 @@
     "special_attack": 50,
     "special_defense": 50,
     "speed": 75,
-    "base_stat_total": 475
+    "base_stat_total": 475,
+    "image": "/images/pokemon/99.png"
   },
   {
     "id": 100,
@@ -1397,7 +1496,8 @@
     "special_attack": 55,
     "special_defense": 55,
     "speed": 100,
-    "base_stat_total": 330
+    "base_stat_total": 330,
+    "image": "/images/pokemon/100.png"
   },
   {
     "id": 101,
@@ -1411,7 +1511,8 @@
     "special_attack": 80,
     "special_defense": 80,
     "speed": 150,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/101.png"
   },
   {
     "id": 102,
@@ -1425,7 +1526,8 @@
     "special_attack": 60,
     "special_defense": 45,
     "speed": 40,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/102.png"
   },
   {
     "id": 103,
@@ -1439,7 +1541,8 @@
     "special_attack": 125,
     "special_defense": 75,
     "speed": 55,
-    "base_stat_total": 530
+    "base_stat_total": 530,
+    "image": "/images/pokemon/103.png"
   },
   {
     "id": 104,
@@ -1453,7 +1556,8 @@
     "special_attack": 40,
     "special_defense": 50,
     "speed": 35,
-    "base_stat_total": 320
+    "base_stat_total": 320,
+    "image": "/images/pokemon/104.png"
   },
   {
     "id": 105,
@@ -1467,7 +1571,8 @@
     "special_attack": 50,
     "special_defense": 80,
     "speed": 45,
-    "base_stat_total": 425
+    "base_stat_total": 425,
+    "image": "/images/pokemon/105.png"
   },
   {
     "id": 106,
@@ -1481,7 +1586,8 @@
     "special_attack": 35,
     "special_defense": 110,
     "speed": 87,
-    "base_stat_total": 455
+    "base_stat_total": 455,
+    "image": "/images/pokemon/106.png"
   },
   {
     "id": 107,
@@ -1495,7 +1601,8 @@
     "special_attack": 35,
     "special_defense": 110,
     "speed": 76,
-    "base_stat_total": 455
+    "base_stat_total": 455,
+    "image": "/images/pokemon/107.png"
   },
   {
     "id": 108,
@@ -1509,7 +1616,8 @@
     "special_attack": 60,
     "special_defense": 75,
     "speed": 30,
-    "base_stat_total": 385
+    "base_stat_total": 385,
+    "image": "/images/pokemon/108.png"
   },
   {
     "id": 109,
@@ -1523,7 +1631,8 @@
     "special_attack": 60,
     "special_defense": 45,
     "speed": 35,
-    "base_stat_total": 340
+    "base_stat_total": 340,
+    "image": "/images/pokemon/109.png"
   },
   {
     "id": 110,
@@ -1537,7 +1646,8 @@
     "special_attack": 85,
     "special_defense": 70,
     "speed": 60,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/110.png"
   },
   {
     "id": 111,
@@ -1551,7 +1661,8 @@
     "special_attack": 30,
     "special_defense": 30,
     "speed": 25,
-    "base_stat_total": 345
+    "base_stat_total": 345,
+    "image": "/images/pokemon/111.png"
   },
   {
     "id": 112,
@@ -1565,7 +1676,8 @@
     "special_attack": 45,
     "special_defense": 45,
     "speed": 40,
-    "base_stat_total": 485
+    "base_stat_total": 485,
+    "image": "/images/pokemon/112.png"
   },
   {
     "id": 113,
@@ -1579,7 +1691,8 @@
     "special_attack": 35,
     "special_defense": 105,
     "speed": 50,
-    "base_stat_total": 450
+    "base_stat_total": 450,
+    "image": "/images/pokemon/113.png"
   },
   {
     "id": 114,
@@ -1593,7 +1706,8 @@
     "special_attack": 100,
     "special_defense": 40,
     "speed": 60,
-    "base_stat_total": 435
+    "base_stat_total": 435,
+    "image": "/images/pokemon/114.png"
   },
   {
     "id": 115,
@@ -1607,7 +1721,8 @@
     "special_attack": 40,
     "special_defense": 80,
     "speed": 90,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/115.png"
   },
   {
     "id": 116,
@@ -1621,7 +1736,8 @@
     "special_attack": 70,
     "special_defense": 25,
     "speed": 60,
-    "base_stat_total": 295
+    "base_stat_total": 295,
+    "image": "/images/pokemon/116.png"
   },
   {
     "id": 117,
@@ -1635,7 +1751,8 @@
     "special_attack": 95,
     "special_defense": 45,
     "speed": 85,
-    "base_stat_total": 440
+    "base_stat_total": 440,
+    "image": "/images/pokemon/117.png"
   },
   {
     "id": 118,
@@ -1649,7 +1766,8 @@
     "special_attack": 35,
     "special_defense": 50,
     "speed": 63,
-    "base_stat_total": 320
+    "base_stat_total": 320,
+    "image": "/images/pokemon/118.png"
   },
   {
     "id": 119,
@@ -1663,7 +1781,8 @@
     "special_attack": 65,
     "special_defense": 80,
     "speed": 68,
-    "base_stat_total": 450
+    "base_stat_total": 450,
+    "image": "/images/pokemon/119.png"
   },
   {
     "id": 120,
@@ -1677,7 +1796,8 @@
     "special_attack": 70,
     "special_defense": 55,
     "speed": 85,
-    "base_stat_total": 340
+    "base_stat_total": 340,
+    "image": "/images/pokemon/120.png"
   },
   {
     "id": 121,
@@ -1691,7 +1811,8 @@
     "special_attack": 100,
     "special_defense": 85,
     "speed": 115,
-    "base_stat_total": 520
+    "base_stat_total": 520,
+    "image": "/images/pokemon/121.png"
   },
   {
     "id": 122,
@@ -1705,7 +1826,8 @@
     "special_attack": 100,
     "special_defense": 120,
     "speed": 90,
-    "base_stat_total": 460
+    "base_stat_total": 460,
+    "image": "/images/pokemon/122.png"
   },
   {
     "id": 123,
@@ -1719,7 +1841,8 @@
     "special_attack": 55,
     "special_defense": 80,
     "speed": 105,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/123.png"
   },
   {
     "id": 124,
@@ -1733,7 +1856,8 @@
     "special_attack": 115,
     "special_defense": 95,
     "speed": 95,
-    "base_stat_total": 455
+    "base_stat_total": 455,
+    "image": "/images/pokemon/124.png"
   },
   {
     "id": 125,
@@ -1747,7 +1871,8 @@
     "special_attack": 95,
     "special_defense": 85,
     "speed": 105,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/125.png"
   },
   {
     "id": 126,
@@ -1761,7 +1886,8 @@
     "special_attack": 100,
     "special_defense": 85,
     "speed": 93,
-    "base_stat_total": 495
+    "base_stat_total": 495,
+    "image": "/images/pokemon/126.png"
   },
   {
     "id": 127,
@@ -1775,7 +1901,8 @@
     "special_attack": 55,
     "special_defense": 70,
     "speed": 85,
-    "base_stat_total": 500
+    "base_stat_total": 500,
+    "image": "/images/pokemon/127.png"
   },
   {
     "id": 128,
@@ -1789,7 +1916,8 @@
     "special_attack": 40,
     "special_defense": 70,
     "speed": 110,
-    "base_stat_total": 490
+    "base_stat_total": 490,
+    "image": "/images/pokemon/128.png"
   },
   {
     "id": 129,
@@ -1803,7 +1931,8 @@
     "special_attack": 15,
     "special_defense": 20,
     "speed": 80,
-    "base_stat_total": 200
+    "base_stat_total": 200,
+    "image": "/images/pokemon/129.png"
   },
   {
     "id": 130,
@@ -1817,7 +1946,8 @@
     "special_attack": 60,
     "special_defense": 100,
     "speed": 81,
-    "base_stat_total": 540
+    "base_stat_total": 540,
+    "image": "/images/pokemon/130.png"
   },
   {
     "id": 131,
@@ -1831,7 +1961,8 @@
     "special_attack": 85,
     "special_defense": 95,
     "speed": 60,
-    "base_stat_total": 535
+    "base_stat_total": 535,
+    "image": "/images/pokemon/131.png"
   },
   {
     "id": 132,
@@ -1845,7 +1976,8 @@
     "special_attack": 48,
     "special_defense": 48,
     "speed": 48,
-    "base_stat_total": 288
+    "base_stat_total": 288,
+    "image": "/images/pokemon/132.png"
   },
   {
     "id": 133,
@@ -1859,7 +1991,8 @@
     "special_attack": 45,
     "special_defense": 65,
     "speed": 55,
-    "base_stat_total": 325
+    "base_stat_total": 325,
+    "image": "/images/pokemon/133.png"
   },
   {
     "id": 134,
@@ -1873,7 +2006,8 @@
     "special_attack": 110,
     "special_defense": 95,
     "speed": 65,
-    "base_stat_total": 525
+    "base_stat_total": 525,
+    "image": "/images/pokemon/134.png"
   },
   {
     "id": 135,
@@ -1887,7 +2021,8 @@
     "special_attack": 110,
     "special_defense": 95,
     "speed": 130,
-    "base_stat_total": 525
+    "base_stat_total": 525,
+    "image": "/images/pokemon/135.png"
   },
   {
     "id": 136,
@@ -1901,7 +2036,8 @@
     "special_attack": 95,
     "special_defense": 110,
     "speed": 65,
-    "base_stat_total": 525
+    "base_stat_total": 525,
+    "image": "/images/pokemon/136.png"
   },
   {
     "id": 137,
@@ -1915,7 +2051,8 @@
     "special_attack": 85,
     "special_defense": 75,
     "speed": 40,
-    "base_stat_total": 395
+    "base_stat_total": 395,
+    "image": "/images/pokemon/137.png"
   },
   {
     "id": 138,
@@ -1929,7 +2066,8 @@
     "special_attack": 90,
     "special_defense": 55,
     "speed": 35,
-    "base_stat_total": 355
+    "base_stat_total": 355,
+    "image": "/images/pokemon/138.png"
   },
   {
     "id": 139,
@@ -1943,7 +2081,8 @@
     "special_attack": 115,
     "special_defense": 70,
     "speed": 55,
-    "base_stat_total": 495
+    "base_stat_total": 495,
+    "image": "/images/pokemon/139.png"
   },
   {
     "id": 140,
@@ -1957,7 +2096,8 @@
     "special_attack": 55,
     "special_defense": 45,
     "speed": 55,
-    "base_stat_total": 355
+    "base_stat_total": 355,
+    "image": "/images/pokemon/140.png"
   },
   {
     "id": 141,
@@ -1971,7 +2111,8 @@
     "special_attack": 65,
     "special_defense": 70,
     "speed": 80,
-    "base_stat_total": 495
+    "base_stat_total": 495,
+    "image": "/images/pokemon/141.png"
   },
   {
     "id": 142,
@@ -1985,7 +2126,8 @@
     "special_attack": 60,
     "special_defense": 75,
     "speed": 130,
-    "base_stat_total": 515
+    "base_stat_total": 515,
+    "image": "/images/pokemon/142.png"
   },
   {
     "id": 143,
@@ -1999,7 +2141,8 @@
     "special_attack": 65,
     "special_defense": 110,
     "speed": 30,
-    "base_stat_total": 540
+    "base_stat_total": 540,
+    "image": "/images/pokemon/143.png"
   },
   {
     "id": 144,
@@ -2013,7 +2156,8 @@
     "special_attack": 95,
     "special_defense": 125,
     "speed": 85,
-    "base_stat_total": 580
+    "base_stat_total": 580,
+    "image": "/images/pokemon/144.png"
   },
   {
     "id": 145,
@@ -2027,7 +2171,8 @@
     "special_attack": 125,
     "special_defense": 90,
     "speed": 100,
-    "base_stat_total": 580
+    "base_stat_total": 580,
+    "image": "/images/pokemon/145.png"
   },
   {
     "id": 146,
@@ -2041,7 +2186,8 @@
     "special_attack": 125,
     "special_defense": 85,
     "speed": 90,
-    "base_stat_total": 580
+    "base_stat_total": 580,
+    "image": "/images/pokemon/146.png"
   },
   {
     "id": 147,
@@ -2055,7 +2201,8 @@
     "special_attack": 50,
     "special_defense": 50,
     "speed": 50,
-    "base_stat_total": 300
+    "base_stat_total": 300,
+    "image": "/images/pokemon/147.png"
   },
   {
     "id": 148,
@@ -2069,7 +2216,8 @@
     "special_attack": 70,
     "special_defense": 70,
     "speed": 70,
-    "base_stat_total": 420
+    "base_stat_total": 420,
+    "image": "/images/pokemon/148.png"
   },
   {
     "id": 149,
@@ -2083,7 +2231,8 @@
     "special_attack": 100,
     "special_defense": 100,
     "speed": 80,
-    "base_stat_total": 600
+    "base_stat_total": 600,
+    "image": "/images/pokemon/149.png"
   },
   {
     "id": 150,
@@ -2097,7 +2246,8 @@
     "special_attack": 154,
     "special_defense": 90,
     "speed": 130,
-    "base_stat_total": 680
+    "base_stat_total": 680,
+    "image": "/images/pokemon/150.png"
   },
   {
     "id": 151,
@@ -2111,6 +2261,7 @@
     "special_attack": 100,
     "special_defense": 100,
     "speed": 100,
-    "base_stat_total": 600
+    "base_stat_total": 600,
+    "image": "/images/pokemon/151.png"
   }
 ]

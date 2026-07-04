@@ -1,5 +1,6 @@
 "use client";
 
+import { LocalSprite } from "@/components/LocalSprite";
 import type { Pokemon } from "@/types/pokemon";
 
 type RevealCardProps = {
@@ -23,6 +24,7 @@ export function RevealCard({
 }: RevealCardProps) {
   const displayPokemon = previewPokemon ?? pokemon;
   const isLocked = Boolean(pokemon);
+  const shouldShowPokemonImage = isLocked && !isRevealing && Boolean(pokemon?.image);
   const typeClass = displayPokemon
     ? `type-${displayPokemon.primary_type.toLowerCase()}`
     : "type-blank";
@@ -52,8 +54,21 @@ export function RevealCard({
     >
       <span className="card-slot-label">CARD {index + 1}</span>
 
-      <span className="card-portrait" aria-hidden="true">
-        {isLocked ? "LOCKED" : isRevealing ? "DRAWING" : "TAP"}
+      <span className="card-portrait">
+        {shouldShowPokemonImage ? (
+          <LocalSprite
+            alt={`${pokemon?.name ?? "Pokemon"} sprite`}
+            className="pokemon-sprite"
+            fallback={pokemon?.name.slice(0, 2).toUpperCase() ?? "PK"}
+            src={pokemon?.image}
+          />
+        ) : isLocked ? (
+          "LOCKED"
+        ) : isRevealing ? (
+          "DRAWING"
+        ) : (
+          "TAP"
+        )}
       </span>
 
       <span className="card-name">{displayPokemon?.name ?? "Mystery Pokemon"}</span>

@@ -1,3 +1,6 @@
+import { LocalSprite } from "@/components/LocalSprite";
+import { BADGE_IMAGE_PATHS } from "@/lib/imagePaths";
+
 const KANTO_BADGES = [
   "Boulder Badge",
   "Cascade Badge",
@@ -26,9 +29,12 @@ export function BadgeDisplay({ earnedBadges = [] }: BadgeDisplayProps) {
             className={`badge-item ${isEarned ? "earned" : "locked"}`}
             key={badgeName}
           >
-            <span className="badge-token" aria-hidden="true">
-              {index + 1}
-            </span>
+            <LocalSprite
+              alt={`${badgeName} sprite`}
+              className="badge-token badge-sprite"
+              fallback={String(index + 1)}
+              src={BADGE_IMAGE_PATHS[badgeName]}
+            />
             <div>
               <strong>{badgeName}</strong>
               <span>{isEarned ? "Earned" : "Locked"}</span>
