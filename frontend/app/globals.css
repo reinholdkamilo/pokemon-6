@@ -61,6 +61,7 @@ button:disabled {
 h1,
 h2,
 h3,
+h4,
 p {
   margin-top: 0;
 }
@@ -77,7 +78,8 @@ h2 {
   font-size: 1.25rem;
 }
 
-h3 {
+h3,
+h4 {
   margin-bottom: 8px;
   font-size: 1rem;
 }
@@ -388,6 +390,112 @@ h3 {
   font-weight: 900;
 }
 
+.result-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.result-state,
+.status-pill {
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.result-state.win {
+  background: #dcfce7;
+  color: var(--success);
+}
+
+.result-state.lose,
+.status-pill.locked {
+  background: #fff1f2;
+  color: var(--danger);
+}
+
+.journey-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  display: grid;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 12px;
+}
+
+.summary-card span,
+.badge-item span,
+.badge-result span {
+  color: var(--muted);
+}
+
+.summary-card strong {
+  overflow-wrap: anywhere;
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.badge-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 10px;
+}
+
+.badge-item.earned {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.badge-item.locked {
+  opacity: 0.72;
+}
+
+.badge-token {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.badge-item.earned .badge-token {
+  background: var(--success);
+  color: #fff;
+}
+
+.badge-item div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.badge-item strong {
+  overflow-wrap: anywhere;
+}
+
 .score-row {
   display: flex;
   justify-content: space-between;
@@ -400,19 +508,51 @@ h3 {
   border-bottom: 0;
 }
 
+.journey-breakdown,
 .opponent-list {
   display: grid;
   gap: 8px;
 }
 
-.opponent-row {
+.journey-section {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
+  gap: 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
+  background: #fbfcfe;
+  padding: 12px;
+}
+
+.journey-section.locked {
+  background: #fffafa;
+}
+
+.journey-section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.journey-section-header h4,
+.journey-lock-message,
+.opponent-card p {
+  margin: 0;
+}
+
+.opponent-row,
+.opponent-card {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
   padding: 10px 12px;
+}
+
+.opponent-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
 }
 
 .opponent-row div {
@@ -422,6 +562,35 @@ h3 {
 
 .opponent-row div:last-child {
   justify-items: end;
+}
+
+.opponent-card-main,
+.badge-result {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.opponent-card-main > div:first-child,
+.opponent-score {
+  display: grid;
+  gap: 3px;
+}
+
+.opponent-score {
+  justify-items: end;
+}
+
+.badge-result {
+  border-radius: 6px;
+  background: var(--surface-muted);
+  padding: 8px 10px;
+}
+
+.opponent-card p {
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .pass {
@@ -450,6 +619,8 @@ h3 {
   }
 
   .team-grid,
+  .journey-summary,
+  .badge-grid,
   .card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -479,15 +650,25 @@ h3 {
   }
 
   .team-grid,
+  .journey-summary,
+  .badge-grid,
   .card-grid {
     grid-template-columns: 1fr;
   }
 
-  .opponent-row {
+  .result-hero,
+  .opponent-row,
+  .opponent-card-main,
+  .badge-result {
     grid-template-columns: 1fr;
   }
 
-  .opponent-row div:last-child {
+  .result-hero {
+    display: grid;
+  }
+
+  .opponent-row div:last-child,
+  .opponent-score {
     justify-items: start;
   }
 }

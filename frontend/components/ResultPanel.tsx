@@ -1,3 +1,5 @@
+import { BadgeDisplay } from "@/components/BadgeDisplay";
+import { JourneyBreakdown } from "@/components/JourneyBreakdown";
 import type { TeamScoreResult } from "@/types/pokemon";
 
 type ResultPanelProps = {
@@ -21,23 +23,40 @@ export function ResultPanel({ result }: ResultPanelProps) {
   return (
     <section className={`panel result-panel ${resultClass}`} aria-label="Team result">
       <h2>Result</h2>
-      <div className="score-total">{result.total_score}/100</div>
-      <h3>{result.result}</h3>
+      <div className="result-hero">
+        <div>
+          <div className="score-total">{result.total_score}/100</div>
+          <h3>{result.result}</h3>
+        </div>
+        <div className={`result-state ${resultClass}`}>
+          {resultClass === "win" ? "Win" : "Lose"}
+        </div>
+      </div>
       <p>{result.explanation}</p>
-      <p className="muted">{result.path_result}</p>
 
       <h3>Journey Progress</h3>
-      <div>
-        <div className="score-row">
+      <div className="journey-summary">
+        <div className="summary-card">
           <span>Badges earned</span>
           <strong>
             {result.badges_earned.length}/{result.badges_required}
           </strong>
         </div>
-        <div className="score-row">
+        <div className="summary-card">
           <span>Elite Four unlocked</span>
           <strong>{result.elite_four_unlocked ? "Yes" : "No"}</strong>
         </div>
+        <div className="summary-card">
+          <span>Path result</span>
+          <strong>{result.path_result}</strong>
+        </div>
+      </div>
+
+      <h3>Badges</h3>
+      <BadgeDisplay earnedBadges={result.badges_earned} />
+
+      <h3>Stage Scores</h3>
+      <div>
         <div className="score-row">
           <span>Gym score</span>
           <strong>{result.gym_score}</strong>
@@ -52,13 +71,6 @@ export function ResultPanel({ result }: ResultPanelProps) {
         </div>
       </div>
 
-      <h3>Badges</h3>
-      {result.badges_earned.length > 0 ? (
-        <p>{result.badges_earned.join(", ")}</p>
-      ) : (
-        <p className="muted">No badges earned.</p>
-      )}
-
       <h3>Score Breakdown</h3>
       <div>
         {Object.entries(result.score_breakdown).map(([label, score]) => (
@@ -70,32 +82,7 @@ export function ResultPanel({ result }: ResultPanelProps) {
       </div>
 
       <h3>Opponent Breakdown</h3>
-      <div className="opponent-list">
-        {[
-          ...result.opponent_breakdown.gym_leaders,
-          ...result.opponent_breakdown.elite_four,
-          ...result.opponent_breakdown.champion,
-        ].map((opponent) => (
-          <div
-            className="opponent-row"
-            key={`${opponent.stage}-${opponent.opponent_name}`}
-          >
-            <div>
-              <strong>{opponent.opponent_name}</strong>
-              <span className="muted">
-                {opponent.stage}
-                {opponent.badge_name ? ` · ${opponent.badge_name}` : ""}
-              </span>
-            </div>
-            <div>
-              <strong>{opponent.matchup_score}/100</strong>
-              <span className={opponent.outcome === "Beat" ? "pass" : "fail"}>
-                {opponent.outcome}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <JourneyBreakdown result={result} />
 
       <h3>Warnings</h3>
       {result.warnings.length > 0 ? (
