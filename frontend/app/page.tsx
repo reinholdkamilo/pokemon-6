@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PokemonCard } from "@/components/PokemonCard";
 import { PokemonSearch } from "@/components/PokemonSearch";
 import { ResultPanel } from "@/components/ResultPanel";
+import { SpinSelector } from "@/components/SpinSelector";
 import { TeamSlots } from "@/components/TeamSlots";
 import { scoreTeam } from "@/lib/api";
 import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
@@ -15,28 +16,33 @@ export default function Home() {
   const [result, setResult] = useState<TeamScoreResult | null>(null);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const teamRef = useRef<Pokemon[]>(team);
+  teamRef.current = team;
 
   function addPokemon(pokemon: Pokemon) {
+    const currentTeam = teamRef.current;
     setError("");
 
-    if (team.length >= TEAM_SIZE) {
+    if (currentTeam.length >= TEAM_SIZE) {
       setError("Your team already has six Pokemon.");
       return;
     }
 
-    if (team.some((selected) => selected.id === pokemon.id)) {
+    if (currentTeam.some((selected) => selected.id === pokemon.id)) {
       setError(`${pokemon.name} is already on your team.`);
       return;
     }
 
-    setTeam((currentTeam) => [...currentTeam, pokemon]);
+    const nextTeam = [...currentTeam, pokemon];
+    teamRef.current = nextTeam;
+    setTeam(nextTeam);
     setResult(null);
   }
 
   function removePokemon(pokemonId: number) {
-    setTeam((currentTeam) =>
-      currentTeam.filter((pokemon) => pokemon.id !== pokemonId),
-    );
+    const nextTeam = teamRef.current.filter((pokemon) => pokemon.id !== pokemonId);
+    teamRef.current = nextTeam;
+    setTeam(nextTeam);
     setResult(null);
     setError("");
   }
@@ -64,24 +70,38 @@ export default function Home() {
     }
   }
 
+  function resetTeam() {
+    teamRef.current = [];
+    setTeam([]);
+    setResult(null);
+    setError("");
+  }
+
   return (
     <main className="page-shell">
       <section className="intro">
         <p className="eyebrow">Generation 1 team challenge</p>
         <h1>Pokemon 6</h1>
         <p>
-          Build a balanced team of six Generation 1 Pokemon, submit it to the
-          MVP scoring system, and see whether it can clear the Champion run.
+          Spin for six random Generation 1 Pokemon, submit the team to the MVP
+          scoring system, and see whether it can clear the Champion run.
         </p>
       </section>
 
-      <section className="workspace" aria-label="Team builder">
-        <div className="builder-column">
-          <PokemonSearch onSelectPokemon={addPokemon} selectedPokemon={team} />
-        </div>
+      <section className="game-flow" aria-label="Team spinner">
+        <SpinSelector selectedPokemon={team} onAddPokemon={addPokemon} />
 
         <div className="team-column">
           <TeamSlots pokemon={team} onRemovePokemon={removePokemon} />
+
+          <button
+            className="secondary-button reset-button"
+            type="button"
+            disabled={team.length === 0 && !result}
+            onClick={resetTeam}
+          >
+            Reset Team
+          </button>
 
           {team.length > 0 && (
             <section className="selected-details" aria-label="Selected Pokemon details">
@@ -107,6 +127,10 @@ export default function Home() {
 
           <ResultPanel result={result} />
         </div>
+      </section>
+
+      <section className="debug-search" aria-label="Secondary Pokemon search">
+        <PokemonSearch onSelectPokemon={addPokemon} selectedPokemon={team} />
       </section>
     </main>
   );

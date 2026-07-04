@@ -4,11 +4,13 @@ Pokémon 6 is a fan-made team-building strategy game where players build a team 
 
 ## MVP Challenge
 
-Build a team of the six strongest Generation 1 Pokémon with balanced primary types.
+Spin to randomly receive six Generation 1 Pokémon, then submit that team to see
+whether it is strong and balanced enough to win the Champion run.
 
 ## Core Features
 
-- Pokémon search
+- Spin-based Pokémon selection
+- Pokémon search as a secondary/debug tool
 - Team of six selection slots
 - Challenge rules
 - Submit team
@@ -58,9 +60,11 @@ The frontend runs at `http://localhost:3000` and calls the backend at
 1. Start the backend.
 2. Start the frontend.
 3. Open `http://localhost:3000`.
-4. Search for a Pokemon by name.
-5. Add six different Pokemon to the team slots.
-6. Remove one Pokemon and add another to confirm team editing works.
-7. Submit the complete team.
-8. Confirm the result panel shows total score, Win/Lose result, score breakdown,
+4. Press Spin and confirm the name and type boxes cycle quickly.
+5. Confirm the stopped Pokemon is added to the next team slot automatically.
+6. Repeat until all six slots are filled.
+7. Confirm Spin is disabled once the team has six Pokemon.
+8. Remove one Pokemon or press Reset Team to confirm the team can be changed.
+9. Submit the complete team.
+10. Confirm the result panel shows total score, Win/Lose result, score breakdown,
    explanation, and warnings.
