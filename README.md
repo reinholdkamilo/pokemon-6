@@ -141,10 +141,11 @@ grids, buttons, headings, or panels.
 4. Confirm the title screen uses the local background image and card backs.
 5. Press CATCH EM ALL and confirm the six-card selection screen appears.
 6. Tap any unrevealed card and confirm it cycles through Pokemon names and types.
-7. Confirm the revealed card locks and duplicate Pokemon are not drawn.
-8. Repeat until all six cards are filled.
-9. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
-10. Submit the complete team and confirm the button shows a scoring state.
-11. Confirm the Gym Leader journey screen marks earned badges as cleared.
-12. Confirm the result panel shows badges, journey progress, stage scores, total
+7. Confirm the revealed card can be tapped again to re-spin that same team slot.
+8. Confirm duplicate Pokemon are not drawn across the six card slots.
+9. Repeat until all six cards are filled.
+10. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
+11. Submit the complete team and confirm the button shows a scoring state.
+12. Confirm the Gym Leader journey screen marks earned badges as cleared.
+13. Confirm the result panel shows badges, journey progress, stage scores, total
    score, Win/Lose result, score breakdown, explanation, and warnings.

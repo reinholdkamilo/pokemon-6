@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RevealCard } from "@/components/RevealCard";
 import { getPokemon } from "@/lib/api";
 import type { Pokemon } from "@/types/pokemon";
@@ -38,10 +38,6 @@ export function CardSelectionScreen({
   const intervalRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
-  const selectedIds = useMemo(
-    () => new Set(selectedPokemon.map((selected) => selected.id)),
-    [selectedPokemon],
-  );
   const teamIsComplete = selectedPokemon.length === TEAM_SIZE;
   const isRevealing = revealingSlot !== null;
 
@@ -79,18 +75,34 @@ export function CardSelectionScreen({
   }, []);
 
   function revealCard(slotIndex: number) {
-    if (isLoading || isRevealing || revealedCards[slotIndex]) {
+    if (isLoading || isRevealing) {
       return;
     }
 
-    const availablePokemon = pokemon.filter((candidate) => !selectedIds.has(candidate.id));
+    const selectedIdsInOtherSlots = new Set(
+      revealedCards
+        .filter(
+          (selectedPokemon, index): selectedPokemon is Pokemon =>
+            index !== slotIndex && Boolean(selectedPokemon),
+        )
+        .map((selectedPokemon) => selectedPokemon.id),
+    );
+    const currentPokemon = revealedCards[slotIndex];
+    const availablePokemon = pokemon.filter(
+      (candidate) => !selectedIdsInOtherSlots.has(candidate.id),
+    );
 
     if (availablePokemon.length === 0) {
       setLoadError("No Pokemon are available to draw.");
       return;
     }
 
-    const finalPokemon = pickRandomPokemon(availablePokemon);
+    const preferredPokemon = currentPokemon
+      ? availablePokemon.filter((candidate) => candidate.id !== currentPokemon.id)
+      : availablePokemon;
+    const finalPokemon = pickRandomPokemon(
+      preferredPokemon.length > 0 ? preferredPokemon : availablePokemon,
+    );
     setLoadError("");
     setRevealingSlot(slotIndex);
 
@@ -134,6 +146,7 @@ export function CardSelectionScreen({
         <p>
           Tap each card to draw a unique Generation 1 Pokemon for the Champion run.
         </p>
+        <p className="selection-hint">Tap a revealed card to re-spin it.</p>
       </div>
 
       <div className="selection-status">

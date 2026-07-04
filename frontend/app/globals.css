@@ -195,6 +195,13 @@ p {
   color: var(--muted);
 }
 
+.selection-hint {
+  margin: 0;
+  color: var(--accent-dark);
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
 .selection-status {
   display: flex;
   justify-content: space-between;
@@ -249,7 +256,7 @@ p {
 }
 
 .reveal-card.locked {
-  cursor: default;
+  cursor: pointer;
 }
 
 .reveal-card.legendary {

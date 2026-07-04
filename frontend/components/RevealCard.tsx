@@ -44,11 +44,11 @@ export function RevealCard({
         .filter(Boolean)
         .join(" ")}
       type="button"
-      disabled={!canReveal || isLocked || isRevealing}
+      disabled={!canReveal || isRevealing}
       onClick={() => onReveal(index)}
       aria-label={
         displayPokemon
-          ? `Card ${index + 1}: ${displayPokemon.name}`
+          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin.`
           : `Reveal team card ${index + 1}`
       }
     >
@@ -62,10 +62,10 @@ export function RevealCard({
             fallback={pokemon?.name.slice(0, 2).toUpperCase() ?? "PK"}
             src={pokemon?.image}
           />
-        ) : isLocked ? (
-          "LOCKED"
         ) : isRevealing ? (
           "DRAWING"
+        ) : isLocked ? (
+          "RE-SPIN"
         ) : (
           "TAP"
         )}

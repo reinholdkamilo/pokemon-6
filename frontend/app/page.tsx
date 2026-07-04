@@ -27,19 +27,19 @@ export default function Home() {
     setError("");
     setResult(null);
 
-    if (teamRef.current.length >= TEAM_SIZE) {
-      setError("Your team can only have six Pokemon.");
-      return;
-    }
-
-    if (teamRef.current.some((selected) => selected.id === pokemon.id)) {
-      setError(`${pokemon.name} is already on your team.`);
-      return;
-    }
-
     const nextCards = [...revealedCards];
-    if (nextCards[slotIndex]) {
-      setError("That card is already locked.");
+
+    if (slotIndex < 0 || slotIndex >= TEAM_SIZE) {
+      setError("Choose a valid team card.");
+      return;
+    }
+
+    const duplicateInAnotherSlot = nextCards.some(
+      (selected, index) => index !== slotIndex && selected?.id === pokemon.id,
+    );
+
+    if (duplicateInAnotherSlot) {
+      setError(`${pokemon.name} is already on your team.`);
       return;
     }
 

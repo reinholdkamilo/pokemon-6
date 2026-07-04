@@ -38,10 +38,14 @@ scoring system.
 3. Tapping an unrevealed card starts a card reveal animation.
 4. The card cycles through available Pokémon names and types.
 5. The reveal stops after a short delay on one random Pokémon.
-6. The revealed Pokémon is locked into that card until Reset Run.
-7. Already selected Pokémon are excluded from future card reveals.
-8. The player can submit once all six cards are revealed.
-9. The player can reset the run and start again.
+6. The revealed Pokémon fills that card's team slot.
+7. The player can tap any revealed card to re-spin that same card slot.
+8. Re-spins are currently unlimited.
+9. Re-spinning replaces the Pokémon in that card slot.
+10. Already selected Pokémon in the other five card slots are excluded from
+    future card reveals and re-spins.
+11. The player can submit once all six cards are revealed.
+12. The player can reset the run and start again.
 
 ## Scoring Areas
 
