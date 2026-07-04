@@ -146,6 +146,13 @@ grids, buttons, headings, or panels.
 9. Repeat until all six cards are filled.
 10. Confirm I CHOOSE YOU appears only after six Pokemon are selected.
 11. Submit the complete team and confirm the button shows a scoring state.
-12. Confirm the Gym Leader journey screen marks earned badges as cleared.
-13. Confirm the result panel shows badges, journey progress, stage scores, total
-   score, Win/Lose result, score breakdown, explanation, and warnings.
+12. Confirm the Gym Leaders screen shows only Gym Leader cards and marks
+   cleared, failed, and not reached leaders correctly.
+13. If all 8 badges are earned, continue to the Elite Four screen and confirm it
+   shows only Elite Four cards.
+14. If the Elite Four is beaten, continue to the Champion screen and confirm it
+   shows the player team against Champion Gary.
+15. Confirm the End Results screen shows the final team, Gym Leaders, Elite
+   Four, Champion Gary, and TRY AGAIN.
+16. Press TRY AGAIN and confirm it returns to Pokémon selection with empty cards,
+   not the title screen.

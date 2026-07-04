@@ -23,13 +23,15 @@ scoring system.
 1. Only Generation 1 Pokémon are allowed.
 2. The player receives Pokémon through the card reveal screen.
 3. No duplicate Pokémon are allowed.
-4. The player must select exactly six Pokémon before submitting the team.
-5. A balanced team should avoid repeated primary types.
-6. The team must have strong coverage against gym leaders, Elite Four members, and the Champion.
-7. The player earns one badge for each Gym Leader beaten.
-8. The Elite Four is locked until all 8 gym badges are earned.
-9. The result is either Win or Lose.
-10. The game must explain why the team won or lost.
+4. The player may enter an optional Trainer Name before submitting the team.
+5. The player must select exactly six Pokémon before submitting the team.
+6. A balanced team should avoid repeated primary types.
+7. The team must have strong coverage against gym leaders, Elite Four members, and the Champion.
+8. The player earns one badge for each Gym Leader beaten.
+9. The Elite Four is locked until all 8 gym badges are earned.
+10. The Champion is locked until all Elite Four members are beaten.
+11. The result is either Win or Lose.
+12. The game must explain why the team won or lost.
 
 ## Card Selection
 
@@ -45,7 +47,35 @@ scoring system.
 10. Already selected Pokémon in the other five card slots are excluded from
     future card reveals and re-spins.
 11. The player can submit once all six cards are revealed.
-12. The player can reset the run and start again.
+12. Submitting the team sends the six selected Pokémon to the scoring endpoint.
+13. The player can reset the run and return to the title screen before submitting.
+
+## Staged Progression
+
+After the team is submitted, the game stores the score response and shows the
+journey one stage at a time instead of revealing every result at once.
+
+1. Team Selection: the player reveals or re-spins six cards and submits the
+   team with I CHOOSE YOU.
+2. Gym Leaders: the player sees only the 8 Kanto Gym Leader cards in order.
+   Cleared leaders show earned badges, failed leaders show the stopping point,
+   and future leaders are marked NOT REACHED.
+3. Elite Four Unlock: if the score response has all 8 badges earned and
+   `elite_four_unlocked` is true, the player can press CHALLENGE ELITE FOUR.
+   Otherwise the player can only view final results.
+4. Elite Four: the player sees Lorelei, Bruno, Agatha, and Lance in order.
+   Cleared members, failed members, and not reached members are shown from the
+   existing opponent breakdown.
+5. Champion Challenge: if all Elite Four members are beaten, the player can
+   press CHALLENGE CHAMPION and see a head-to-head screen against Champion Gary.
+6. End Results: the final screen shows the player name, final team, Gym Leader
+   results, Elite Four results, and Champion Gary. Opponents the player did not
+   reach are greyed out and marked NOT REACHED rather than given invented
+   results.
+
+The TRY AGAIN button on the End Results screen clears selected Pokémon, score
+results, and revealed cards, then returns the player to the Pokémon selection
+screen rather than the title screen.
 
 ## Scoring Areas
 
@@ -79,7 +109,8 @@ is false and the Elite Four and Champion are not marked as beaten.
 
 ## Elite Four
 
-After all 8 badges are earned, the team can challenge the Elite Four:
+After all 8 badges are earned and the player chooses to continue, the team can
+challenge the Elite Four:
 
 1. Lorelei
 2. Bruno
@@ -93,7 +124,8 @@ marked as beaten.
 
 Champion Gary is the final opponent. Gary uses a mixed team profile, so the
 scoring rewards teams with strong stats, broad type coverage, and balanced type
-selection.
+selection. The Champion screen is only shown after all Elite Four members are
+beaten and the player chooses to challenge Gary.
 
 ## Result Scoring
 

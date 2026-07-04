@@ -2,14 +2,22 @@
 
 import { useRef, useState } from "react";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
-import { GymLeaderJourney } from "@/components/GymLeaderJourney";
-import { ResultPanel } from "@/components/ResultPanel";
+import { ChampionScreen } from "@/components/ChampionScreen";
+import { EliteFourScreen } from "@/components/EliteFourScreen";
+import { EndResultsScreen } from "@/components/EndResultsScreen";
+import { GymLeadersScreen } from "@/components/GymLeadersScreen";
 import { TitleScreen } from "@/components/TitleScreen";
 import { scoreTeam } from "@/lib/api";
 import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
-type GameScreen = "title" | "select-team" | "journey";
+type GameScreen =
+  | "title"
+  | "select-team"
+  | "gym-leaders"
+  | "elite-four"
+  | "champion"
+  | "end-results";
 
 export default function Home() {
   const [screen, setScreen] = useState<GameScreen>("title");
@@ -18,10 +26,12 @@ export default function Home() {
   );
   const [team, setTeam] = useState<Pokemon[]>([]);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
+  const [trainerName, setTrainerName] = useState("");
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const teamRef = useRef<Pokemon[]>(team);
   teamRef.current = team;
+  const displayTrainerName = trainerName.trim() || "Trainer";
 
   function revealCard(slotIndex: number, pokemon: Pokemon) {
     setError("");
@@ -64,7 +74,7 @@ export default function Home() {
     try {
       const scoreResult = await scoreTeam(currentTeam.map((pokemon) => pokemon.name));
       setResult(scoreResult);
-      setScreen("journey");
+      setScreen("gym-leaders");
     } catch (caughtError) {
       setResult(null);
       setError(
@@ -77,7 +87,7 @@ export default function Home() {
     }
   }
 
-  function resetTeam() {
+  function resetToTitle() {
     teamRef.current = [];
     setRevealedCards(createEmptyCards());
     setTeam([]);
@@ -86,16 +96,58 @@ export default function Home() {
     setScreen("title");
   }
 
+  function tryAgain() {
+    teamRef.current = [];
+    setRevealedCards(createEmptyCards());
+    setTeam([]);
+    setResult(null);
+    setError("");
+    setScreen("select-team");
+  }
+
   if (screen === "title") {
     return <TitleScreen onStart={() => setScreen("select-team")} />;
   }
 
-  if (screen === "journey" && result) {
+  if (screen === "gym-leaders" && result) {
     return (
-      <main className="game-shell journey-shell">
-        <GymLeaderJourney result={result} selectedPokemon={team} onReset={resetTeam} />
-        <ResultPanel result={result} />
-      </main>
+      <GymLeadersScreen
+        result={result}
+        onChallengeEliteFour={() => setScreen("elite-four")}
+        onViewResults={() => setScreen("end-results")}
+      />
+    );
+  }
+
+  if (screen === "elite-four" && result) {
+    return (
+      <EliteFourScreen
+        result={result}
+        onChallengeChampion={() => setScreen("champion")}
+        onViewResults={() => setScreen("end-results")}
+      />
+    );
+  }
+
+  if (screen === "champion" && result) {
+    return (
+      <ChampionScreen
+        playerName={displayTrainerName}
+        result={result}
+        selectedPokemon={team}
+        onViewResults={() => setScreen("end-results")}
+      />
+    );
+  }
+
+  if (screen === "end-results" && result) {
+    return (
+      <EndResultsScreen
+        playerName={displayTrainerName}
+        result={result}
+        selectedPokemon={team}
+        onTryAgain={tryAgain}
+      />
     );
   }
 
@@ -105,10 +157,12 @@ export default function Home() {
         error={error}
         revealedCards={revealedCards}
         isSubmitting={isSubmitting}
+        trainerName={trainerName}
         selectedPokemon={team}
         onRevealCard={revealCard}
+        onTrainerNameChange={setTrainerName}
         onSubmitTeam={submitTeam}
-        onResetRun={resetTeam}
+        onResetRun={resetToTitle}
       />
     </main>
   );

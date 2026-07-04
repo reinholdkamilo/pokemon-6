@@ -10,7 +10,9 @@ type CardSelectionScreenProps = {
   selectedPokemon: Pokemon[];
   error: string;
   isSubmitting: boolean;
+  trainerName: string;
   onRevealCard: (slotIndex: number, pokemon: Pokemon) => void;
+  onTrainerNameChange: (trainerName: string) => void;
   onSubmitTeam: () => void;
   onResetRun: () => void;
 };
@@ -24,7 +26,9 @@ export function CardSelectionScreen({
   selectedPokemon,
   error,
   isSubmitting,
+  trainerName,
   onRevealCard,
+  onTrainerNameChange,
   onSubmitTeam,
   onResetRun,
 }: CardSelectionScreenProps) {
@@ -153,6 +157,17 @@ export function CardSelectionScreen({
         <strong>{selectedPokemon.length}/6 revealed</strong>
         <span>{isLoading ? "Loading deck..." : teamIsComplete ? "Team ready" : "Tap a card"}</span>
       </div>
+
+      <label className="trainer-name-field">
+        <span>Trainer Name</span>
+        <input
+          type="text"
+          value={trainerName}
+          onChange={(event) => onTrainerNameChange(event.target.value)}
+          placeholder="Trainer"
+          maxLength={24}
+        />
+      </label>
 
       <div className="reveal-grid">
         {revealedCards.map((slotPokemon, index) => (
