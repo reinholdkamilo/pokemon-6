@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Lorelei",
+    "stage": "Elite Four 1",
+    "specialty_types": ["Ice", "Water"],
+    "key_threats": ["Dewgong", "Cloyster", "Slowbro", "Jynx", "Lapras"],
+    "recommended_counter_types": ["Electric", "Grass", "Fighting", "Rock", "Fire"]
+  },
+  {
+    "name": "Bruno",
+    "stage": "Elite Four 2",
+    "specialty_types": ["Fighting", "Rock"],
+    "key_threats": ["Onix", "Hitmonchan", "Hitmonlee", "Machamp"],
+    "recommended_counter_types": ["Water", "Grass", "Psychic", "Flying", "Ice"]
+  },
+  {
+    "name": "Agatha",
+    "stage": "Elite Four 3",
+    "specialty_types": ["Ghost", "Poison"],
+    "key_threats": ["Gengar", "Golbat", "Haunter", "Arbok"],
+    "recommended_counter_types": ["Psychic", "Ground", "Ghost"]
+  },
+  {
+    "name": "Lance",
+    "stage": "Elite Four 4",
+    "specialty_types": ["Dragon", "Flying"],
+    "key_threats": ["Gyarados", "Dragonair", "Aerodactyl", "Dragonite"],
+    "recommended_counter_types": ["Ice", "Electric", "Rock", "Dragon"]
+  }
+]

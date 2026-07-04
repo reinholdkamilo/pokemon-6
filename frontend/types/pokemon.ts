@@ -16,9 +16,19 @@ export type Pokemon = {
 export type ScoreBreakdown = {
   base_stat_strength: number;
   type_balance: number;
-  elite_four_coverage: number;
+  journey_coverage: number;
   weakness_management: number;
-  team_variety: number;
+  matchup_spread: number;
+};
+
+export type OpponentBreakdown = {
+  opponent_name: string;
+  stage: string;
+  badge_name?: string;
+  matchup_score: number;
+  outcome: string;
+  badge_earned?: boolean;
+  explanation: string;
 };
 
 export type TeamScoreResult = {
@@ -26,6 +36,18 @@ export type TeamScoreResult = {
   result: string;
   selected_pokemon: Pokemon[];
   score_breakdown: ScoreBreakdown;
+  gym_score: number;
+  elite_four_score: number;
+  champion_score: number;
+  badges_earned: string[];
+  badges_required: number;
+  elite_four_unlocked: boolean;
+  path_result: string;
+  opponent_breakdown: {
+    gym_leaders: OpponentBreakdown[];
+    elite_four: OpponentBreakdown[];
+    champion: OpponentBreakdown[];
+  };
   explanation: string;
   warnings: string[];
 };

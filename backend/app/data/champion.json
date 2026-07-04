@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Gary",
+    "stage": "Champion",
+    "specialty_types": ["Mixed"],
+    "key_threats": ["Pidgeot", "Alakazam", "Rhydon", "Arcanine", "Gyarados", "Starter ace"],
+    "recommended_counter_types": ["Electric", "Water", "Ice", "Psychic", "Ground", "Rock"]
+  }
+]

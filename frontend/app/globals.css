@@ -400,6 +400,40 @@ h3 {
   border-bottom: 0;
 }
 
+.opponent-list {
+  display: grid;
+  gap: 8px;
+}
+
+.opponent-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.opponent-row div {
+  display: grid;
+  gap: 3px;
+}
+
+.opponent-row div:last-child {
+  justify-items: end;
+}
+
+.pass {
+  color: var(--success);
+  font-weight: 800;
+}
+
+.fail {
+  color: var(--danger);
+  font-weight: 800;
+}
+
 .warning-list {
   margin: 0;
   padding-left: 20px;
@@ -447,5 +481,13 @@ h3 {
   .team-grid,
   .card-grid {
     grid-template-columns: 1fr;
+  }
+
+  .opponent-row {
+    grid-template-columns: 1fr;
+  }
+
+  .opponent-row div:last-child {
+    justify-items: start;
   }
 }

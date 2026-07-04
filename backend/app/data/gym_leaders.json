@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Brock",
+    "stage": "Gym Leader 1",
+    "badge_name": "Boulder Badge",
+    "specialty_types": ["Rock", "Ground"],
+    "key_threats": ["Geodude", "Onix"],
+    "recommended_counter_types": ["Water", "Grass", "Fighting", "Ground"]
+  },
+  {
+    "name": "Misty",
+    "stage": "Gym Leader 2",
+    "badge_name": "Cascade Badge",
+    "specialty_types": ["Water"],
+    "key_threats": ["Staryu", "Starmie"],
+    "recommended_counter_types": ["Electric", "Grass"]
+  },
+  {
+    "name": "Lt. Surge",
+    "stage": "Gym Leader 3",
+    "badge_name": "Thunder Badge",
+    "specialty_types": ["Electric"],
+    "key_threats": ["Voltorb", "Pikachu", "Raichu"],
+    "recommended_counter_types": ["Ground", "Rock", "Grass"]
+  },
+  {
+    "name": "Erika",
+    "stage": "Gym Leader 4",
+    "badge_name": "Rainbow Badge",
+    "specialty_types": ["Grass", "Poison"],
+    "key_threats": ["Victreebel", "Tangela", "Vileplume"],
+    "recommended_counter_types": ["Fire", "Flying", "Ice", "Psychic"]
+  },
+  {
+    "name": "Koga",
+    "stage": "Gym Leader 5",
+    "badge_name": "Soul Badge",
+    "specialty_types": ["Poison"],
+    "key_threats": ["Koffing", "Muk", "Weezing"],
+    "recommended_counter_types": ["Ground", "Psychic"]
+  },
+  {
+    "name": "Sabrina",
+    "stage": "Gym Leader 6",
+    "badge_name": "Marsh Badge",
+    "specialty_types": ["Psychic"],
+    "key_threats": ["Kadabra", "Mr. Mime", "Alakazam"],
+    "recommended_counter_types": ["Bug", "Ghost", "Normal", "Psychic"]
+  },
+  {
+    "name": "Blaine",
+    "stage": "Gym Leader 7",
+    "badge_name": "Volcano Badge",
+    "specialty_types": ["Fire"],
+    "key_threats": ["Growlithe", "Ponyta", "Rapidash", "Arcanine"],
+    "recommended_counter_types": ["Water", "Ground", "Rock"]
+  },
+  {
+    "name": "Giovanni",
+    "stage": "Gym Leader 8",
+    "badge_name": "Earth Badge",
+    "specialty_types": ["Ground", "Rock"],
+    "key_threats": ["Rhyhorn", "Dugtrio", "Nidoqueen", "Nidoking", "Rhydon"],
+    "recommended_counter_types": ["Water", "Grass", "Ice", "Psychic"]
+  }
+]
