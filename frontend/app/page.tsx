@@ -106,8 +106,12 @@ export default function Home() {
     setScreen("select-team");
   }
 
+  function handleStartTrainerCard() {
+    setScreen("trainer-card");
+  }
+
   if (screen === "title") {
-    return <TitleScreen onStart={() => setScreen("trainer-card")} />;
+    return <TitleScreen onStart={handleStartTrainerCard} />;
   }
 
   if (screen === "trainer-card") {

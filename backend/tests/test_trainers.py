@@ -61,6 +61,24 @@ def test_create_trainer_file_if_missing(tmp_path, monkeypatch) -> None:
     assert trainer_file.exists()
 
 
+def test_trainer_preflight_allows_local_network_frontend() -> None:
+    response = client.options(
+        "/trainers",
+        headers={
+            "Origin": "http://192.168.1.126:3000",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "http://192.168.1.126:3000"
+    )
+    assert "POST" in response.headers["access-control-allow-methods"]
+    assert "content-type" in response.headers["access-control-allow-headers"].lower()
+
+
 def _trainer_payload() -> dict:
     return {
         "name": "Leaf",

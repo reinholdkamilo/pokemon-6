@@ -44,6 +44,25 @@ uvicorn app.main:app --reload
 
 The API runs at `http://127.0.0.1:8000`.
 
+For local-network testing from a phone or another device, bind the backend to
+your machine's LAN address or all interfaces:
+
+```bash
+cd backend
+. .venv/bin/activate
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+The default CORS origins allow `http://localhost:3000`,
+`http://127.0.0.1:3000`, `http://localhost:3001`,
+`http://127.0.0.1:3001`, and `http://192.168.1.126:3000`. To allow a
+different local frontend address, set `POKEMON6_CORS_ORIGINS` to a
+comma-separated list:
+
+```bash
+POKEMON6_CORS_ORIGINS=http://192.168.1.50:3000 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
 Trainer profiles created in local development are appended to
 `backend/app/data/pokemon_trainers.json`. That file is ignored by Git so real
 player emails and dates of birth are not committed. The tracked template file is
@@ -75,6 +94,16 @@ npm run dev
 
 The frontend runs at `http://localhost:3000` and calls the backend at
 `http://127.0.0.1:8000`. Use Node.js 20 or newer.
+
+For phone testing on the same Wi-Fi network, start the frontend with a backend
+URL that points at your computer's LAN address:
+
+```bash
+cd frontend
+NEXT_PUBLIC_API_BASE_URL=http://192.168.1.126:8000 npm run dev -- --hostname 0.0.0.0
+```
+
+Then open `http://192.168.1.126:3000` on the phone.
 
 ## Building the Frontend
 
