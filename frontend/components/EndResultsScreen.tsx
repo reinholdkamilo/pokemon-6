@@ -1,12 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import {
-  BattleTrainerCard,
-  createPlayerBattleTrainerCardProps,
-} from "@/components/BattleTrainerCard";
 import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
+import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -38,7 +35,10 @@ export function EndResultsScreen({
   const gymBreakdowns = result.opponent_breakdown?.gym_leaders ?? [];
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
   const playerName = trainerProfile.name || "Trainer";
-  const badgesEarned = result.badges_earned?.length ?? 0;
+  const earnedBadgeNames = getEarnedBadgeNames(result);
+  const badgesEarned = earnedBadgeNames.length;
+  const teamPower = getFinalTeamPower(result);
+  const resultRank = getResultRank(result);
 
   return (
     <main className="game-shell stage-shell">
@@ -55,12 +55,14 @@ export function EndResultsScreen({
 
         <section className="results-team-section" aria-label="Player Trainer Card">
           <h2>Trainer Card</h2>
-          <BattleTrainerCard
-            {...createPlayerBattleTrainerCardProps(trainerProfile)}
-            badges={badgesEarned}
-            className="results-battle-trainer-card"
-            pokemonCount={selectedPokemon.length}
-            team={selectedPokemon}
+          <ResultsTrainerCard
+            badges={earnedBadgeNames}
+            fallback={trainerProfile.sprite === "player-male" ? "M" : "F"}
+            hometown={trainerProfile.hometown}
+            name={playerName}
+            power={teamPower}
+            rank={resultRank}
+            spriteSrc={TRAINER_IMAGE_PATHS[trainerProfile.sprite]}
           />
         </section>
 
@@ -119,6 +121,63 @@ export function EndResultsScreen({
   );
 }
 
+type ResultsTrainerCardProps = {
+  badges: string[];
+  fallback: string;
+  hometown?: string;
+  name: string;
+  power: number;
+  rank: string;
+  spriteSrc: string;
+};
+
+function ResultsTrainerCard({
+  badges,
+  fallback,
+  hometown,
+  name,
+  power,
+  rank,
+  spriteSrc,
+}: ResultsTrainerCardProps) {
+  return (
+    <article className="battle-trainer-card results-trainer-card">
+      <div className="battle-trainer-card__top results-trainer-card__top">
+        <span className="results-trainer-card__logo">POKEMON 6</span>
+        <strong>POWER {power}</strong>
+      </div>
+
+      <LocalSprite
+        alt={`${name} trainer sprite`}
+        className="battle-trainer-card__sprite"
+        fallback={fallback}
+        src={spriteSrc}
+      />
+
+      <div className="battle-trainer-card__identity">
+        <p className="results-trainer-card__rank">{rank}</p>
+        <h2 className="battle-trainer-card__name">{name}</h2>
+        {hometown ? <p>{hometown}</p> : null}
+      </div>
+
+      <section className="results-trainer-card__badges" aria-label="Earned badges">
+        {badges.length > 0 ? (
+          badges.map((badge) => (
+            <img
+              alt={badge}
+              className="results-trainer-card__badge"
+              key={badge}
+              src={BADGE_IMAGE_PATHS[badge]}
+            />
+          ))
+        ) : (
+          <strong className="results-trainer-card__no-badges">NO BADGES</strong>
+        )}
+      </section>
+    </article>
+  );
+}
+
 type ResultSectionProps = {
   title: string;
   children: ReactNode;
@@ -172,4 +231,72 @@ function ProgressionResults({
 
 function formatTypes(pokemon: Pokemon) {
   return [pokemon.primary_type, pokemon.secondary_type].filter(Boolean).join(" / ");
+}
+
+function getFinalTeamPower(result: TeamScoreResult) {
+  const possibleScores = [
+    result.total_score,
+    result.team_score,
+    result.score,
+    result.battle_score_breakdown?.final_score,
+    result.battle_score_breakdown?.team_score,
+    result.battle_score_breakdown?.average_adjusted_score,
+  ];
+
+  const score = possibleScores.find((value) => typeof value === "number");
+
+  return Math.round(score ?? 0);
+}
+
+function getResultRank(result: TeamScoreResult) {
+  const championBreakdown = findBreakdown(
+    result.opponent_breakdown?.champion,
+    CHAMPION.name,
+  );
+  const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
+  const championBeaten =
+    didBeatOpponent(championBreakdown) ||
+    result.result?.toLowerCase().includes("win") ||
+    result.path_result?.toLowerCase().includes("champion gary beaten");
+
+  if (championBeaten) {
+    return "POKEMON MASTER";
+  }
+
+  const eliteFourBeaten =
+    ELITE_FOUR.every((member) =>
+      didBeatOpponent(findBreakdown(eliteFourBreakdowns, member.name)),
+    ) ||
+    result.path_result
+      ?.toLowerCase()
+      .includes("elite four beaten, champion gary not beaten");
+
+  if (eliteFourBeaten) {
+    return "POKEMON CHAMPION";
+  }
+
+  if (getEarnedBadgeNames(result).length >= GYM_LEADERS.length) {
+    return "POKEMON TRAINER";
+  }
+
+  return "BEGINNER";
+}
+
+function getEarnedBadgeNames(result: TeamScoreResult) {
+  const gymBreakdowns = result.opponent_breakdown?.gym_leaders ?? [];
+  const earnedFromBattles = GYM_LEADERS.flatMap((leader) => {
+    const breakdown = findBreakdown(gymBreakdowns, leader.name);
+
+    if (!breakdown || !leader.badge) {
+      return [];
+    }
+
+    return breakdown.badge_earned || didBeatOpponent(breakdown) ? [leader.badge] : [];
+  });
+
+  if (earnedFromBattles.length > 0 || gymBreakdowns.length > 0) {
+    return earnedFromBattles;
+  }
+
+  return (result.badges_earned ?? []).filter((badge) => BADGE_IMAGE_PATHS[badge]);
 }

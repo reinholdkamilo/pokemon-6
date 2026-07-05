@@ -1011,6 +1011,72 @@ p {
   image-rendering: pixelated;
 }
 
+.results-trainer-card {
+  grid-template-rows: auto auto auto 1fr;
+}
+
+.results-trainer-card__top {
+  align-items: start;
+  gap: 8px;
+}
+
+.results-trainer-card__logo {
+  flex: 1 1 auto;
+  border: 3px solid var(--border);
+  background:
+    linear-gradient(180deg, #fff7b2 0%, #facc15 52%, #f97316 100%);
+  box-shadow: 0 3px 0 var(--border);
+  color: #1d4ed8;
+  text-shadow:
+    1px 1px 0 #ffffff,
+    2px 2px 0 var(--border);
+  letter-spacing: 0;
+}
+
+.results-trainer-card__top strong {
+  flex: 0 1 auto;
+  max-width: 46%;
+  overflow-wrap: anywhere;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.results-trainer-card__rank {
+  margin: 0;
+  color: var(--accent-dark);
+  font-size: 0.86rem;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.results-trainer-card__badges {
+  align-self: end;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(32px, 1fr));
+  gap: 8px;
+  min-width: 0;
+  border: 2px solid rgba(52, 42, 32, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 8px;
+}
+
+.results-trainer-card__badge {
+  justify-self: center;
+  width: 34px;
+  height: 34px;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.results-trainer-card__no-badges {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
 .champion-team-grid,
 .results-team-grid {
   display: grid;

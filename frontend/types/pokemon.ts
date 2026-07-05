@@ -40,9 +40,12 @@ export type OpponentBreakdown = {
 
 export type TeamScoreResult = {
   total_score?: number;
+  team_score?: number;
+  score?: number;
   result?: string;
   selected_pokemon: Pokemon[];
   score_breakdown?: Partial<ScoreBreakdown>;
+  battle_score_breakdown?: Partial<Record<string, number>>;
   gym_score?: number;
   elite_four_score?: number;
   champion_score?: number;
