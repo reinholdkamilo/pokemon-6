@@ -24,39 +24,41 @@ PARTIAL_ACE_BST = 480
 USEFUL_TEAM_MEMBER_BST = 420
 
 OPPONENT_DIFFICULTIES = {
-    "Brock": 46,
-    "Misty": 52,
-    "Lt. Surge": 56,
-    "Erika": 58,
-    "Koga": 61,
-    "Sabrina": 64,
-    "Blaine": 66,
-    "Giovanni": 68,
-    "Lorelei": 70,
-    "Bruno": 68,
-    "Agatha": 73,
-    "Lance": 77,
-    "Gary": 86,
+    "Brock": 38,
+    "Misty": 43,
+    "Lt. Surge": 48,
+    "Erika": 52,
+    "Koga": 56,
+    "Sabrina": 60,
+    "Blaine": 63,
+    "Giovanni": 66,
+    "Lorelei": 68,
+    "Bruno": 66,
+    "Agatha": 71,
+    "Lance": 75,
+    "Gary": 84,
 }
 
 FATIGUE_PENALTIES = {
     "Gym Leader 1": 0,
     "Gym Leader 2": 1,
-    "Gym Leader 3": 2,
-    "Gym Leader 4": 3,
-    "Gym Leader 5": 4,
-    "Gym Leader 6": 5,
-    "Gym Leader 7": 6,
-    "Gym Leader 8": 7,
-    "Elite Four 1": 10,
-    "Elite Four 2": 13,
-    "Elite Four 3": 16,
-    "Elite Four 4": 19,
-    "Champion": 18,
+    "Gym Leader 3": 1,
+    "Gym Leader 4": 2,
+    "Gym Leader 5": 2,
+    "Gym Leader 6": 3,
+    "Gym Leader 7": 3,
+    "Gym Leader 8": 4,
+    "Elite Four 1": 6,
+    "Elite Four 2": 8,
+    "Elite Four 3": 10,
+    "Elite Four 4": 12,
+    "Champion": 16,
 }
 
 CHAMPION_THREAT_TYPES = ["Flying", "Psychic", "Ground", "Fire", "Water", "Normal"]
 LEGENDARY_POKEMON = {"Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew"}
+ELITE_FOUR_MOMENTUM_BONUS = 3
+CHAMPION_MOMENTUM_BONUS = 2
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 GYM_LEADERS_PATH = DATA_DIR / "gym_leaders.json"
@@ -109,6 +111,7 @@ def score_team(
         initially_locked=not elite_four_unlocked,
         initial_locked_reason="the team has not earned all 8 Gym Badges",
         locked_reason="the player lost to an earlier Elite Four member",
+        momentum_bonus=ELITE_FOUR_MOMENTUM_BONUS if elite_four_unlocked else 0,
     )
     elite_four_beaten = elite_four_unlocked and all(
         matchup["outcome"] == "Beat" for matchup in elite_four_breakdown
@@ -125,6 +128,7 @@ def score_team(
                 if not elite_four_beaten
                 else None
             ),
+            momentum_bonus=CHAMPION_MOMENTUM_BONUS if elite_four_beaten else 0,
         )
         for opponent in _load_json(CHAMPION_PATH)
     ]
@@ -233,6 +237,7 @@ def _score_progression(
     initially_locked: bool = False,
     initial_locked_reason: Optional[str] = None,
     locked_reason: Optional[str] = None,
+    momentum_bonus: int = 0,
 ) -> list[dict]:
     breakdowns = []
     progression_stopped = initially_locked
@@ -245,6 +250,7 @@ def _score_progression(
             random_number_generator,
             locked=progression_stopped,
             locked_reason=current_locked_reason,
+            momentum_bonus=0 if progression_stopped else momentum_bonus,
         )
         breakdowns.append(breakdown)
 
@@ -261,8 +267,9 @@ def _score_opponent(
     random_number_generator: Optional[Callable[[], float]] = None,
     locked: bool = False,
     locked_reason: Optional[str] = None,
+    momentum_bonus: int = 0,
 ) -> dict:
-    scoring = _calculate_battle_scoring(selected_pokemon, opponent)
+    scoring = _calculate_battle_scoring(selected_pokemon, opponent, momentum_bonus)
     roll = None
 
     if locked:
@@ -270,7 +277,10 @@ def _score_opponent(
         win_type = "locked"
         win_chance = 0
     else:
-        win_chance = _get_win_chance(scoring["score_difference"])
+        win_chance = _get_win_chance(
+            scoring["score_difference"],
+            is_champion=opponent["name"] == "Gary",
+        )
         roll = (
             random_number_generator()
             if random_number_generator is not None
@@ -280,7 +290,8 @@ def _score_opponent(
         win_type = "normal" if beat_opponent else "loss"
 
     badge_name = opponent.get("badge_name")
-    was_chance_battle = not locked and win_chance < 0.95
+    top_win_chance = 0.90 if opponent["name"] == "Gary" else 0.95
+    was_chance_battle = not locked and win_chance < top_win_chance
 
     breakdown = {
         "opponent_name": opponent["name"],
@@ -295,6 +306,7 @@ def _score_opponent(
         "fatigue_penalty": scoring["fatigue_penalty"],
         "opponent_threat_penalty": scoring["opponent_threat_penalty"],
         "champion_pressure_penalty": scoring["champion_pressure_penalty"],
+        "momentum_bonus": scoring["momentum_bonus"],
         "was_chance_battle": was_chance_battle,
         "roll": roll,
         "outcome": "Beat" if beat_opponent else "Lost",
@@ -321,7 +333,11 @@ def _score_opponent(
     return breakdown
 
 
-def _calculate_battle_scoring(selected_pokemon: list[dict], opponent: dict) -> dict:
+def _calculate_battle_scoring(
+    selected_pokemon: list[dict],
+    opponent: dict,
+    momentum_bonus: int = 0,
+) -> dict:
     categories = {
         "team_power": _score_team_power(selected_pokemon),
         "type_advantage": _score_type_advantage(selected_pokemon, opponent),
@@ -344,7 +360,8 @@ def _calculate_battle_scoring(selected_pokemon: list[dict], opponent: dict) -> d
         raw_battle_score
         - fatigue_penalty
         - opponent_threat_penalty
-        - champion_pressure_penalty,
+        - champion_pressure_penalty
+        + momentum_bonus,
     )
     difficulty = OPPONENT_DIFFICULTIES.get(opponent["name"], 70)
 
@@ -357,6 +374,7 @@ def _calculate_battle_scoring(selected_pokemon: list[dict], opponent: dict) -> d
         "fatigue_penalty": fatigue_penalty,
         "opponent_threat_penalty": opponent_threat_penalty,
         "champion_pressure_penalty": champion_pressure_penalty,
+        "momentum_bonus": momentum_bonus,
     }
 
 
@@ -469,29 +487,45 @@ def _score_champion_pressure_penalty(selected_pokemon: list[dict], opponent: dic
 
     penalty = 0
     if not any(_is_full_ace(pokemon) for pokemon in selected_pokemon):
-        penalty += 6
+        penalty += 5
     if _average_base_stat_total(selected_pokemon) < 420:
-        penalty += 6
+        penalty += 5
     if len({pokemon["primary_type"] for pokemon in selected_pokemon}) < 4:
-        penalty += 4
+        penalty += 3
     if _highest_shared_weakness_count(selected_pokemon, CHAMPION_THREAT_TYPES) >= 3:
-        penalty += 8
+        penalty += 6
     return penalty
 
 
-def _get_win_chance(score_difference: int) -> float:
-    if score_difference >= 10:
+def _get_win_chance(score_difference: int, is_champion: bool = False) -> float:
+    if is_champion:
+        return _get_champion_win_chance(score_difference)
+    if score_difference >= 12:
         return 0.95
-    if score_difference >= 5:
-        return 0.80
+    if score_difference >= 6:
+        return 0.85
     if score_difference >= 0:
-        return 0.65
+        return 0.70
     if score_difference >= -5:
-        return 0.35
+        return 0.45
     if score_difference >= -10:
-        return 0.15
+        return 0.25
     if score_difference >= -15:
-        return 0.08
+        return 0.10
+    return 0
+
+
+def _get_champion_win_chance(score_difference: int) -> float:
+    if score_difference >= 15:
+        return 0.90
+    if score_difference >= 8:
+        return 0.75
+    if score_difference >= 0:
+        return 0.55
+    if score_difference >= -6:
+        return 0.30
+    if score_difference >= -12:
+        return 0.12
     return 0
 
 

@@ -138,9 +138,10 @@ The raw battle score is:
 
 `Team Power + Type Advantage + Weakness Control + Team Balance + Ace Factor`
 
+Momentum is then applied for teams that have already cleared major milestones.
 The adjusted battle score is:
 
-`Raw Battle Score - Fatigue Penalty - Opponent Threat Penalty - Champion Gary Pressure Penalty`
+`Raw Battle Score - Fatigue Penalty - Opponent Threat Penalty - Champion Gary Pressure Penalty + Momentum Bonus`
 
 The adjusted battle score is then compared with the opponent's difficulty.
 
@@ -170,6 +171,9 @@ before the Elite Four can be challenged.
 Gym Leaders use controlled chance like every other reached battle. A dominant
 score is very reliable but still not completely guaranteed.
 
+After all 8 badges are earned, the team receives a +3 momentum bonus against
+reached Elite Four battles only.
+
 ## Elite Four
 
 After all 8 badges are earned and the player chooses to continue, the team can
@@ -187,6 +191,9 @@ Elite Four battles are evaluated sequentially. Losing to Lorelei, Bruno,
 Agatha, or Lance stops Elite Four progression and locks later Elite Four members
 and Champion Gary.
 
+After all four Elite Four members are beaten, the team receives a +2 momentum
+bonus against Champion Gary only.
+
 ## Champion
 
 Champion Gary is the final opponent. Gary uses a mixed team profile, so the
@@ -197,46 +204,53 @@ beaten and the player chooses to challenge Gary.
 Champion Gary tests the whole team rather than only type counters. Gary applies
 extra pressure penalties:
 
-- No ace Pokémon: -6
-- Average team base stat total below 420: -6
-- Less than 4 unique primary types: -4
-- 3 or more Pokémon weak to one of Gary's main threat types: -8
+- No ace Pokémon: -5
+- Average team base stat total below 420: -5
+- Less than 4 unique primary types: -3
+- 3 or more Pokémon weak to one of Gary's main threat types: -6
 
 These pressure penalties only apply to Champion Gary.
+Gary also uses a separate, harder chance table. Even an elite team can never
+have more than a 90% win chance against Gary.
 
 ## Difficulties and Fatigue
 
 Opponent difficulties:
 
-- Brock: 46
-- Misty: 52
-- Lt. Surge: 56
-- Erika: 58
-- Koga: 61
-- Sabrina: 64
-- Blaine: 66
-- Giovanni: 68
-- Lorelei: 70
-- Bruno: 68
-- Agatha: 73
-- Lance: 77
-- Gary: 86
+- Brock: 38
+- Misty: 43
+- Lt. Surge: 48
+- Erika: 52
+- Koga: 56
+- Sabrina: 60
+- Blaine: 63
+- Giovanni: 66
+- Lorelei: 68
+- Bruno: 66
+- Agatha: 71
+- Lance: 75
+- Gary: 84
 
 Journey fatigue penalties:
 
 - Gym Leader 1: 0
 - Gym Leader 2: -1
-- Gym Leader 3: -2
-- Gym Leader 4: -3
-- Gym Leader 5: -4
-- Gym Leader 6: -5
-- Gym Leader 7: -6
-- Gym Leader 8: -7
-- Elite Four 1: -10
-- Elite Four 2: -13
-- Elite Four 3: -16
-- Elite Four 4: -19
-- Champion Gary: -18
+- Gym Leader 3: -1
+- Gym Leader 4: -2
+- Gym Leader 5: -2
+- Gym Leader 6: -3
+- Gym Leader 7: -3
+- Gym Leader 8: -4
+- Elite Four 1: -6
+- Elite Four 2: -8
+- Elite Four 3: -10
+- Elite Four 4: -12
+- Champion Gary: -16
+
+Momentum bonuses:
+
+- All 8 badges earned: +3 against Elite Four battles only.
+- All Elite Four beaten: +2 against Champion Gary only.
 
 ## Controlled Chance
 
@@ -246,13 +260,24 @@ After penalties, the score difference is:
 
 The score difference controls win chance:
 
-- +10 or more: 95%
-- +5 to +9: 80%
-- 0 to +4: 65%
-- -1 to -5: 35%
-- -6 to -10: 15%
-- -11 to -15: 8%
+Gym Leaders and Elite Four:
+
+- +12 or more: 95%
+- +6 to +11: 85%
+- 0 to +5: 70%
+- -1 to -5: 45%
+- -6 to -10: 25%
+- -11 to -15: 10%
 - Below -15: 0%
+
+Champion Gary:
+
+- +15 or more: 90%
+- +8 to +14: 75%
+- 0 to +7: 55%
+- -1 to -6: 30%
+- -7 to -12: 12%
+- Below -12: 0%
 
 The backend accepts an injectable random number generator for tests, so battle
 rolls can be forced and backend tests stay deterministic.
@@ -268,18 +293,19 @@ the journey data returned by the backend.
 - Beat all Gym Leaders but lose in the Elite Four: `Lose - Pokemon Trainer`
 - Lose before beating all Gym Leaders: `Lose - Beginner`
 
-A close/chance battle is any reached battle with less than a 95% win chance.
-Those battles use the controlled random roll, which is injectable in backend
-tests so outcomes remain deterministic.
+A close/chance battle is any reached battle below the highest possible band for
+that battle type: less than 95% for Gym Leader and Elite Four battles, or less
+than 90% for Champion Gary. Those battles use the controlled random roll, which
+is injectable in backend tests so outcomes remain deterministic.
 
 The intended gameplay feel is:
 
-- Poor teams usually lose early.
-- Average teams can beat some Gym Leaders but should not expect to clear Kanto.
-- Good teams can beat all Gym Leaders.
-- Very good teams can reach the Elite Four.
-- Elite teams can reach Champion Gary and can beat him with a favorable roll,
-  but Gary is not guaranteed even with excellent type coverage.
+- Poor teams usually lose before all 8 badges.
+- Average teams can beat several Gym Leaders and feel progress.
+- Good teams can beat all Gym Leaders and reach the Elite Four.
+- Very good teams can reach Champion Gary.
+- Elite teams can beat Champion Gary with a favorable roll, but Gary is not
+  guaranteed even with excellent stats, Legendary Pokémon, or type coverage.
 - Going undefeated and becoming Pokemon Master should be rare.
 
 The score response includes the selected Pokémon, legacy score breakdown, new
@@ -288,4 +314,4 @@ earned, badge requirement, Elite Four unlock state, path result, opponent
 breakdown, explanation, and warnings. Opponent breakdowns also include battle
 diagnostics such as raw battle score, adjusted battle score, difficulty, score
 difference, win chance, fatigue penalty, opponent threat penalty, Champion
-pressure penalty, chance-battle flag, and roll.
+pressure penalty, momentum bonus, chance-battle flag, and roll.
