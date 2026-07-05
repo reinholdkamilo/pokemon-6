@@ -18,6 +18,9 @@ type CardSelectionScreenProps = {
 const TEAM_SIZE = 6;
 const REVEAL_TICK_MS = 85;
 const REVEAL_DURATION_MS = 1400;
+const POWER_SPIN_HOLD_MS = 1300;
+const STRONG_BASE_STAT_TOTAL = 480;
+const LEGENDARY_NAMES = new Set(["Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew"]);
 
 export function CardSelectionScreen({
   revealedCards,
@@ -33,10 +36,14 @@ export function CardSelectionScreen({
     createEmptySlots,
   );
   const [revealingSlot, setRevealingSlot] = useState<number | null>(null);
+  const [chargingCardIndex, setChargingCardIndex] = useState<number | null>(null);
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const intervalRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const holdTimeoutRef = useRef<number | null>(null);
+  const activeHoldSlotRef = useRef<number | null>(null);
+  const completedHoldSlotRef = useRef<number | null>(null);
 
   const teamIsComplete = selectedPokemon.length === TEAM_SIZE;
   const isRevealing = revealingSlot !== null;
@@ -71,10 +78,11 @@ export function CardSelectionScreen({
     return () => {
       ignoreResult = true;
       clearRevealTimers();
+      clearHoldTimer();
     };
   }, []);
 
-  function revealCard(slotIndex: number) {
+  function revealCard(slotIndex: number, isPowerSpin = false) {
     if (isLoading || isRevealing) {
       return;
     }
@@ -100,16 +108,21 @@ export function CardSelectionScreen({
     const preferredPokemon = currentPokemon
       ? availablePokemon.filter((candidate) => candidate.id !== currentPokemon.id)
       : availablePokemon;
+    const normalSpinPool =
+      preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
+    const strongPokemon = preferredPokemon.filter(isStrongPokemon);
     const finalPokemon = pickRandomPokemon(
-      preferredPokemon.length > 0 ? preferredPokemon : availablePokemon,
+      isPowerSpin && strongPokemon.length > 0 ? strongPokemon : normalSpinPool,
     );
+    const previewPokemon =
+      isPowerSpin && strongPokemon.length > 0 ? strongPokemon : availablePokemon;
     setLoadError("");
     setRevealingSlot(slotIndex);
 
     intervalRef.current = window.setInterval(() => {
       setPreviewBySlot((currentSlots) => {
         const nextSlots = [...currentSlots];
-        nextSlots[slotIndex] = pickRandomPokemon(availablePokemon);
+        nextSlots[slotIndex] = pickRandomPokemon(previewPokemon);
         return nextSlots;
       });
     }, REVEAL_TICK_MS);
@@ -126,6 +139,53 @@ export function CardSelectionScreen({
     }, REVEAL_DURATION_MS);
   }
 
+  function startHold(slotIndex: number) {
+    if (isLoading || isRevealing) {
+      return;
+    }
+
+    clearHoldTimer();
+    activeHoldSlotRef.current = slotIndex;
+    completedHoldSlotRef.current = null;
+    setChargingCardIndex(slotIndex);
+
+    holdTimeoutRef.current = window.setTimeout(() => {
+      completedHoldSlotRef.current = slotIndex;
+      clearHoldTimer();
+      setChargingCardIndex(null);
+      revealCard(slotIndex, true);
+    }, POWER_SPIN_HOLD_MS);
+  }
+
+  function finishHold(slotIndex: number) {
+    if (activeHoldSlotRef.current !== slotIndex) {
+      return;
+    }
+
+    const completedHoldSlot = completedHoldSlotRef.current;
+    clearHoldTimer();
+    setChargingCardIndex(null);
+    activeHoldSlotRef.current = null;
+
+    if (completedHoldSlot === slotIndex) {
+      completedHoldSlotRef.current = null;
+      return;
+    }
+
+    revealCard(slotIndex);
+  }
+
+  function cancelHold(slotIndex: number) {
+    if (activeHoldSlotRef.current !== slotIndex) {
+      return;
+    }
+
+    clearHoldTimer();
+    setChargingCardIndex(null);
+    activeHoldSlotRef.current = null;
+    completedHoldSlotRef.current = null;
+  }
+
   function clearRevealTimers() {
     if (intervalRef.current !== null) {
       window.clearInterval(intervalRef.current);
@@ -138,6 +198,13 @@ export function CardSelectionScreen({
     }
   }
 
+  function clearHoldTimer() {
+    if (holdTimeoutRef.current !== null) {
+      window.clearTimeout(holdTimeoutRef.current);
+      holdTimeoutRef.current = null;
+    }
+  }
+
   return (
     <section className="selection-screen" aria-label="Team card selection">
       <div className="selection-header">
@@ -146,7 +213,9 @@ export function CardSelectionScreen({
         <p>
           Tap each card to draw a unique Generation 1 Pokemon for the Champion run.
         </p>
-        <p className="selection-hint">Tap a revealed card to re-spin it.</p>
+        <p className="selection-hint">
+          Tap a revealed card to re-spin it. Hold a card for Power Spin.
+        </p>
       </div>
 
       <div className="selection-status">
@@ -159,9 +228,13 @@ export function CardSelectionScreen({
           <RevealCard
             canReveal={!isLoading && !isRevealing}
             index={index}
+            isCharging={chargingCardIndex === index}
             isRevealing={revealingSlot === index}
             key={slotPokemon?.id ?? `slot-${index}`}
+            onCancelHold={cancelHold}
+            onFinishHold={finishHold}
             onReveal={revealCard}
+            onStartHold={startHold}
             pokemon={slotPokemon}
             previewPokemon={previewBySlot[index]}
           />
@@ -200,4 +273,12 @@ function createEmptySlots() {
 
 function pickRandomPokemon(pokemon: Pokemon[]) {
   return pokemon[Math.floor(Math.random() * pokemon.length)];
+}
+
+function isStrongPokemon(pokemon: Pokemon) {
+  return (
+    Boolean(pokemon.isLegendary) ||
+    LEGENDARY_NAMES.has(pokemon.name) ||
+    pokemon.base_stat_total >= STRONG_BASE_STAT_TOTAL
+  );
 }

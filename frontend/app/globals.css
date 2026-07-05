@@ -265,9 +265,13 @@ p {
   padding: 8px;
   text-align: center;
   box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82);
+  touch-action: manipulation;
   transition:
     transform 160ms ease,
     filter 160ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .reveal-card:not(:disabled):active {
@@ -293,6 +297,15 @@ p {
 
 .reveal-card.revealing {
   animation: cardDraw 180ms linear infinite alternate;
+}
+
+.reveal-card.charging {
+  animation: powerCharge 1300ms linear forwards;
+  filter: saturate(1.18) brightness(1.04);
+  box-shadow:
+    0 8px 0 rgba(52, 42, 32, 0.82),
+    0 0 0 4px rgba(34, 87, 167, 0.38),
+    0 0 18px rgba(34, 87, 167, 0.48);
 }
 
 .legendary-tag {
@@ -1573,6 +1586,20 @@ p {
 
   to {
     transform: rotate(1deg) translateY(-4px);
+  }
+}
+
+@keyframes powerCharge {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  55% {
+    transform: translateY(-2px) scale(1.015);
+  }
+
+  100% {
+    transform: translateY(-3px) scale(1.025);
   }
 }
 

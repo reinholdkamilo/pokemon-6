@@ -8,8 +8,12 @@ type RevealCardProps = {
   pokemon: Pokemon | null;
   previewPokemon: Pokemon | null;
   isRevealing: boolean;
+  isCharging: boolean;
   canReveal: boolean;
   onReveal: (index: number) => void;
+  onStartHold: (index: number) => void;
+  onFinishHold: (index: number) => void;
+  onCancelHold: (index: number) => void;
 };
 
 const LEGENDARY_NAMES = new Set(["Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew"]);
@@ -19,8 +23,12 @@ export function RevealCard({
   pokemon,
   previewPokemon,
   isRevealing,
+  isCharging,
   canReveal,
   onReveal,
+  onStartHold,
+  onFinishHold,
+  onCancelHold,
 }: RevealCardProps) {
   const displayPokemon = previewPokemon ?? pokemon;
   const isLocked = Boolean(pokemon);
@@ -39,17 +47,35 @@ export function RevealCard({
         typeClass,
         isLocked ? "locked" : "",
         isRevealing ? "revealing" : "",
+        isCharging ? "charging" : "",
         isLegendary && isLocked ? "legendary" : "",
       ]
         .filter(Boolean)
         .join(" ")}
       type="button"
       disabled={!canReveal || isRevealing}
-      onClick={() => onReveal(index)}
+      onPointerDown={() => onStartHold(index)}
+      onPointerUp={() => onFinishHold(index)}
+      onPointerLeave={() => onCancelHold(index)}
+      onPointerCancel={() => onCancelHold(index)}
+      onClick={(event) => {
+        event.preventDefault();
+      }}
+      onContextMenu={(event) => {
+        event.preventDefault();
+      }}
+      onKeyDown={(event) => {
+        if (event.repeat || (event.key !== "Enter" && event.key !== " ")) {
+          return;
+        }
+
+        event.preventDefault();
+        onReveal(index);
+      }}
       aria-label={
         displayPokemon
-          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin.`
-          : `Reveal team card ${index + 1}`
+          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin. Hold for Power Spin.`
+          : `Reveal team card ${index + 1}. Hold for Power Spin.`
       }
     >
       <span className="card-portrait">
