@@ -1,0 +1,1210 @@
+[
+  {
+    "dex": 1,
+    "name": "Bulbasaur",
+    "file": "001_bulbasaur.png",
+    "sheet": 8,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 2,
+    "name": "Ivysaur",
+    "file": "002_ivysaur.png",
+    "sheet": 8,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 3,
+    "name": "Venusaur",
+    "file": "003_venusaur.png",
+    "sheet": 8,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 4,
+    "name": "Charmander",
+    "file": "004_charmander.png",
+    "sheet": 8,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 5,
+    "name": "Charmeleon",
+    "file": "005_charmeleon.png",
+    "sheet": 8,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 6,
+    "name": "Charizard",
+    "file": "006_charizard.png",
+    "sheet": 8,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 7,
+    "name": "Squirtle",
+    "file": "007_squirtle.png",
+    "sheet": 8,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 8,
+    "name": "Wartortle",
+    "file": "008_wartortle.png",
+    "sheet": 8,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 9,
+    "name": "Blastoise",
+    "file": "009_blastoise.png",
+    "sheet": 8,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 10,
+    "name": "Caterpie",
+    "file": "010_caterpie.png",
+    "sheet": 8,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 11,
+    "name": "Metapod",
+    "file": "011_metapod.png",
+    "sheet": 8,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 12,
+    "name": "Butterfree",
+    "file": "012_butterfree.png",
+    "sheet": 8,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 13,
+    "name": "Weedle",
+    "file": "013_weedle.png",
+    "sheet": 8,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 14,
+    "name": "Kakuna",
+    "file": "014_kakuna.png",
+    "sheet": 8,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 15,
+    "name": "Beedrill",
+    "file": "015_beedrill.png",
+    "sheet": 8,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 16,
+    "name": "Pidgey",
+    "file": "016_pidgey.png",
+    "sheet": 8,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 17,
+    "name": "Pidgeotto",
+    "file": "017_pidgeotto.png",
+    "sheet": 9,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 18,
+    "name": "Pidgeot",
+    "file": "018_pidgeot.png",
+    "sheet": 9,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 19,
+    "name": "Rattata",
+    "file": "019_rattata.png",
+    "sheet": 9,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 20,
+    "name": "Raticate",
+    "file": "020_raticate.png",
+    "sheet": 9,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 21,
+    "name": "Spearow",
+    "file": "021_spearow.png",
+    "sheet": 9,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 22,
+    "name": "Fearow",
+    "file": "022_fearow.png",
+    "sheet": 9,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 23,
+    "name": "Ekans",
+    "file": "023_ekans.png",
+    "sheet": 9,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 24,
+    "name": "Arbok",
+    "file": "024_arbok.png",
+    "sheet": 9,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 25,
+    "name": "Pikachu",
+    "file": "025_pikachu.png",
+    "sheet": 9,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 26,
+    "name": "Raichu",
+    "file": "026_raichu.png",
+    "sheet": 9,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 27,
+    "name": "Sandshrew",
+    "file": "027_sandshrew.png",
+    "sheet": 9,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 28,
+    "name": "Sandslash",
+    "file": "028_sandslash.png",
+    "sheet": 9,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 29,
+    "name": "Nidoran\u2640",
+    "file": "029_nidoranf.png",
+    "sheet": 9,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 30,
+    "name": "Nidorina",
+    "file": "030_nidorina.png",
+    "sheet": 9,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 31,
+    "name": "Nidoqueen",
+    "file": "031_nidoqueen.png",
+    "sheet": 9,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 32,
+    "name": "Nidoran\u2642",
+    "file": "032_nidoranm.png",
+    "sheet": 9,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 33,
+    "name": "Nidorino",
+    "file": "033_nidorino.png",
+    "sheet": 10,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 34,
+    "name": "Nidoking",
+    "file": "034_nidoking.png",
+    "sheet": 10,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 35,
+    "name": "Clefairy",
+    "file": "035_clefairy.png",
+    "sheet": 10,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 36,
+    "name": "Clefable",
+    "file": "036_clefable.png",
+    "sheet": 10,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 37,
+    "name": "Vulpix",
+    "file": "037_vulpix.png",
+    "sheet": 10,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 38,
+    "name": "Ninetales",
+    "file": "038_ninetales.png",
+    "sheet": 10,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 39,
+    "name": "Jigglypuff",
+    "file": "039_jigglypuff.png",
+    "sheet": 10,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 40,
+    "name": "Wigglytuff",
+    "file": "040_wigglytuff.png",
+    "sheet": 10,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 41,
+    "name": "Zubat",
+    "file": "041_zubat.png",
+    "sheet": 10,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 42,
+    "name": "Golbat",
+    "file": "042_golbat.png",
+    "sheet": 10,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 43,
+    "name": "Oddish",
+    "file": "043_oddish.png",
+    "sheet": 10,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 44,
+    "name": "Gloom",
+    "file": "044_gloom.png",
+    "sheet": 10,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 45,
+    "name": "Vileplume",
+    "file": "045_vileplume.png",
+    "sheet": 10,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 46,
+    "name": "Paras",
+    "file": "046_paras.png",
+    "sheet": 10,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 47,
+    "name": "Parasect",
+    "file": "047_parasect.png",
+    "sheet": 10,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 48,
+    "name": "Venonat",
+    "file": "048_venonat.png",
+    "sheet": 10,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 49,
+    "name": "Venomoth",
+    "file": "049_venomoth.png",
+    "sheet": 7,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 50,
+    "name": "Diglett",
+    "file": "050_diglett.png",
+    "sheet": 7,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 51,
+    "name": "Dugtrio",
+    "file": "051_dugtrio.png",
+    "sheet": 7,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 52,
+    "name": "Meowth",
+    "file": "052_meowth.png",
+    "sheet": 7,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 53,
+    "name": "Persian",
+    "file": "053_persian.png",
+    "sheet": 7,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 54,
+    "name": "Psyduck",
+    "file": "054_psyduck.png",
+    "sheet": 7,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 55,
+    "name": "Golduck",
+    "file": "055_golduck.png",
+    "sheet": 7,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 56,
+    "name": "Mankey",
+    "file": "056_mankey.png",
+    "sheet": 7,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 57,
+    "name": "Primeape",
+    "file": "057_primeape.png",
+    "sheet": 7,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 58,
+    "name": "Growlithe",
+    "file": "058_growlithe.png",
+    "sheet": 7,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 59,
+    "name": "Arcanine",
+    "file": "059_arcanine.png",
+    "sheet": 7,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 60,
+    "name": "Poliwag",
+    "file": "060_poliwag.png",
+    "sheet": 7,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 61,
+    "name": "Poliwhirl",
+    "file": "061_poliwhirl.png",
+    "sheet": 7,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 62,
+    "name": "Poliwrath",
+    "file": "062_poliwrath.png",
+    "sheet": 7,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 63,
+    "name": "Abra",
+    "file": "063_abra.png",
+    "sheet": 7,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 64,
+    "name": "Kadabra",
+    "file": "064_kadabra.png",
+    "sheet": 7,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 65,
+    "name": "Alakazam",
+    "file": "065_alakazam.png",
+    "sheet": 6,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 66,
+    "name": "Machop",
+    "file": "066_machop.png",
+    "sheet": 6,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 67,
+    "name": "Machoke",
+    "file": "067_machoke.png",
+    "sheet": 6,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 68,
+    "name": "Machamp",
+    "file": "068_machamp.png",
+    "sheet": 6,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 69,
+    "name": "Bellsprout",
+    "file": "069_bellsprout.png",
+    "sheet": 6,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 70,
+    "name": "Weepinbell",
+    "file": "070_weepinbell.png",
+    "sheet": 6,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 71,
+    "name": "Victreebel",
+    "file": "071_victreebel.png",
+    "sheet": 6,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 72,
+    "name": "Tentacool",
+    "file": "072_tentacool.png",
+    "sheet": 6,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 73,
+    "name": "Tentacruel",
+    "file": "073_tentacruel.png",
+    "sheet": 6,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 74,
+    "name": "Geodude",
+    "file": "074_geodude.png",
+    "sheet": 6,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 75,
+    "name": "Graveler",
+    "file": "075_graveler.png",
+    "sheet": 6,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 76,
+    "name": "Golem",
+    "file": "076_golem.png",
+    "sheet": 6,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 77,
+    "name": "Ponyta",
+    "file": "077_ponyta.png",
+    "sheet": 6,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 78,
+    "name": "Rapidash",
+    "file": "078_rapidash.png",
+    "sheet": 6,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 79,
+    "name": "Slowpoke",
+    "file": "079_slowpoke.png",
+    "sheet": 6,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 80,
+    "name": "Slowbro",
+    "file": "080_slowbro.png",
+    "sheet": 6,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 81,
+    "name": "Magnemite",
+    "file": "081_magnemite.png",
+    "sheet": 5,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 82,
+    "name": "Magneton",
+    "file": "082_magneton.png",
+    "sheet": 5,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 83,
+    "name": "Farfetch'd",
+    "file": "083_farfetch_d.png",
+    "sheet": 5,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 84,
+    "name": "Doduo",
+    "file": "084_doduo.png",
+    "sheet": 5,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 85,
+    "name": "Dodrio",
+    "file": "085_dodrio.png",
+    "sheet": 5,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 86,
+    "name": "Seel",
+    "file": "086_seel.png",
+    "sheet": 5,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 87,
+    "name": "Dewgong",
+    "file": "087_dewgong.png",
+    "sheet": 5,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 88,
+    "name": "Grimer",
+    "file": "088_grimer.png",
+    "sheet": 5,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 89,
+    "name": "Muk",
+    "file": "089_muk.png",
+    "sheet": 5,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 90,
+    "name": "Shellder",
+    "file": "090_shellder.png",
+    "sheet": 5,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 91,
+    "name": "Cloyster",
+    "file": "091_cloyster.png",
+    "sheet": 5,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 92,
+    "name": "Gastly",
+    "file": "092_gastly.png",
+    "sheet": 5,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 93,
+    "name": "Haunter",
+    "file": "093_haunter.png",
+    "sheet": 5,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 94,
+    "name": "Gengar",
+    "file": "094_gengar.png",
+    "sheet": 5,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 95,
+    "name": "Onix",
+    "file": "095_onix.png",
+    "sheet": 5,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 96,
+    "name": "Drowzee",
+    "file": "096_drowzee.png",
+    "sheet": 5,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 97,
+    "name": "Hypno",
+    "file": "097_hypno.png",
+    "sheet": 4,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 98,
+    "name": "Krabby",
+    "file": "098_krabby.png",
+    "sheet": 4,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 99,
+    "name": "Kingler",
+    "file": "099_kingler.png",
+    "sheet": 4,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 100,
+    "name": "Voltorb",
+    "file": "100_voltorb.png",
+    "sheet": 4,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 101,
+    "name": "Electrode",
+    "file": "101_electrode.png",
+    "sheet": 4,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 102,
+    "name": "Exeggcute",
+    "file": "102_exeggcute.png",
+    "sheet": 4,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 103,
+    "name": "Exeggutor",
+    "file": "103_exeggutor.png",
+    "sheet": 4,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 104,
+    "name": "Cubone",
+    "file": "104_cubone.png",
+    "sheet": 4,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 105,
+    "name": "Marowak",
+    "file": "105_marowak.png",
+    "sheet": 4,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 106,
+    "name": "Hitmonlee",
+    "file": "106_hitmonlee.png",
+    "sheet": 4,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 107,
+    "name": "Hitmonchan",
+    "file": "107_hitmonchan.png",
+    "sheet": 4,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 108,
+    "name": "Lickitung",
+    "file": "108_lickitung.png",
+    "sheet": 4,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 109,
+    "name": "Koffing",
+    "file": "109_koffing.png",
+    "sheet": 4,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 110,
+    "name": "Weezing",
+    "file": "110_weezing.png",
+    "sheet": 4,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 111,
+    "name": "Rhyhorn",
+    "file": "111_rhyhorn.png",
+    "sheet": 4,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 112,
+    "name": "Rhydon",
+    "file": "112_rhydon.png",
+    "sheet": 4,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 113,
+    "name": "Chansey",
+    "file": "113_chansey.png",
+    "sheet": 3,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 114,
+    "name": "Tangela",
+    "file": "114_tangela.png",
+    "sheet": 3,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 115,
+    "name": "Kangaskhan",
+    "file": "115_kangaskhan.png",
+    "sheet": 3,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 116,
+    "name": "Horsea",
+    "file": "116_horsea.png",
+    "sheet": 3,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 117,
+    "name": "Seadra",
+    "file": "117_seadra.png",
+    "sheet": 3,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 118,
+    "name": "Goldeen",
+    "file": "118_goldeen.png",
+    "sheet": 3,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 119,
+    "name": "Seaking",
+    "file": "119_seaking.png",
+    "sheet": 3,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 120,
+    "name": "Staryu",
+    "file": "120_staryu.png",
+    "sheet": 3,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 121,
+    "name": "Starmie",
+    "file": "121_starmie.png",
+    "sheet": 3,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 122,
+    "name": "Mr. Mime",
+    "file": "122_mr_mime.png",
+    "sheet": 3,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 123,
+    "name": "Scyther",
+    "file": "123_scyther.png",
+    "sheet": 3,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 124,
+    "name": "Jynx",
+    "file": "124_jynx.png",
+    "sheet": 3,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 125,
+    "name": "Electabuzz",
+    "file": "125_electabuzz.png",
+    "sheet": 3,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 126,
+    "name": "Magmar",
+    "file": "126_magmar.png",
+    "sheet": 3,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 127,
+    "name": "Pinsir",
+    "file": "127_pinsir.png",
+    "sheet": 3,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 128,
+    "name": "Tauros",
+    "file": "128_tauros.png",
+    "sheet": 3,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 129,
+    "name": "Magikarp",
+    "file": "129_magikarp.png",
+    "sheet": 2,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 130,
+    "name": "Gyarados",
+    "file": "130_gyarados.png",
+    "sheet": 2,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 131,
+    "name": "Lapras",
+    "file": "131_lapras.png",
+    "sheet": 2,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 132,
+    "name": "Ditto",
+    "file": "132_ditto.png",
+    "sheet": 2,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 133,
+    "name": "Eevee",
+    "file": "133_eevee.png",
+    "sheet": 2,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 134,
+    "name": "Vaporeon",
+    "file": "134_vaporeon.png",
+    "sheet": 2,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 135,
+    "name": "Jolteon",
+    "file": "135_jolteon.png",
+    "sheet": 2,
+    "row": 2,
+    "col": 3
+  },
+  {
+    "dex": 136,
+    "name": "Flareon",
+    "file": "136_flareon.png",
+    "sheet": 2,
+    "row": 2,
+    "col": 4
+  },
+  {
+    "dex": 137,
+    "name": "Porygon",
+    "file": "137_porygon.png",
+    "sheet": 2,
+    "row": 3,
+    "col": 1
+  },
+  {
+    "dex": 138,
+    "name": "Omanyte",
+    "file": "138_omanyte.png",
+    "sheet": 2,
+    "row": 3,
+    "col": 2
+  },
+  {
+    "dex": 139,
+    "name": "Omastar",
+    "file": "139_omastar.png",
+    "sheet": 2,
+    "row": 3,
+    "col": 3
+  },
+  {
+    "dex": 140,
+    "name": "Kabuto",
+    "file": "140_kabuto.png",
+    "sheet": 2,
+    "row": 3,
+    "col": 4
+  },
+  {
+    "dex": 141,
+    "name": "Kabutops",
+    "file": "141_kabutops.png",
+    "sheet": 2,
+    "row": 4,
+    "col": 1
+  },
+  {
+    "dex": 142,
+    "name": "Aerodactyl",
+    "file": "142_aerodactyl.png",
+    "sheet": 2,
+    "row": 4,
+    "col": 2
+  },
+  {
+    "dex": 143,
+    "name": "Snorlax",
+    "file": "143_snorlax.png",
+    "sheet": 2,
+    "row": 4,
+    "col": 3
+  },
+  {
+    "dex": 144,
+    "name": "Articuno",
+    "file": "144_articuno.png",
+    "sheet": 2,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "dex": 145,
+    "name": "Zapdos",
+    "file": "145_zapdos.png",
+    "sheet": 1,
+    "row": 1,
+    "col": 1
+  },
+  {
+    "dex": 146,
+    "name": "Moltres",
+    "file": "146_moltres.png",
+    "sheet": 1,
+    "row": 1,
+    "col": 2
+  },
+  {
+    "dex": 147,
+    "name": "Dratini",
+    "file": "147_dratini.png",
+    "sheet": 1,
+    "row": 1,
+    "col": 3
+  },
+  {
+    "dex": 148,
+    "name": "Dragonair",
+    "file": "148_dragonair.png",
+    "sheet": 1,
+    "row": 1,
+    "col": 4
+  },
+  {
+    "dex": 149,
+    "name": "Dragonite",
+    "file": "149_dragonite.png",
+    "sheet": 1,
+    "row": 2,
+    "col": 1
+  },
+  {
+    "dex": 150,
+    "name": "Mewtwo",
+    "file": "150_mewtwo.png",
+    "sheet": 1,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "dex": 151,
+    "name": "Mew",
+    "file": "151_mew.png",
+    "sheet": 1,
+    "row": 2,
+    "col": 3
+  }
+]

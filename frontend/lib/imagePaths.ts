@@ -26,3 +26,25 @@ export const TRAINER_IMAGE_PATHS: Record<string, string> = {
   "player-male": "/images/trainers/player-male.svg",
   "player-female": "/images/trainers/player-female.svg",
 };
+
+const CARD_FILENAME_OVERRIDES: Record<number, string> = {
+  29: "029_nidoranf.png",
+  32: "032_nidoranm.png",
+  83: "083_farfetch_d.png",
+  122: "122_mr_mime.png",
+};
+
+export function getPokemonCardImagePath(pokemon: { id: number; name: string }) {
+  const fileName =
+    CARD_FILENAME_OVERRIDES[pokemon.id] ??
+    `${String(pokemon.id).padStart(3, "0")}_${slugifyPokemonName(pokemon.name)}.png`;
+
+  return `/images/pokemon-cards/${fileName}`;
+}
+
+function slugifyPokemonName(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
