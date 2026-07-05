@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-from typing import Optional
 
 from app.main import app
 from app.services import team_scoring
@@ -17,16 +16,25 @@ STRONG_BALANCED_TEAM = [
     "Dragonite",
 ]
 
-STRONG_TEAM_WITHOUT_ALL_BADGES = [
-    "Charizard",
-    "Lapras",
-    "Raichu",
-    "Alakazam",
-    "Snorlax",
+ELITE_TEAM = [
+    "Mewtwo",
     "Dragonite",
+    "Snorlax",
+    "Lapras",
+    "Jolteon",
+    "Rhydon",
 ]
 
-WEAK_UNBALANCED_TEAM = [
+TYPE_COVERAGE_TEAM = [
+    "Jolteon",
+    "Vaporeon",
+    "Lapras",
+    "Alakazam",
+    "Rhydon",
+    "Arcanine",
+]
+
+WEAK_TEAM = [
     "Bulbasaur",
     "Charmander",
     "Squirtle",
@@ -35,8 +43,19 @@ WEAK_UNBALANCED_TEAM = [
     "Charmeleon",
 ]
 
+SHARED_WEAKNESS_TEAM = [
+    "Charizard",
+    "Moltres",
+    "Pidgeot",
+    "Fearow",
+    "Butterfree",
+    "Dragonite",
+]
 
-def test_score_valid_six_pokemon_team() -> None:
+
+def test_score_valid_six_pokemon_team_keeps_api_shape(monkeypatch) -> None:
+    monkeypatch.setattr(team_scoring.random, "random", lambda: 0.0)
+
     response = client.post(
         "/teams/score",
         json={"pokemon_names": STRONG_BALANCED_TEAM},
@@ -54,6 +73,13 @@ def test_score_valid_six_pokemon_team() -> None:
         "weakness_management",
         "matchup_spread",
     }
+    assert set(data["battle_score_breakdown"]) >= {
+        "team_power",
+        "type_advantage",
+        "weakness_control",
+        "team_balance",
+        "ace_factor",
+    }
     assert "gym_score" in data
     assert "elite_four_score" in data
     assert "champion_score" in data
@@ -65,28 +91,42 @@ def test_score_valid_six_pokemon_team() -> None:
     assert isinstance(data["warnings"], list)
 
 
-def test_scoring_includes_gym_leader_breakdown() -> None:
+def test_scoring_includes_battle_diagnostics(monkeypatch) -> None:
+    monkeypatch.setattr(team_scoring.random, "random", lambda: 0.0)
+
     response = client.post(
         "/teams/score",
         json={"pokemon_names": STRONG_BALANCED_TEAM},
     )
 
     assert response.status_code == 200
-    gym_breakdown = response.json()["opponent_breakdown"]["gym_leaders"]
-    assert len(gym_breakdown) == 8
-    assert gym_breakdown[0]["opponent_name"] == "Brock"
-    assert gym_breakdown[0]["stage"] == "Gym Leader 1"
-    assert "matchup_score" in gym_breakdown[0]
-    assert "outcome" in gym_breakdown[0]
-    assert gym_breakdown[0]["win_type"] in {"normal", "lucky", "locked", "loss"}
-    assert gym_breakdown[0]["lucky_win"] is False
-    assert "lucky_win_chance" in gym_breakdown[0]
-    assert "random_roll" in gym_breakdown[0]
-    assert "badge_earned" in gym_breakdown[0]
-    assert gym_breakdown[0]["explanation"]
+    brock = response.json()["opponent_breakdown"]["gym_leaders"][0]
+    assert brock["opponent_name"] == "Brock"
+    assert brock["stage"] == "Gym Leader 1"
+    assert brock["badge_name"] == "Boulder Badge"
+    assert brock["badge_earned"] is True
+    assert brock["win_type"] in {"normal", "locked", "loss"}
+    assert brock["lucky_win"] is False
+    assert brock["lucky_win_chance"] == 0
+    assert "matchup_score" in brock
+    assert "battle_score" in brock
+    assert "raw_battle_score" in brock
+    assert "adjusted_battle_score" in brock
+    assert "difficulty" in brock
+    assert "score_difference" in brock
+    assert "win_chance" in brock
+    assert "fatigue_penalty" in brock
+    assert "opponent_threat_penalty" in brock
+    assert "champion_pressure_penalty" in brock
+    assert "was_chance_battle" in brock
+    assert "roll" in brock
+    assert "random_roll" in brock
+    assert brock["explanation"]
 
 
-def test_scoring_includes_badge_names() -> None:
+def test_scoring_includes_badge_names(monkeypatch) -> None:
+    monkeypatch.setattr(team_scoring.random, "random", lambda: 0.0)
+
     response = client.post(
         "/teams/score",
         json={"pokemon_names": STRONG_BALANCED_TEAM},
@@ -106,125 +146,240 @@ def test_scoring_includes_badge_names() -> None:
     ]
 
 
-def test_badges_earned_is_returned() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_BALANCED_TEAM},
-    )
+def test_type_coverage_alone_does_not_guarantee_champion_win() -> None:
+    data = team_scoring.score_team(TYPE_COVERAGE_TEAM, random_number_generator=lambda: 0.0)
+    champion = data["opponent_breakdown"]["champion"][0]
 
-    assert response.status_code == 200
-    assert response.json()["badges_earned"] == [
-        "Boulder Badge",
-        "Cascade Badge",
-        "Thunder Badge",
-        "Rainbow Badge",
-        "Soul Badge",
-        "Marsh Badge",
-        "Volcano Badge",
-        "Earth Badge",
-    ]
-
-
-def test_elite_four_unlocked_false_when_fewer_than_8_badges(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring.random, "random", lambda: 0.99)
-
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_TEAM_WITHOUT_ALL_BADGES},
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data["badges_earned"]) < 8
-    assert data["elite_four_unlocked"] is False
-    assert (
-        data["opponent_breakdown"]["gym_leaders"][2]["opponent_name"]
-        == "Lt. Surge"
-    )
-    assert data["opponent_breakdown"]["gym_leaders"][2]["win_type"] == "loss"
-    assert all(
-        opponent["win_type"] == "locked"
-        for opponent in data["opponent_breakdown"]["gym_leaders"][3:]
-    )
-    assert all(
-        opponent["outcome"] == "Lost"
-        for opponent in data["opponent_breakdown"]["elite_four"]
-    )
-    assert all(
-        opponent["outcome"] == "Lost"
-        for opponent in data["opponent_breakdown"]["champion"]
-    )
-
-
-def test_elite_four_unlocked_true_when_all_8_badges_are_earned() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_BALANCED_TEAM},
-    )
-
-    assert response.status_code == 200
-    data = response.json()
     assert len(data["badges_earned"]) == 8
     assert data["elite_four_unlocked"] is True
+    assert champion["opponent_name"] == "Gary"
+    assert champion["outcome"] == "Lost"
+    assert champion["win_chance"] == 0
+    assert data["result"] == "Lose - Pokemon Expert"
 
 
-def test_scoring_includes_elite_four_breakdown() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_BALANCED_TEAM},
+def test_strong_balanced_team_can_reach_champion_but_not_auto_beat_gary() -> None:
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
     )
+    champion = data["opponent_breakdown"]["champion"][0]
 
-    assert response.status_code == 200
-    elite_four_breakdown = response.json()["opponent_breakdown"]["elite_four"]
-    assert [opponent["opponent_name"] for opponent in elite_four_breakdown] == [
-        "Lorelei",
-        "Bruno",
-        "Agatha",
-        "Lance",
-    ]
-    assert all("matchup_score" in opponent for opponent in elite_four_breakdown)
-    assert all("explanation" in opponent for opponent in elite_four_breakdown)
-
-
-def test_scoring_includes_champion_breakdown() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_BALANCED_TEAM},
+    assert len(data["badges_earned"]) == 8
+    assert data["elite_four_unlocked"] is True
+    assert all(
+        opponent["outcome"] == "Beat"
+        for opponent in data["opponent_breakdown"]["elite_four"]
     )
-
-    assert response.status_code == 200
-    champion_breakdown = response.json()["opponent_breakdown"]["champion"]
-    assert len(champion_breakdown) == 1
-    assert champion_breakdown[0]["opponent_name"] == "Gary"
-    assert champion_breakdown[0]["stage"] == "Champion"
-    assert champion_breakdown[0]["matchup_score"] > 0
-    assert champion_breakdown[0]["explanation"]
+    assert champion["win_type"] == "loss"
+    assert champion["outcome"] == "Lost"
+    assert data["result"] == "Lose - Pokemon Expert"
 
 
-def test_strong_balanced_team_receives_high_score() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": STRONG_BALANCED_TEAM},
-    )
+def test_champion_win_is_possible_but_difficult() -> None:
+    data = team_scoring.score_team(ELITE_TEAM, random_number_generator=lambda: 0.0)
+    champion = data["opponent_breakdown"]["champion"][0]
 
-    assert response.status_code == 200
-    data = response.json()
-    assert data["total_score"] >= 95
-    assert data["result"] == "Win - Undefeated Champion"
+    assert champion["outcome"] == "Beat"
+    assert 0 < champion["win_chance"] < 0.95
+    assert champion["was_chance_battle"] is True
+    assert data["result"] == "Win - Pokemon Champion"
 
 
-def test_weak_unbalanced_team_receives_low_score() -> None:
-    response = client.post(
-        "/teams/score",
-        json={"pokemon_names": WEAK_UNBALANCED_TEAM},
-    )
+def test_weak_teams_fail_early() -> None:
+    data = team_scoring.score_team(WEAK_TEAM, random_number_generator=lambda: 0.99)
+    gym_breakdown = data["opponent_breakdown"]["gym_leaders"]
 
-    assert response.status_code == 200
-    data = response.json()
-    assert data["total_score"] < 75
-    assert len(data["badges_earned"]) < 8
+    assert data["badges_earned"] == []
+    assert gym_breakdown[0]["outcome"] == "Lost"
+    assert all(opponent["win_type"] == "locked" for opponent in gym_breakdown[1:])
     assert data["elite_four_unlocked"] is False
-    assert data["result"] == "Lose - Did not beat all Gym Leaders"
+    assert data["result"] == "Lose - Beginner"
+
+
+def test_fatigue_reduces_late_stage_success() -> None:
+    team = team_scoring._validate_team(STRONG_BALANCED_TEAM)
+    early_opponent = {
+        "name": "Brock",
+        "stage": "Gym Leader 1",
+        "specialty_types": ["Normal"],
+        "recommended_counter_types": ["Water", "Grass"],
+    }
+    late_opponent = {
+        "name": "Test Champion",
+        "stage": "Champion",
+        "specialty_types": ["Normal"],
+        "recommended_counter_types": ["Water", "Grass"],
+    }
+
+    early = team_scoring._calculate_battle_scoring(team, early_opponent)
+    late = team_scoring._calculate_battle_scoring(team, late_opponent)
+
+    assert early["raw_battle_score"] == late["raw_battle_score"]
+    assert late["fatigue_penalty"] > early["fatigue_penalty"]
+    assert late["adjusted_battle_score"] < early["adjusted_battle_score"]
+
+
+def test_shared_weakness_teams_are_punished() -> None:
+    shared_team = team_scoring._validate_team(SHARED_WEAKNESS_TEAM)
+    balanced_team = team_scoring._validate_team(STRONG_BALANCED_TEAM)
+    brock = {
+        "name": "Brock",
+        "stage": "Gym Leader 1",
+        "specialty_types": ["Rock"],
+        "recommended_counter_types": ["Water", "Grass", "Fighting", "Ground"],
+    }
+
+    assert (
+        team_scoring._score_weakness_control(shared_team, brock)
+        < team_scoring._score_weakness_control(balanced_team, brock)
+    )
+
+
+def test_random_rolls_are_deterministic_in_tests(monkeypatch) -> None:
+    monkeypatch.setattr(
+        team_scoring,
+        "_calculate_battle_scoring",
+        lambda *_: _fake_scoring(adjusted_battle_score=50, difficulty=50),
+    )
+
+    win = team_scoring._score_opponent(
+        _fake_team(),
+        _fake_opponent("Misty"),
+        random_number_generator=lambda: 0.64,
+    )
+    loss = team_scoring._score_opponent(
+        _fake_team(),
+        _fake_opponent("Misty"),
+        random_number_generator=lambda: 0.65,
+    )
+
+    assert win["win_chance"] == 0.65
+    assert win["outcome"] == "Beat"
+    assert win["roll"] == 0.64
+    assert loss["outcome"] == "Lost"
+    assert loss["roll"] == 0.65
+
+
+def test_gym_progression_stops_after_a_loss(monkeypatch) -> None:
+    scores = {
+        "Brock": 60,
+        "Misty": 20,
+        "Lt. Surge": 100,
+        "Erika": 100,
+        "Koga": 100,
+        "Sabrina": 100,
+        "Blaine": 100,
+        "Giovanni": 100,
+    }
+    difficulties = {"Brock": 40, "Misty": 45}
+
+    monkeypatch.setattr(
+        team_scoring,
+        "_calculate_battle_scoring",
+        lambda _team, opponent: _fake_scoring(
+            scores.get(opponent["name"], 100),
+            difficulties.get(opponent["name"], 50),
+        ),
+    )
+
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+    gym_breakdown = data["opponent_breakdown"]["gym_leaders"]
+
+    assert data["badges_earned"] == ["Boulder Badge"]
+    assert gym_breakdown[0]["win_type"] == "normal"
+    assert gym_breakdown[1]["win_type"] == "loss"
+    assert all(opponent["win_type"] == "locked" for opponent in gym_breakdown[2:])
+
+
+def test_elite_four_progression_stops_after_a_loss(monkeypatch) -> None:
+    def scoring(_team, opponent):
+        if opponent["stage"].startswith("Gym Leader"):
+            return _fake_scoring(100, 40)
+        if opponent["name"] == "Lorelei":
+            return _fake_scoring(90, 73)
+        if opponent["name"] == "Bruno":
+            return _fake_scoring(40, 75)
+        return _fake_scoring(100, 80)
+
+    monkeypatch.setattr(team_scoring, "_calculate_battle_scoring", scoring)
+
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+    elite_four = data["opponent_breakdown"]["elite_four"]
+
+    assert len(data["badges_earned"]) == 8
+    assert elite_four[0]["outcome"] == "Beat"
+    assert elite_four[1]["win_type"] == "loss"
+    assert all(opponent["win_type"] == "locked" for opponent in elite_four[2:])
+    assert data["opponent_breakdown"]["champion"][0]["win_type"] == "locked"
+    assert data["result"] == "Lose - Pokemon Trainer"
+
+
+def test_champion_only_unlocks_after_all_elite_four_are_beaten(monkeypatch) -> None:
+    def scoring(_team, opponent):
+        if opponent["stage"].startswith("Gym Leader"):
+            return _fake_scoring(100, 40)
+        if opponent["name"] == "Agatha":
+            return _fake_scoring(40, 78)
+        return _fake_scoring(100, 80)
+
+    monkeypatch.setattr(team_scoring, "_calculate_battle_scoring", scoring)
+
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+    champion = data["opponent_breakdown"]["champion"][0]
+
+    assert data["elite_four_unlocked"] is True
+    assert data["opponent_breakdown"]["elite_four"][2]["win_type"] == "loss"
+    assert champion["win_type"] == "locked"
+    assert champion["outcome"] == "Lost"
+
+
+def test_pokemon_master_label_requires_no_chance_battles(monkeypatch) -> None:
+    monkeypatch.setattr(
+        team_scoring,
+        "_calculate_battle_scoring",
+        lambda *_: _fake_scoring(adjusted_battle_score=100, difficulty=40),
+    )
+
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.94,
+    )
+
+    assert data["opponent_breakdown"]["champion"][0]["outcome"] == "Beat"
+    assert all(
+        opponent["was_chance_battle"] is False
+        for group in data["opponent_breakdown"].values()
+        for opponent in group
+    )
+    assert data["result"] == "Win - Pokemon Master"
+
+
+def test_pokemon_champion_label_allows_close_battles(monkeypatch) -> None:
+    def scoring(_team, opponent):
+        if opponent["name"] == "Gary":
+            return _fake_scoring(adjusted_battle_score=88, difficulty=88)
+        return _fake_scoring(adjusted_battle_score=100, difficulty=40)
+
+    monkeypatch.setattr(team_scoring, "_calculate_battle_scoring", scoring)
+
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+
+    assert data["opponent_breakdown"]["champion"][0]["win_chance"] == 0.65
+    assert data["opponent_breakdown"]["champion"][0]["outcome"] == "Beat"
+    assert data["result"] == "Win - Pokemon Champion"
 
 
 def test_duplicate_pokemon_rejected() -> None:
@@ -249,13 +404,7 @@ def test_duplicate_pokemon_rejected() -> None:
 def test_less_than_six_pokemon_rejected() -> None:
     response = client.post(
         "/teams/score",
-        json={
-            "pokemon_names": [
-                "Charizard",
-                "Lapras",
-                "Jolteon",
-            ]
-        },
+        json={"pokemon_names": ["Charizard", "Lapras", "Jolteon"]},
     )
 
     assert response.status_code == 400
@@ -281,348 +430,41 @@ def test_unknown_pokemon_rejected() -> None:
     assert "unknown" in response.json()["detail"].lower()
 
 
-def test_gym_leader_normal_win_still_works(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 48)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(430),
-        _fake_opponent("Brock", badge_name="Boulder Badge"),
-        team_scoring.GYM_WIN_THRESHOLD,
-        allow_lucky_win=True,
-        random_number_generator=lambda: 0.99,
-    )
-
-    assert breakdown["outcome"] == "Beat"
-    assert breakdown["win_type"] == "normal"
-    assert breakdown["lucky_win"] is False
-    assert breakdown["badge_earned"] is True
-
-
-def test_gym_leader_normal_loss_still_works(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 41)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Misty", badge_name="Cascade Badge"),
-        team_scoring.GYM_WIN_THRESHOLD,
-        allow_lucky_win=True,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["win_type"] == "loss"
-    assert breakdown["lucky_win"] is False
-    assert breakdown["badge_earned"] is False
-
-
-def test_gym_leader_lucky_win_can_happen_for_close_strong_matchup(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Lt. Surge", badge_name="Thunder Badge"),
-        team_scoring.GYM_WIN_THRESHOLD,
-        allow_lucky_win=True,
-        random_number_generator=lambda: 0.1,
-    )
-
-    assert breakdown["outcome"] == "Beat"
-    assert breakdown["win_type"] == "lucky"
-    assert breakdown["lucky_win"] is True
-    assert breakdown["lucky_win_chance"] == 0.5
-    assert breakdown["random_roll"] == 0.1
-    assert breakdown["badge_earned"] is True
-    assert "scraped through" in breakdown["explanation"]
-
-
-def test_gym_leaders_are_processed_sequentially(monkeypatch) -> None:
-    matchup_scores = {
-        "Brock": 48,
-        "Misty": 41,
-        "Lt. Surge": 99,
-        "Erika": 99,
-        "Koga": 99,
-        "Sabrina": 99,
-        "Blaine": 99,
-        "Giovanni": 99,
-    }
-    monkeypatch.setattr(
-        team_scoring,
-        "_calculate_matchup_score",
-        lambda _team, opponent: matchup_scores.get(opponent["name"], 0),
-    )
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0,
-    )
-    gym_breakdown = data["opponent_breakdown"]["gym_leaders"]
-
-    assert data["badges_earned"] == ["Boulder Badge"]
-    assert gym_breakdown[0]["win_type"] == "normal"
-    assert gym_breakdown[1]["win_type"] == "loss"
-    assert [opponent["win_type"] for opponent in gym_breakdown[2:]] == [
-        "locked",
-        "locked",
-        "locked",
-        "locked",
-        "locked",
-        "locked",
-    ]
-    assert all(
-        "not reached" in opponent["explanation"]
-        for opponent in gym_breakdown[2:]
-    )
-
-
-def test_losing_to_first_gym_leader_locks_later_gym_leaders(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 41)
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0,
-    )
-    gym_breakdown = data["opponent_breakdown"]["gym_leaders"]
-
-    assert data["badges_earned"] == []
-    assert gym_breakdown[0]["opponent_name"] == "Brock"
-    assert gym_breakdown[0]["win_type"] == "loss"
-    assert all(opponent["win_type"] == "locked" for opponent in gym_breakdown[1:])
-    assert all(opponent["badge_earned"] is False for opponent in gym_breakdown)
-    assert data["elite_four_unlocked"] is False
-
-
-def test_gym_leader_lucky_win_cannot_happen_far_below_threshold(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 41)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Erika", badge_name="Rainbow Badge"),
-        team_scoring.GYM_WIN_THRESHOLD,
-        allow_lucky_win=True,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["lucky_win"] is False
-    assert breakdown["lucky_win_chance"] == 0
-    assert breakdown["random_roll"] is None
-
-
-def test_gym_leader_lucky_win_cannot_happen_with_weak_base_stats(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(419),
-        _fake_opponent("Koga", badge_name="Soul Badge"),
-        team_scoring.GYM_WIN_THRESHOLD,
-        allow_lucky_win=True,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["lucky_win"] is False
-    assert breakdown["lucky_win_chance"] == 0
-    assert breakdown["random_roll"] is None
-
-
-def test_elite_four_never_receives_lucky_win(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Lorelei", stage="Elite Four 1"),
-        team_scoring.ELITE_FOUR_WIN_THRESHOLD,
-        allow_lucky_win=False,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["win_type"] == "loss"
-    assert breakdown["lucky_win"] is False
-    assert breakdown["lucky_win_chance"] == 0
-    assert breakdown["random_roll"] is None
-
-
-def test_champion_gary_never_receives_lucky_win(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Gary", stage="Champion"),
-        team_scoring.CHAMPION_WIN_THRESHOLD,
-        allow_lucky_win=False,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["win_type"] == "loss"
-    assert breakdown["lucky_win"] is False
-
-
-def test_champion_gary_cannot_be_beaten_through_lucky_progression(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 69)
-
-    breakdown = team_scoring._score_opponent(
-        _fake_team(520),
-        _fake_opponent("Gary", stage="Champion"),
-        team_scoring.CHAMPION_WIN_THRESHOLD,
-        allow_lucky_win=False,
-        random_number_generator=lambda: 0,
-    )
-
-    assert breakdown["outcome"] == "Lost"
-    assert breakdown["win_type"] == "loss"
-    assert breakdown["lucky_win"] is False
-
-
-def test_failed_lucky_roll_counts_as_loss_and_stops_progression(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0.99,
-    )
-    gym_breakdown = data["opponent_breakdown"]["gym_leaders"]
-
-    assert data["badges_earned"] == []
-    assert data["elite_four_unlocked"] is False
-    assert gym_breakdown[0]["outcome"] == "Lost"
-    assert gym_breakdown[0]["win_type"] == "loss"
-    assert gym_breakdown[0]["lucky_win"] is False
-    assert gym_breakdown[0]["lucky_win_chance"] == 0.5
-    assert gym_breakdown[0]["random_roll"] == 0.99
-    assert all(opponent["win_type"] == "locked" for opponent in gym_breakdown[1:])
-
-
-def test_lucky_gym_badges_can_unlock_elite_four(monkeypatch) -> None:
-    monkeypatch.setattr(team_scoring, "_calculate_matchup_score", lambda *_: 44)
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0,
-    )
-
-    assert len(data["badges_earned"]) == 8
-    assert data["elite_four_unlocked"] is True
-    assert all(
-        opponent["win_type"] == "lucky"
-        for opponent in data["opponent_breakdown"]["gym_leaders"]
-    )
-    assert all(
-        opponent["lucky_win"] is False
-        for opponent in data["opponent_breakdown"]["elite_four"]
-    )
-    assert all(
-        opponent["lucky_win"] is False
-        for opponent in data["opponent_breakdown"]["champion"]
-    )
-
-
-def test_elite_four_and_champion_have_no_lucky_progression_in_full_run(
-    monkeypatch,
-) -> None:
-    matchup_scores = {
-        "Brock": 48,
-        "Misty": 48,
-        "Lt. Surge": 48,
-        "Erika": 48,
-        "Koga": 48,
-        "Sabrina": 48,
-        "Blaine": 48,
-        "Giovanni": 48,
-        "Lorelei": 61,
-        "Bruno": 61,
-        "Agatha": 61,
-        "Lance": 61,
-        "Gary": 69,
-    }
-    monkeypatch.setattr(
-        team_scoring,
-        "_calculate_matchup_score",
-        lambda _team, opponent: matchup_scores[opponent["name"]],
-    )
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0,
-    )
-
-    assert len(data["badges_earned"]) == 8
-    assert data["elite_four_unlocked"] is True
-    assert all(
-        opponent["win_type"] == "loss"
-        and opponent["lucky_win"] is False
-        and opponent["random_roll"] is None
-        for opponent in data["opponent_breakdown"]["elite_four"]
-    )
-    assert all(
-        opponent["win_type"] == "locked"
-        and opponent["lucky_win"] is False
-        and opponent["random_roll"] is None
-        for opponent in data["opponent_breakdown"]["champion"]
-    )
-
-
-def test_champion_gary_has_no_lucky_progression_after_elite_four(monkeypatch) -> None:
-    matchup_scores = {
-        "Brock": 48,
-        "Misty": 48,
-        "Lt. Surge": 48,
-        "Erika": 48,
-        "Koga": 48,
-        "Sabrina": 48,
-        "Blaine": 48,
-        "Giovanni": 48,
-        "Lorelei": 62,
-        "Bruno": 62,
-        "Agatha": 62,
-        "Lance": 62,
-        "Gary": 69,
-    }
-    monkeypatch.setattr(
-        team_scoring,
-        "_calculate_matchup_score",
-        lambda _team, opponent: matchup_scores[opponent["name"]],
-    )
-
-    data = team_scoring.score_team(
-        STRONG_BALANCED_TEAM,
-        random_number_generator=lambda: 0,
-    )
-    champion = data["opponent_breakdown"]["champion"][0]
-
-    assert data["elite_four_unlocked"] is True
-    assert champion["outcome"] == "Lost"
-    assert champion["win_type"] == "loss"
-    assert champion["lucky_win"] is False
-    assert champion["lucky_win_chance"] == 0
-    assert champion["random_roll"] is None
-
-
-def _fake_team(base_stat_total: int) -> list[dict]:
+def _fake_team() -> list[dict]:
     return [
         {
             "name": f"Pokemon {index}",
             "primary_type": "Normal",
             "secondary_type": None,
-            "base_stat_total": base_stat_total,
+            "base_stat_total": 500,
         }
         for index in range(team_scoring.TEAM_SIZE)
     ]
 
 
-def _fake_opponent(
-    name: str,
-    stage: str = "Gym Leader 1",
-    badge_name: Optional[str] = None,
-) -> dict:
-    opponent = {
+def _fake_opponent(name: str, stage: str = "Gym Leader 1") -> dict:
+    return {
         "name": name,
         "stage": stage,
         "specialty_types": ["Rock"],
         "recommended_counter_types": ["Water"],
     }
-    if badge_name:
-        opponent["badge_name"] = badge_name
-    return opponent
+
+
+def _fake_scoring(adjusted_battle_score: int, difficulty: int) -> dict:
+    return {
+        "score_categories": {
+            "team_power": 25,
+            "type_advantage": 25,
+            "weakness_control": 20,
+            "team_balance": 15,
+            "ace_factor": 15,
+        },
+        "raw_battle_score": adjusted_battle_score,
+        "adjusted_battle_score": adjusted_battle_score,
+        "difficulty": difficulty,
+        "score_difference": adjusted_battle_score - difficulty,
+        "fatigue_penalty": 0,
+        "opponent_threat_penalty": 0,
+        "champion_pressure_penalty": 0,
+    }

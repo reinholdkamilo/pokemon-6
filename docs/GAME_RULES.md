@@ -111,16 +111,38 @@ future debugging.
 
 ## Scoring Areas
 
-- Base stat strength
-- Type balance
-- Journey coverage against Gym Leaders, Elite Four, and Champion Gary
-- Weakness management
-- Low repeated type overlap
-- Matchup spread across the full journey
+The scoring system is not a full battle simulator. Each battle is scored with a
+readable team-building model, then compared against that opponent's difficulty.
+Type coverage matters, but it is capped so the correct type spread cannot
+guarantee a win by itself.
 
-The scoring system is not a full battle simulator. It uses simple, readable
-matchup scoring based on team stats, team types, recommended counter types, and
-how consistently the team matches up across the journey.
+Each battle starts with five scoring categories:
+
+- Team Power: 25 points. Based on average team base stat total, scaled for
+  Generation 1 Pokémon. Strong teams gain a meaningful advantage, but raw stats
+  alone cannot guarantee victory.
+- Type Advantage: 25 points. Rewards useful counter types against the opponent.
+  Multiple answers are better than one answer, but repeated counters have
+  diminishing returns.
+- Weakness Control: 20 points. Penalizes teams that share weaknesses to the
+  opponent's main threat types. Shared weaknesses become harsher from Sabrina
+  onward and are most dangerous against the Elite Four and Champion Gary.
+- Team Balance: 15 points. Rewards unique primary types and multiple useful
+  Pokémon. Repeated primary types and over-reliance on only one or two strong
+  Pokémon reduce this score.
+- Ace Factor: 15 points. Rewards 1-2 high-end Pokémon, including Legendary
+  Pokémon, Pokémon with base stat total 500 or higher, and partial credit for
+  Pokémon with base stat total 480 or higher.
+
+The raw battle score is:
+
+`Team Power + Type Advantage + Weakness Control + Team Balance + Ace Factor`
+
+The adjusted battle score is:
+
+`Raw Battle Score - Fatigue Penalty - Opponent Threat Penalty - Champion Gary Pressure Penalty`
+
+The adjusted battle score is then compared with the opponent's difficulty.
 
 ## Gym Leaders and Badge Rewards
 
@@ -145,28 +167,8 @@ If the team earns fewer than 8 badges, `elite_four_unlocked` is false and the
 Elite Four and Champion are not marked as beaten. All 8 Gym Badges are required
 before the Elite Four can be challenged.
 
-Gym Leaders can also be beaten by lucky progression when the matchup is close
-and the team has strong overall base stats. This means a strong team can
-sometimes actually beat a Gym Leader despite imperfect counter coverage:
-
-- Matchup score 48 or higher: normal win.
-- Matchup score 42 to 47 and average team base stat total 420 to 459: 20%
-  lucky win chance.
-- Matchup score 42 to 47 and average team base stat total 460 to 499: 35%
-  lucky win chance.
-- Matchup score 42 to 47 and average team base stat total 500 or higher: 50%
-  lucky win chance.
-- If the lucky roll succeeds: lucky win, `lucky_win` is true, and the badge is
-  earned.
-- If the lucky roll fails: loss, `lucky_win` is false, no badge is earned, and
-  later Gym Leaders are not reached.
-- Matchup score below 42 or average base stat total below 420: no lucky win
-  chance.
-
-Lucky Gym Leader wins earn badges and can unlock the Elite Four if all 8 badges
-are earned. Opponent breakdowns include `win_type`, `lucky_win`,
-`lucky_win_chance`, and `random_roll` so lucky wins are visible in the API data.
-Lucky progression never grants automatic advancement after a loss.
+Gym Leaders use controlled chance like every other reached battle. A dominant
+score is very reliable but still not completely guaranteed.
 
 ## Elite Four
 
@@ -181,8 +183,9 @@ challenge the Elite Four:
 The team must beat all four Elite Four members before Champion Gary can be
 marked as beaten.
 
-Elite Four results are deterministic. Lucky progression never applies to Elite
-Four members, and they cannot be beaten by randomness.
+Elite Four battles are evaluated sequentially. Losing to Lorelei, Bruno,
+Agatha, or Lance stops Elite Four progression and locks later Elite Four members
+and Champion Gary.
 
 ## Champion
 
@@ -191,18 +194,96 @@ scoring rewards teams with strong stats, broad type coverage, and balanced type
 selection. The Champion screen is only shown after all Elite Four members are
 beaten and the player chooses to challenge Gary.
 
-Champion Gary's result is deterministic. Lucky progression never applies to the
-Champion, and Gary cannot be beaten by randomness.
+Champion Gary tests the whole team rather than only type counters. Gary applies
+extra pressure penalties:
+
+- No ace Pokémon: -8
+- Average team base stat total below 420: -8
+- Less than 4 unique primary types: -6
+- 3 or more Pokémon weak to one of Gary's main threat types: -10
+
+These pressure penalties only apply to Champion Gary.
+
+## Difficulties and Fatigue
+
+Opponent difficulties:
+
+- Brock: 40
+- Misty: 45
+- Lt. Surge: 50
+- Erika: 55
+- Koga: 60
+- Sabrina: 64
+- Blaine: 67
+- Giovanni: 70
+- Lorelei: 73
+- Bruno: 75
+- Agatha: 78
+- Lance: 82
+- Gary: 88
+
+Journey fatigue penalties:
+
+- Gym Leader 1: 0
+- Gym Leader 2: -1
+- Gym Leader 3: -2
+- Gym Leader 4: -3
+- Gym Leader 5: -4
+- Gym Leader 6: -5
+- Gym Leader 7: -6
+- Gym Leader 8: -7
+- Elite Four 1: -9
+- Elite Four 2: -11
+- Elite Four 3: -13
+- Elite Four 4: -15
+- Champion Gary: -18
+
+## Controlled Chance
+
+After penalties, the score difference is:
+
+`Adjusted Battle Score - Opponent Difficulty`
+
+The score difference controls win chance:
+
+- +12 or more: 95%
+- +6 to +11: 80%
+- 0 to +5: 65%
+- -1 to -5: 40%
+- -6 to -10: 20%
+- -11 to -15: 8%
+- Below -15: 0%
+
+The backend accepts an injectable random number generator for tests, so battle
+rolls can be forced and backend tests stay deterministic.
 
 ## Result Scoring
 
-The total score stays out of 100.
+The total score stays out of 100 and is the average adjusted matchup score for
+the journey data returned by the backend.
 
-- 95 to 100 and Champion beaten: `Win - Undefeated Champion`
-- 85 to 94 and Elite Four beaten but Champion not beaten: `Lose - Beat Gym Leaders and Elite Four, but lost to Champion Gary`
-- 75 to 84 and all 8 badges earned but Elite Four not beaten: `Lose - Beat Gym Leaders, but lost during the Elite Four`
-- Below 75 or fewer than 8 badges earned: `Lose - Did not beat all Gym Leaders`
+- Beat Gary with no chance battles: `Win - Pokemon Master`
+- Beat Gary with at least one chance battle: `Win - Pokemon Champion`
+- Beat the Elite Four but lose to Gary: `Lose - Pokemon Expert`
+- Beat all Gym Leaders but lose in the Elite Four: `Lose - Pokemon Trainer`
+- Lose before beating all Gym Leaders: `Lose - Beginner`
 
-The score response includes the selected Pokémon, score breakdown, gym score,
-Elite Four score, Champion score, badges earned, badge requirement, Elite Four
-unlock state, path result, opponent breakdown, explanation, and warnings.
+A chance battle is any won battle with less than a 95% win chance.
+
+The intended gameplay feel is:
+
+- Poor teams usually lose early.
+- Average teams can beat some Gym Leaders but should not expect to clear Kanto.
+- Good teams can reach the Elite Four.
+- Very good teams can reach Champion Gary.
+- Elite teams can beat Gary, but Gary is not guaranteed even with excellent type
+  coverage.
+- Going undefeated and becoming Pokemon Master should be rare.
+
+The score response includes the selected Pokémon, legacy score breakdown, new
+`battle_score_breakdown`, gym score, Elite Four score, Champion score, badges
+earned, badge requirement, Elite Four unlock state, path result, opponent
+breakdown, explanation, and warnings. Opponent breakdowns also include battle
+diagnostics such as raw battle score, adjusted battle score, difficulty, score
+difference, win chance, fatigue penalty, opponent threat penalty, Champion
+pressure penalty, chance-battle flag, and roll.
