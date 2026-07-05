@@ -121,6 +121,7 @@ def test_scoring_includes_battle_diagnostics(monkeypatch) -> None:
     assert "was_chance_battle" in brock
     assert "roll" in brock
     assert "random_roll" in brock
+    assert "score_categories" in brock
     assert brock["explanation"]
 
 
@@ -155,7 +156,32 @@ def test_type_coverage_alone_does_not_guarantee_champion_win() -> None:
     assert champion["opponent_name"] == "Gary"
     assert champion["outcome"] == "Lost"
     assert champion["win_chance"] == 0
+    assert champion["score_categories"]["type_advantage"] == 25
     assert data["result"] == "Lose - Pokemon Expert"
+
+
+def test_strong_balanced_team_can_beat_all_gyms() -> None:
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+
+    assert len(data["badges_earned"]) == 8
+    assert all(
+        opponent["outcome"] == "Beat"
+        for opponent in data["opponent_breakdown"]["gym_leaders"]
+    )
+    assert data["elite_four_unlocked"] is True
+
+
+def test_strong_balanced_team_can_reach_elite_four() -> None:
+    data = team_scoring.score_team(
+        STRONG_BALANCED_TEAM,
+        random_number_generator=lambda: 0.0,
+    )
+
+    assert data["elite_four_unlocked"] is True
+    assert data["opponent_breakdown"]["elite_four"][0]["win_type"] != "locked"
 
 
 def test_strong_balanced_team_can_reach_champion_but_not_auto_beat_gary() -> None:
@@ -176,7 +202,20 @@ def test_strong_balanced_team_can_reach_champion_but_not_auto_beat_gary() -> Non
     assert data["result"] == "Lose - Pokemon Expert"
 
 
-def test_champion_win_is_possible_but_difficult() -> None:
+def test_very_strong_balanced_team_can_reach_champion_gary() -> None:
+    data = team_scoring.score_team(ELITE_TEAM, random_number_generator=lambda: 0.0)
+    champion = data["opponent_breakdown"]["champion"][0]
+
+    assert len(data["badges_earned"]) == 8
+    assert all(
+        opponent["outcome"] == "Beat"
+        for opponent in data["opponent_breakdown"]["elite_four"]
+    )
+    assert champion["opponent_name"] == "Gary"
+    assert champion["win_type"] != "locked"
+
+
+def test_champion_gary_win_is_possible_with_elite_team_and_favorable_roll() -> None:
     data = team_scoring.score_team(ELITE_TEAM, random_number_generator=lambda: 0.0)
     champion = data["opponent_breakdown"]["champion"][0]
 
@@ -184,6 +223,26 @@ def test_champion_win_is_possible_but_difficult() -> None:
     assert 0 < champion["win_chance"] < 0.95
     assert champion["was_chance_battle"] is True
     assert data["result"] == "Win - Pokemon Champion"
+
+
+def test_champion_gary_is_not_guaranteed_even_with_strong_team() -> None:
+    rolls = iter([0.0] * 12 + [0.99])
+
+    data = team_scoring.score_team(
+        ELITE_TEAM,
+        random_number_generator=lambda: next(rolls),
+    )
+    champion = data["opponent_breakdown"]["champion"][0]
+
+    assert all(
+        opponent["outcome"] == "Beat"
+        for opponent in data["opponent_breakdown"]["elite_four"]
+    )
+    assert champion["win_type"] == "loss"
+    assert champion["outcome"] == "Lost"
+    assert 0 < champion["win_chance"] < 0.95
+    assert champion["roll"] == 0.99
+    assert data["result"] == "Lose - Pokemon Expert"
 
 
 def test_weak_teams_fail_early() -> None:
@@ -218,6 +277,19 @@ def test_fatigue_reduces_late_stage_success() -> None:
     assert early["raw_battle_score"] == late["raw_battle_score"]
     assert late["fatigue_penalty"] > early["fatigue_penalty"]
     assert late["adjusted_battle_score"] < early["adjusted_battle_score"]
+
+
+def test_champion_fatigue_does_not_make_gary_mathematically_impossible() -> None:
+    perfect_raw_score = 100
+    score_difference = (
+        perfect_raw_score
+        - team_scoring.FATIGUE_PENALTIES["Champion"]
+        - team_scoring.OPPONENT_DIFFICULTIES["Gary"]
+    )
+
+    assert team_scoring.FATIGUE_PENALTIES["Champion"] == 18
+    assert score_difference == -4
+    assert team_scoring._get_win_chance(score_difference) == 0.35
 
 
 def test_shared_weakness_teams_are_punished() -> None:
@@ -259,6 +331,72 @@ def test_random_rolls_are_deterministic_in_tests(monkeypatch) -> None:
     assert win["roll"] == 0.64
     assert loss["outcome"] == "Lost"
     assert loss["roll"] == 0.65
+
+
+def test_requested_difficulty_fatigue_and_chance_tables_are_used() -> None:
+    assert team_scoring.OPPONENT_DIFFICULTIES == {
+        "Brock": 46,
+        "Misty": 52,
+        "Lt. Surge": 56,
+        "Erika": 58,
+        "Koga": 61,
+        "Sabrina": 64,
+        "Blaine": 66,
+        "Giovanni": 68,
+        "Lorelei": 70,
+        "Bruno": 68,
+        "Agatha": 73,
+        "Lance": 77,
+        "Gary": 86,
+    }
+    assert team_scoring.FATIGUE_PENALTIES == {
+        "Gym Leader 1": 0,
+        "Gym Leader 2": 1,
+        "Gym Leader 3": 2,
+        "Gym Leader 4": 3,
+        "Gym Leader 5": 4,
+        "Gym Leader 6": 5,
+        "Gym Leader 7": 6,
+        "Gym Leader 8": 7,
+        "Elite Four 1": 10,
+        "Elite Four 2": 13,
+        "Elite Four 3": 16,
+        "Elite Four 4": 19,
+        "Champion": 18,
+    }
+    assert team_scoring._get_win_chance(10) == 0.95
+    assert team_scoring._get_win_chance(5) == 0.80
+    assert team_scoring._get_win_chance(0) == 0.65
+    assert team_scoring._get_win_chance(-1) == 0.35
+    assert team_scoring._get_win_chance(-6) == 0.15
+    assert team_scoring._get_win_chance(-11) == 0.08
+    assert team_scoring._get_win_chance(-16) == 0
+
+
+def test_champion_gary_pressure_penalties_are_softened_and_champion_only() -> None:
+    weak_team = team_scoring._validate_team(WEAK_TEAM)
+    gary = {
+        "name": "Gary",
+        "stage": "Champion",
+        "specialty_types": ["Mixed"],
+        "recommended_counter_types": [
+            "Electric",
+            "Water",
+            "Ice",
+            "Psychic",
+            "Ground",
+            "Rock",
+        ],
+    }
+    lance = {
+        "name": "Lance",
+        "stage": "Elite Four 4",
+        "specialty_types": ["Dragon", "Flying"],
+        "recommended_counter_types": ["Ice", "Electric", "Rock", "Dragon"],
+    }
+
+    assert team_scoring._score_champion_pressure_penalty(weak_team, gary) == 20
+    assert team_scoring._score_champion_pressure_penalty(weak_team, lance) == 0
 
 
 def test_gym_progression_stops_after_a_loss(monkeypatch) -> None:

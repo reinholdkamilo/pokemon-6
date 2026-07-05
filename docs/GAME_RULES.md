@@ -197,10 +197,10 @@ beaten and the player chooses to challenge Gary.
 Champion Gary tests the whole team rather than only type counters. Gary applies
 extra pressure penalties:
 
-- No ace Pokémon: -8
-- Average team base stat total below 420: -8
-- Less than 4 unique primary types: -6
-- 3 or more Pokémon weak to one of Gary's main threat types: -10
+- No ace Pokémon: -6
+- Average team base stat total below 420: -6
+- Less than 4 unique primary types: -4
+- 3 or more Pokémon weak to one of Gary's main threat types: -8
 
 These pressure penalties only apply to Champion Gary.
 
@@ -208,19 +208,19 @@ These pressure penalties only apply to Champion Gary.
 
 Opponent difficulties:
 
-- Brock: 40
-- Misty: 45
-- Lt. Surge: 50
-- Erika: 55
-- Koga: 60
+- Brock: 46
+- Misty: 52
+- Lt. Surge: 56
+- Erika: 58
+- Koga: 61
 - Sabrina: 64
-- Blaine: 67
-- Giovanni: 70
-- Lorelei: 73
-- Bruno: 75
-- Agatha: 78
-- Lance: 82
-- Gary: 88
+- Blaine: 66
+- Giovanni: 68
+- Lorelei: 70
+- Bruno: 68
+- Agatha: 73
+- Lance: 77
+- Gary: 86
 
 Journey fatigue penalties:
 
@@ -232,10 +232,10 @@ Journey fatigue penalties:
 - Gym Leader 6: -5
 - Gym Leader 7: -6
 - Gym Leader 8: -7
-- Elite Four 1: -9
-- Elite Four 2: -11
-- Elite Four 3: -13
-- Elite Four 4: -15
+- Elite Four 1: -10
+- Elite Four 2: -13
+- Elite Four 3: -16
+- Elite Four 4: -19
 - Champion Gary: -18
 
 ## Controlled Chance
@@ -246,11 +246,11 @@ After penalties, the score difference is:
 
 The score difference controls win chance:
 
-- +12 or more: 95%
-- +6 to +11: 80%
-- 0 to +5: 65%
-- -1 to -5: 40%
-- -6 to -10: 20%
+- +10 or more: 95%
+- +5 to +9: 80%
+- 0 to +4: 65%
+- -1 to -5: 35%
+- -6 to -10: 15%
 - -11 to -15: 8%
 - Below -15: 0%
 
@@ -262,22 +262,24 @@ rolls can be forced and backend tests stay deterministic.
 The total score stays out of 100 and is the average adjusted matchup score for
 the journey data returned by the backend.
 
-- Beat Gary with no chance battles: `Win - Pokemon Master`
-- Beat Gary with at least one chance battle: `Win - Pokemon Champion`
+- Beat Gary with no close/chance battles: `Win - Pokemon Master`
+- Beat Gary with at least one close/chance battle: `Win - Pokemon Champion`
 - Beat the Elite Four but lose to Gary: `Lose - Pokemon Expert`
 - Beat all Gym Leaders but lose in the Elite Four: `Lose - Pokemon Trainer`
 - Lose before beating all Gym Leaders: `Lose - Beginner`
 
-A chance battle is any won battle with less than a 95% win chance.
+A close/chance battle is any reached battle with less than a 95% win chance.
+Those battles use the controlled random roll, which is injectable in backend
+tests so outcomes remain deterministic.
 
 The intended gameplay feel is:
 
 - Poor teams usually lose early.
 - Average teams can beat some Gym Leaders but should not expect to clear Kanto.
-- Good teams can reach the Elite Four.
-- Very good teams can reach Champion Gary.
-- Elite teams can beat Gary, but Gary is not guaranteed even with excellent type
-  coverage.
+- Good teams can beat all Gym Leaders.
+- Very good teams can reach the Elite Four.
+- Elite teams can reach Champion Gary and can beat him with a favorable roll,
+  but Gary is not guaranteed even with excellent type coverage.
 - Going undefeated and becoming Pokemon Master should be rare.
 
 The score response includes the selected Pokémon, legacy score breakdown, new

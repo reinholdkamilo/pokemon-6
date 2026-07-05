@@ -24,19 +24,19 @@ PARTIAL_ACE_BST = 480
 USEFUL_TEAM_MEMBER_BST = 420
 
 OPPONENT_DIFFICULTIES = {
-    "Brock": 40,
-    "Misty": 45,
-    "Lt. Surge": 50,
-    "Erika": 55,
-    "Koga": 60,
+    "Brock": 46,
+    "Misty": 52,
+    "Lt. Surge": 56,
+    "Erika": 58,
+    "Koga": 61,
     "Sabrina": 64,
-    "Blaine": 67,
-    "Giovanni": 70,
-    "Lorelei": 73,
-    "Bruno": 75,
-    "Agatha": 78,
-    "Lance": 82,
-    "Gary": 88,
+    "Blaine": 66,
+    "Giovanni": 68,
+    "Lorelei": 70,
+    "Bruno": 68,
+    "Agatha": 73,
+    "Lance": 77,
+    "Gary": 86,
 }
 
 FATIGUE_PENALTIES = {
@@ -48,10 +48,10 @@ FATIGUE_PENALTIES = {
     "Gym Leader 6": 5,
     "Gym Leader 7": 6,
     "Gym Leader 8": 7,
-    "Elite Four 1": 9,
-    "Elite Four 2": 11,
-    "Elite Four 3": 13,
-    "Elite Four 4": 15,
+    "Elite Four 1": 10,
+    "Elite Four 2": 13,
+    "Elite Four 3": 16,
+    "Elite Four 4": 19,
     "Champion": 18,
 }
 
@@ -132,7 +132,7 @@ def score_team(
         matchup["outcome"] == "Beat" for matchup in champion_breakdown
     )
     had_chance_battle = any(
-        matchup["outcome"] == "Beat" and matchup["was_chance_battle"]
+        matchup["was_chance_battle"]
         for matchup in gym_breakdown + elite_four_breakdown + champion_breakdown
     )
 
@@ -455,9 +455,9 @@ def _score_opponent_threat_penalty(selected_pokemon: list[dict], opponent: dict)
         return 0
     stage = opponent["stage"]
     if stage == "Champion":
-        return 7
-    if stage.startswith("Elite Four"):
         return 5
+    if stage.startswith("Elite Four"):
+        return 4
     if stage in {"Gym Leader 6", "Gym Leader 7", "Gym Leader 8"}:
         return 3
     return 1
@@ -469,27 +469,27 @@ def _score_champion_pressure_penalty(selected_pokemon: list[dict], opponent: dic
 
     penalty = 0
     if not any(_is_full_ace(pokemon) for pokemon in selected_pokemon):
-        penalty += 8
-    if _average_base_stat_total(selected_pokemon) < 420:
-        penalty += 8
-    if len({pokemon["primary_type"] for pokemon in selected_pokemon}) < 4:
         penalty += 6
+    if _average_base_stat_total(selected_pokemon) < 420:
+        penalty += 6
+    if len({pokemon["primary_type"] for pokemon in selected_pokemon}) < 4:
+        penalty += 4
     if _highest_shared_weakness_count(selected_pokemon, CHAMPION_THREAT_TYPES) >= 3:
-        penalty += 10
+        penalty += 8
     return penalty
 
 
 def _get_win_chance(score_difference: int) -> float:
-    if score_difference >= 12:
+    if score_difference >= 10:
         return 0.95
-    if score_difference >= 6:
+    if score_difference >= 5:
         return 0.80
     if score_difference >= 0:
         return 0.65
     if score_difference >= -5:
-        return 0.40
+        return 0.35
     if score_difference >= -10:
-        return 0.20
+        return 0.15
     if score_difference >= -15:
         return 0.08
     return 0
