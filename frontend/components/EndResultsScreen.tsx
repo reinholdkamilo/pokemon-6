@@ -49,6 +49,10 @@ export function EndResultsScreen({
           <p>{playerName}</p>
         </div>
 
+        <button className="primary-action stage-action" type="button" onClick={onTryAgain}>
+          TRY AGAIN
+        </button>
+
         <section className="results-team-section" aria-label="Player Trainer Card">
           <h2>Trainer Card</h2>
           <BattleTrainerCard
@@ -110,10 +114,6 @@ export function EndResultsScreen({
             )}
           />
         </ResultSection>
-
-        <button className="primary-action stage-action" type="button" onClick={onTryAgain}>
-          TRY AGAIN
-        </button>
       </section>
     </main>
   );

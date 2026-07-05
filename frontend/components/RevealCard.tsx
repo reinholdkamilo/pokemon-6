@@ -52,8 +52,6 @@ export function RevealCard({
           : `Reveal team card ${index + 1}`
       }
     >
-      <span className="card-slot-label">CARD {index + 1}</span>
-
       <span className="card-portrait">
         {shouldShowPokemonImage ? (
           <LocalSprite
@@ -74,9 +72,6 @@ export function RevealCard({
       <span className="card-name">{displayPokemon?.name ?? "Mystery Pokemon"}</span>
       <span className="card-type">
         {displayPokemon ? formatTypes(displayPokemon) : "Unknown Type"}
-      </span>
-      <span className="card-stat">
-        {displayPokemon ? `BST ${displayPokemon.base_stat_total}` : "Base stats hidden"}
       </span>
 
       {/* TODO: Add shiny draw state and rate tuning in a later task. */}
