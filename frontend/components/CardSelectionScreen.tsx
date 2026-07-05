@@ -19,7 +19,6 @@ const TEAM_SIZE = 6;
 const REVEAL_TICK_MS = 85;
 const REVEAL_DURATION_MS = 1400;
 const POWER_SPIN_HOLD_MS = 1300;
-const STRONG_BASE_STAT_TOTAL = 480;
 const LEGENDARY_NAMES = new Set(["Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew"]);
 
 export function CardSelectionScreen({
@@ -110,12 +109,13 @@ export function CardSelectionScreen({
       : availablePokemon;
     const normalSpinPool =
       preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
-    const strongPokemon = preferredPokemon.filter(isStrongPokemon);
+    const legendaryPokemon = preferredPokemon.filter(isLegendaryPokemon);
+    const hasLegendaryPowerSpinPool = isPowerSpin && legendaryPokemon.length > 0;
     const finalPokemon = pickRandomPokemon(
-      isPowerSpin && strongPokemon.length > 0 ? strongPokemon : normalSpinPool,
+      hasLegendaryPowerSpinPool ? legendaryPokemon : normalSpinPool,
     );
     const previewPokemon =
-      isPowerSpin && strongPokemon.length > 0 ? strongPokemon : availablePokemon;
+      hasLegendaryPowerSpinPool ? legendaryPokemon : availablePokemon;
     setLoadError("");
     setRevealingSlot(slotIndex);
 
@@ -214,7 +214,7 @@ export function CardSelectionScreen({
           Tap each card to draw a unique Generation 1 Pokemon for the Champion run.
         </p>
         <p className="selection-hint">
-          Tap a revealed card to re-spin it. Hold a card for Power Spin.
+          Tap a revealed card to re-spin it. Hold a card for Legendary Spin.
         </p>
       </div>
 
@@ -275,10 +275,6 @@ function pickRandomPokemon(pokemon: Pokemon[]) {
   return pokemon[Math.floor(Math.random() * pokemon.length)];
 }
 
-function isStrongPokemon(pokemon: Pokemon) {
-  return (
-    Boolean(pokemon.isLegendary) ||
-    LEGENDARY_NAMES.has(pokemon.name) ||
-    pokemon.base_stat_total >= STRONG_BASE_STAT_TOTAL
-  );
+function isLegendaryPokemon(pokemon: Pokemon) {
+  return LEGENDARY_NAMES.has(pokemon.name);
 }

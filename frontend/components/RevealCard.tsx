@@ -74,8 +74,8 @@ export function RevealCard({
       }}
       aria-label={
         displayPokemon
-          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin. Hold for Power Spin.`
-          : `Reveal team card ${index + 1}. Hold for Power Spin.`
+          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin. Hold for Legendary Spin.`
+          : `Reveal team card ${index + 1}. Hold for Legendary Spin.`
       }
     >
       <span className="card-portrait">
