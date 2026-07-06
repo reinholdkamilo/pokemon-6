@@ -9,22 +9,41 @@ export const BADGE_IMAGE_PATHS: Record<string, string> = {
   "Earth Badge": "/images/badges/earth.svg",
 };
 
+export type PlayerTrainerGender = "male" | "female" | "player-male" | "player-female";
+
+const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female", string> = {
+  male: "/images/trainers/player/male.png",
+  female: "/images/trainers/player/female.png",
+};
+
+const GYM_LEADER_IMAGE_PATHS: Record<string, string> = {
+  Brock: "/images/trainers/gym-leaders/brock.png",
+  Misty: "/images/trainers/gym-leaders/misty.png",
+  "Lt. Surge": "/images/trainers/gym-leaders/lt-surge.png",
+  Erika: "/images/trainers/gym-leaders/erika.png",
+  Koga: "/images/trainers/gym-leaders/koga.png",
+  Sabrina: "/images/trainers/gym-leaders/sabrina.png",
+  Blaine: "/images/trainers/gym-leaders/blaine.png",
+  Giovanni: "/images/trainers/gym-leaders/giovanni.png",
+};
+
+const ELITE_FOUR_IMAGE_PATHS: Record<string, string> = {
+  Lorelei: "/images/trainers/elite-four/lorelei.png",
+  Bruno: "/images/trainers/elite-four/bruno.png",
+  Agatha: "/images/trainers/elite-four/agatha.png",
+  Lance: "/images/trainers/elite-four/lance.png",
+};
+
+const CHAMPION_IMAGE_PATHS: Record<string, string> = {
+  Gary: "/images/trainers/champion/gary.png",
+};
+
 export const TRAINER_IMAGE_PATHS: Record<string, string> = {
-  Brock: "/images/trainers/brock.svg",
-  Misty: "/images/trainers/misty.svg",
-  "Lt. Surge": "/images/trainers/lt-surge.svg",
-  Erika: "/images/trainers/erika.svg",
-  Koga: "/images/trainers/koga.svg",
-  Sabrina: "/images/trainers/sabrina.svg",
-  Blaine: "/images/trainers/blaine.svg",
-  Giovanni: "/images/trainers/giovanni.svg",
-  Lorelei: "/images/trainers/lorelei.svg",
-  Bruno: "/images/trainers/bruno.svg",
-  Agatha: "/images/trainers/agatha.svg",
-  Lance: "/images/trainers/lance.svg",
-  Gary: "/images/trainers/gary.svg",
-  "player-male": "/images/trainers/player-male.svg",
-  "player-female": "/images/trainers/player-female.svg",
+  ...GYM_LEADER_IMAGE_PATHS,
+  ...ELITE_FOUR_IMAGE_PATHS,
+  ...CHAMPION_IMAGE_PATHS,
+  "player-male": PLAYER_TRAINER_IMAGE_PATHS.male,
+  "player-female": PLAYER_TRAINER_IMAGE_PATHS.female,
 };
 
 const CARD_FILENAME_OVERRIDES: Record<number, string> = {
@@ -34,12 +53,69 @@ const CARD_FILENAME_OVERRIDES: Record<number, string> = {
   122: "122_mr_mime.png",
 };
 
+export function getPlayerTrainerSprite(gender: PlayerTrainerGender | null | undefined) {
+  return PLAYER_TRAINER_IMAGE_PATHS[toPlayerTrainerKey(gender)];
+}
+
+export function getGymLeaderSprite(name: string | null | undefined) {
+  return getTrainerSpriteFromMap(GYM_LEADER_IMAGE_PATHS, name);
+}
+
+export function getEliteFourSprite(name: string | null | undefined) {
+  return getTrainerSpriteFromMap(ELITE_FOUR_IMAGE_PATHS, name);
+}
+
+export function getChampionSprite(name: string | null | undefined) {
+  return getTrainerSpriteFromMap(CHAMPION_IMAGE_PATHS, name) ?? CHAMPION_IMAGE_PATHS.Gary;
+}
+
+export function getTrainerSprite(name: string | null | undefined) {
+  if (!name) {
+    return getPlayerTrainerSprite("male");
+  }
+
+  if (name === "player-male" || name === "player-female") {
+    return getPlayerTrainerSprite(name);
+  }
+
+  return (
+    getGymLeaderSprite(name) ??
+    getEliteFourSprite(name) ??
+    getTrainerSpriteFromMap(CHAMPION_IMAGE_PATHS, name) ??
+    getPlayerTrainerSprite("male")
+  );
+}
+
 export function getPokemonCardImagePath(pokemon: { id: number; name: string }) {
   const fileName =
     CARD_FILENAME_OVERRIDES[pokemon.id] ??
     `${String(pokemon.id).padStart(3, "0")}_${slugifyPokemonName(pokemon.name)}.png`;
 
   return `/images/pokemon-cards/${fileName}`;
+}
+
+function getTrainerSpriteFromMap(
+  map: Record<string, string>,
+  name: string | null | undefined,
+) {
+  if (!name) {
+    return undefined;
+  }
+
+  return map[name] ?? map[normalizeTrainerName(name)];
+}
+
+function normalizeTrainerName(name: string) {
+  return name
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/^lt surge$/i, "Lt. Surge")
+    .replace(/^lt\. surge$/i, "Lt. Surge")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function toPlayerTrainerKey(gender: PlayerTrainerGender | null | undefined) {
+  return gender === "female" || gender === "player-female" ? "female" : "male";
 }
 
 function slugifyPokemonName(name: string) {

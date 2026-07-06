@@ -5,7 +5,7 @@ import {
   BattleTrainerCard,
   createPlayerBattleTrainerCardProps,
 } from "@/components/BattleTrainerCard";
-import { TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { getChampionSprite } from "@/lib/imagePaths";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -86,7 +86,7 @@ export function ChampionScreen({
               name="Gary"
               pokemonCount={CHAMPION.pokemonCount}
               role="Champion"
-              spriteSrc={TRAINER_IMAGE_PATHS[CHAMPION.name]}
+              spriteSrc={getChampionSprite(CHAMPION.name)}
             />
           </div>
         </div>

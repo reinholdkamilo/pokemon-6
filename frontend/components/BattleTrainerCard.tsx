@@ -1,7 +1,7 @@
 "use client";
 
 import { LocalSprite } from "@/components/LocalSprite";
-import { TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { getPlayerTrainerSprite } from "@/lib/imagePaths";
 import type { Pokemon, TrainerProfile } from "@/types/pokemon";
 
 type BattleTrainerCardProps = {
@@ -96,6 +96,6 @@ export function createPlayerBattleTrainerCardProps(
     hometown: trainerProfile.hometown,
     name: playerName,
     role: "Challenger",
-    spriteSrc: TRAINER_IMAGE_PATHS[trainerProfile.sprite],
+    spriteSrc: getPlayerTrainerSprite(trainerProfile.sprite),
   };
 }

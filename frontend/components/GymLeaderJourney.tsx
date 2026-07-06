@@ -1,7 +1,7 @@
 "use client";
 
 import { LocalSprite } from "@/components/LocalSprite";
-import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getGymLeaderSprite } from "@/lib/imagePaths";
 import type { Pokemon, TeamScoreResult } from "@/types/pokemon";
 
 type GymLeaderJourneyProps = {
@@ -117,7 +117,7 @@ export function GymLeaderJourney({
                 alt={`${leader.name} sprite`}
                 className="trainer-sprite gym-trainer-sprite"
                 fallback={getInitials(leader.name)}
-                src={TRAINER_IMAGE_PATHS[leader.name]}
+                src={getGymLeaderSprite(leader.name)}
               />
               <h2>{leader.name}</h2>
               <p>{leader.type} specialist</p>

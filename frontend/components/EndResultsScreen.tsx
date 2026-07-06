@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
-import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getPlayerTrainerSprite } from "@/lib/imagePaths";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -62,7 +62,7 @@ export function EndResultsScreen({
             name={playerName}
             power={teamPower}
             rank={resultRank}
-            spriteSrc={TRAINER_IMAGE_PATHS[trainerProfile.sprite]}
+            spriteSrc={getPlayerTrainerSprite(trainerProfile.sprite)}
           />
         </section>
 

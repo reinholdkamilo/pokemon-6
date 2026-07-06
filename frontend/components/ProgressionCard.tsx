@@ -1,7 +1,7 @@
 "use client";
 
 import { LocalSprite } from "@/components/LocalSprite";
-import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getTrainerSprite } from "@/lib/imagePaths";
 import {
   formatBattleOutcome,
   type BattleStatus,
@@ -35,7 +35,7 @@ export function ProgressionCard({
         alt={`${meta.name} sprite`}
         className="trainer-sprite stage-trainer-sprite"
         fallback={meta.fallback}
-        src={TRAINER_IMAGE_PATHS[meta.name]}
+        src={getTrainerSprite(meta.name)}
       />
 
       <h2>{meta.name}</h2>

@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { LocalSprite } from "@/components/LocalSprite";
 import { saveTrainerProfile } from "@/lib/api";
-import { TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { getPlayerTrainerSprite } from "@/lib/imagePaths";
 import type { TrainerProfile } from "@/types/pokemon";
 
 type TrainerCardScreenProps = {
@@ -133,7 +133,7 @@ export function TrainerCardScreen({ onTrainerSaved }: TrainerCardScreenProps) {
               alt={selectedSprite.label}
               className="player-trainer-sprite"
               fallback={selectedSprite.sprite === "player-male" ? "M" : "F"}
-              src={TRAINER_IMAGE_PATHS[selectedSprite.sprite]}
+              src={getPlayerTrainerSprite(selectedSprite.sprite)}
             />
             <button
               className="sprite-nav-button"

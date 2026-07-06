@@ -1,5 +1,5 @@
 import { LocalSprite } from "@/components/LocalSprite";
-import { BADGE_IMAGE_PATHS, TRAINER_IMAGE_PATHS } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getTrainerSprite } from "@/lib/imagePaths";
 import type { OpponentBreakdown, TeamScoreResult } from "@/types/pokemon";
 
 type JourneyBreakdownProps = {
@@ -119,7 +119,7 @@ function OpponentCard({ locked, opponent }: OpponentCardProps) {
           alt={`${opponentName} sprite`}
           className="trainer-sprite opponent-trainer-sprite"
           fallback={meta.fallback}
-          src={TRAINER_IMAGE_PATHS[opponentName]}
+          src={getTrainerSprite(opponentName)}
         />
         <div>
           <strong>{opponentName}</strong>
