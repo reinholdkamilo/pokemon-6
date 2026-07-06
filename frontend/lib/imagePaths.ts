@@ -91,7 +91,7 @@ export function getPokemonCardImagePath(pokemon: { id: number; name: string }) {
     CARD_FILENAME_OVERRIDES[pokemon.id] ??
     `${String(pokemon.id).padStart(3, "0")}_${slugifyPokemonName(pokemon.name)}.png`;
 
-  return `/images/pokemon-cards/${fileName}`;
+  return `/images/pokemon-cards-hd/${fileName}`;
 }
 
 function getTrainerSpriteFromMap(
