@@ -2329,3 +2329,77 @@ p {
     max-width: 110px;
   }
 }
+
+
+/* Results trainer card cleanup */
+.results-logo,
+.result-logo,
+.results-trainer-logo,
+.results-pokemon-logo,
+.result-pokemon-logo,
+.trainer-card-logo,
+.results-card-logo,
+.pokemon-6-logo-panel,
+.results-logo-panel {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.results-power-pill,
+.result-power-pill,
+.results-power-box,
+.result-power-box,
+.trainer-power-pill,
+.trainer-power-box {
+  display: none !important;
+}
+
+.results-stat-card:has(.results-stat-label),
+.result-stat-card:has(.result-stat-label) {
+  min-width: 0;
+}
+
+.results-level-value,
+.result-level-value,
+.trainer-level-value,
+.results-rank-value,
+.result-rank-value {
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  hyphens: none !important;
+  white-space: normal !important;
+}
+
+
+/* Exact results trainer card logo cleanup */
+.results-trainer-card__top {
+  justify-content: flex-start !important;
+}
+
+.results-trainer-card__logo {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.results-trainer-card__stats {
+  grid-template-columns: 1fr !important;
+}
+
+.results-trainer-card__stats > div {
+  width: 100% !important;
+}
+
+.results-trainer-card__stats span,
+.results-trainer-card__stats strong {
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+}

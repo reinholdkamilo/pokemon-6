@@ -140,23 +140,14 @@ function ResultsTrainerCard({
     <article className="results-trainer-card">
       <div className="results-trainer-card__top">
         <span className="results-trainer-card__logo">POKEMON 6</span>
-        <strong>Power: {power}/100</strong>
-      </div>
+</div>
 
       <div className="results-trainer-card__stats">
         <div>
           <span>Level</span>
           <strong>{rank}</strong>
         </div>
-        <div>
-          <span>Badges</span>
-          <strong>{badgeCount}/8</strong>
-        </div>
-        <div>
-          <span>Power</span>
-          <strong>{power}/100</strong>
-        </div>
-      </div>
+</div>
 
       <section className="results-trainer-card__badges" aria-label="Earned badges">
         <strong className="results-trainer-card__badge-count">Badges: {badgeCount}/8</strong>
@@ -286,7 +277,7 @@ function getResultRank(result: TeamScoreResult) {
     result.path_result?.toLowerCase().includes("champion gary beaten");
 
   if (championBeaten) {
-    return "Pokemon Master";
+    return "Pokémon Master";
   }
 
   const eliteFourBeaten =
@@ -298,17 +289,17 @@ function getResultRank(result: TeamScoreResult) {
       .includes("elite four beaten, champion gary not beaten");
 
   if (eliteFourBeaten) {
-    return "Pokemon Champion";
+    return "Pokémon Champion";
   }
 
   const badgeCount = getEarnedBadgeNames(result).length;
 
   if (badgeCount >= GYM_LEADERS.length) {
-    return "Pokemon Expert";
+    return "Pokémon Expert";
   }
 
   if (badgeCount > 0) {
-    return "Pokemon Trainer";
+    return "Pokémon Trainer";
   }
 
   return "Beginner";
