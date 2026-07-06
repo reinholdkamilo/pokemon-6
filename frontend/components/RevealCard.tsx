@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalSprite } from "@/components/LocalSprite";
+import { getPokemonCardImagePath } from "@/lib/imagePaths";
 import type { Pokemon } from "@/types/pokemon";
 
 type RevealCardProps = {
@@ -32,7 +32,7 @@ export function RevealCard({
 }: RevealCardProps) {
   const displayPokemon = previewPokemon ?? pokemon;
   const isLocked = Boolean(pokemon);
-  const shouldShowPokemonImage = isLocked && !isRevealing && Boolean(pokemon?.image);
+  const shouldShowCardImage = Boolean(displayPokemon) && (isLocked || isRevealing);
   const typeClass = displayPokemon
     ? `type-${displayPokemon.primary_type.toLowerCase()}`
     : "type-blank";
@@ -74,17 +74,16 @@ export function RevealCard({
       }}
       aria-label={
         displayPokemon
-          ? `Card ${index + 1}: ${displayPokemon.name}. Tap to re-spin. Hold for Legendary Spin.`
-          : `Reveal team card ${index + 1}. Hold for Legendary Spin.`
+          ? `Card ${index + 1}: ${displayPokemon.name}`
+          : `Reveal team card ${index + 1}`
       }
     >
       <span className="card-portrait">
-        {shouldShowPokemonImage ? (
-          <LocalSprite
-            alt={`${pokemon?.name ?? "Pokemon"} sprite`}
-            className="pokemon-sprite"
-            fallback={pokemon?.name.slice(0, 2).toUpperCase() ?? "PK"}
-            src={pokemon?.image}
+        {shouldShowCardImage && displayPokemon ? (
+          <img
+            alt={`${displayPokemon.name} card`}
+            className="pokemon-card-png"
+            src={getPokemonCardImagePath(displayPokemon)}
           />
         ) : isRevealing ? (
           "DRAWING"

@@ -1,12 +1,16 @@
 "use client";
 
 type TitleScreenProps = {
-  onStart: () => void;
+  onSelectBattleMode: () => void;
+  onSelectAdventureMode: () => void;
 };
 
 const CARD_ROTATIONS = [-18, -10, -3, 5, 12, 20];
 
-export function TitleScreen({ onStart }: TitleScreenProps) {
+export function TitleScreen({
+  onSelectBattleMode,
+  onSelectAdventureMode,
+}: TitleScreenProps) {
   return (
     <main className="title-screen">
       <section className="title-stage" aria-label="Pokemon 6 title screen">
@@ -25,9 +29,18 @@ export function TitleScreen({ onStart }: TitleScreenProps) {
             />
           ))}
         </div>
-        <button className="catch-button" type="button" onClick={onStart}>
-          CATCH EM ALL
-        </button>
+        <div className="mode-actions" aria-label="Choose game mode">
+          <button className="catch-button" type="button" onClick={onSelectBattleMode}>
+            Battle Mode
+          </button>
+          <button
+            className="catch-button adventure-mode-button"
+            type="button"
+            onClick={onSelectAdventureMode}
+          >
+            Adventure Mode
+          </button>
+        </div>
       </section>
     </main>
   );

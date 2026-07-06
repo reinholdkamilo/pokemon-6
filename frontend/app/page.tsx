@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
 import { EliteFourScreen } from "@/components/EliteFourScreen";
@@ -12,6 +13,7 @@ import { scoreTeam } from "@/lib/api";
 import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
+type GameMode = "battle" | "adventure";
 type GameScreen =
   | "title"
   | "trainer-card"
@@ -23,6 +25,7 @@ type GameScreen =
 
 export default function Home() {
   const [screen, setScreen] = useState<GameScreen>("title");
+  const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [revealedCards, setRevealedCards] = useState<(Pokemon | null)[]>(
     createEmptyCards,
   );
@@ -93,6 +96,8 @@ export default function Home() {
     setRevealedCards(createEmptyCards());
     setTeam([]);
     setResult(null);
+    setTrainerProfile(null);
+    setGameMode(null);
     setError("");
     setScreen("title");
   }
@@ -106,12 +111,34 @@ export default function Home() {
     setScreen("select-team");
   }
 
-  function handleStartTrainerCard() {
+  function startBattleMode() {
+    setGameMode("battle");
+    setTrainerProfile(createBattleTrainerProfile());
+    teamRef.current = [];
+    setRevealedCards(createEmptyCards());
+    setTeam([]);
+    setResult(null);
+    setError("");
+    setScreen("select-team");
+  }
+
+  function startAdventureMode() {
+    setGameMode("adventure");
+    teamRef.current = [];
+    setRevealedCards(createEmptyCards());
+    setTeam([]);
+    setResult(null);
+    setError("");
     setScreen("trainer-card");
   }
 
   if (screen === "title") {
-    return <TitleScreen onStart={handleStartTrainerCard} />;
+    return (
+      <TitleScreen
+        onSelectAdventureMode={startAdventureMode}
+        onSelectBattleMode={startBattleMode}
+      />
+    );
   }
 
   if (screen === "trainer-card") {
@@ -119,6 +146,7 @@ export default function Home() {
       <TrainerCardScreen
         onTrainerSaved={(savedTrainerProfile) => {
           setTrainerProfile(savedTrainerProfile);
+          setGameMode("adventure");
           setScreen("select-team");
         }}
       />
@@ -169,15 +197,27 @@ export default function Home() {
 
   return (
     <main className="game-shell">
-      <CardSelectionScreen
-        error={error}
-        revealedCards={revealedCards}
-        isSubmitting={isSubmitting}
-        selectedPokemon={team}
-        onRevealCard={revealCard}
-        onSubmitTeam={submitTeam}
-        onResetRun={resetToTitle}
-      />
+      {gameMode === "battle" ? (
+        <BattleSelectionScreen
+          error={error}
+          revealedCards={revealedCards}
+          isSubmitting={isSubmitting}
+          selectedPokemon={team}
+          onRevealCard={revealCard}
+          onSubmitTeam={submitTeam}
+          onResetRun={resetToTitle}
+        />
+      ) : (
+        <CardSelectionScreen
+          error={error}
+          revealedCards={revealedCards}
+          isSubmitting={isSubmitting}
+          selectedPokemon={team}
+          onRevealCard={revealCard}
+          onSubmitTeam={submitTeam}
+          onResetRun={resetToTitle}
+        />
+      )}
     </main>
   );
 }
@@ -187,8 +227,12 @@ function createEmptyCards() {
 }
 
 function createFallbackTrainerProfile(): TrainerProfile {
+  return createBattleTrainerProfile();
+}
+
+function createBattleTrainerProfile(): TrainerProfile {
   return {
-    name: "Trainer",
+    name: "Battle Trainer",
     dob: "",
     email: "",
     hometown: "Pallet Town",

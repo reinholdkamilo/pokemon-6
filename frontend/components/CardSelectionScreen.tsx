@@ -44,13 +44,16 @@ export function CardSelectionScreen({
   const [isChargingLegendary, setIsChargingLegendary] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [visibleLocation, setVisibleLocation] = useState("Ready to explore Kanto");
-  const [locationPokemon, setLocationPokemon] = useState<Pokemon[]>([]);
   const [pendingEncounter, setPendingEncounter] = useState<Pokemon | null>(null);
   const [isSpecialEncounter, setIsSpecialEncounter] = useState(false);
   const [legendaryNotice, setLegendaryNotice] = useState("");
+  const [isCatching, setIsCatching] = useState(false);
+  const [catchConfirmed, setCatchConfirmed] = useState(false);
   const spinIntervalRef = useRef<number | null>(null);
   const spinTimeoutRef = useRef<number | null>(null);
   const holdTimeoutRef = useRef<number | null>(null);
+  const catchTimeoutRef = useRef<number | null>(null);
+  const catchCompleteTimeoutRef = useRef<number | null>(null);
   const holdCompletedRef = useRef(false);
 
   const teamIsComplete = selectedPokemon.length === TEAM_SIZE;
@@ -88,6 +91,7 @@ export function CardSelectionScreen({
       ignoreResult = true;
       clearSpinTimers();
       clearHoldTimer();
+      clearCatchTimers();
     };
   }, []);
 
@@ -97,9 +101,11 @@ export function CardSelectionScreen({
     }
 
     clearSpinTimers();
+    clearCatchTimers();
     setLoadError("");
-    setLocationPokemon([]);
     setPendingEncounter(null);
+    setIsCatching(false);
+    setCatchConfirmed(false);
     setIsSpecialEncounter(isLegendarySpin);
     setLegendaryNotice(isLegendarySpin ? "Legendary Encounter!" : "");
     setIsSpinning(true);
@@ -119,25 +125,27 @@ export function CardSelectionScreen({
     spinTimeoutRef.current = window.setTimeout(() => {
       clearSpinTimers();
       setIsSpinning(false);
-      setSelectedLocation(finalLocation);
-      setVisibleLocation(finalLocation);
 
-      const specialPokemon = isLegendarySpin
-        ? getLegendaryEncounterForLocation(finalLocation, selectedPokemon, pokemon)
-        : null;
-      const nextLocationPokemon = specialPokemon
-        ? [specialPokemon]
-        : getEligiblePokemonForLocation(finalLocation, selectedPokemon, pokemon);
+      const nextEncounter = chooseEncounterForLocation(
+        finalLocation,
+        isLegendarySpin,
+      );
 
-      setLocationPokemon(nextLocationPokemon);
-
-      if (isLegendarySpin && specialPokemon) {
-        setPendingEncounter(specialPokemon);
-        setIsSpecialEncounter(true);
-      } else if (nextLocationPokemon.length === 0) {
-        setLoadError("No uncaught Pokemon are available here. Spin again.");
+      if (!nextEncounter) {
+        setSelectedLocation("");
+        setVisibleLocation("Ready to explore Kanto");
+        setLoadError("No uncaught Pokemon are available. Reset the run to start again.");
         setLegendaryNotice("");
+        setIsSpecialEncounter(false);
+        return;
       }
+
+      setSelectedLocation(nextEncounter.location);
+      setVisibleLocation(nextEncounter.location);
+      setPendingEncounter(nextEncounter.pokemon);
+      setIsSpecialEncounter(
+        isLegendarySpin || isLegendaryPokemon(nextEncounter.pokemon),
+      );
     }, SPIN_DURATION_MS);
   }
 
@@ -176,13 +184,8 @@ export function CardSelectionScreen({
     setIsChargingLegendary(false);
   }
 
-  function choosePokemon(candidate: Pokemon) {
-    setPendingEncounter(candidate);
-    setIsSpecialEncounter([144, 145, 146, 150, 151].includes(candidate.id));
-  }
-
   function catchPokemon() {
-    if (!pendingEncounter || teamIsComplete) {
+    if (!pendingEncounter || teamIsComplete || isCatching) {
       return;
     }
 
@@ -192,22 +195,65 @@ export function CardSelectionScreen({
       return;
     }
 
-    onRevealCard(selectedPokemon.length, pendingEncounter);
-    setPendingEncounter(null);
-    setLocationPokemon([]);
-    setSelectedLocation("");
-    setVisibleLocation(
-      selectedPokemon.length + 1 === TEAM_SIZE
-        ? "Team complete"
-        : "Ready to explore Kanto",
-    );
-    setLegendaryNotice("");
-    setIsSpecialEncounter(false);
+    const caughtPokemon = pendingEncounter;
+    setIsCatching(true);
+    setCatchConfirmed(false);
+
+    catchTimeoutRef.current = window.setTimeout(() => {
+      setCatchConfirmed(true);
+
+      catchCompleteTimeoutRef.current = window.setTimeout(() => {
+        onRevealCard(selectedPokemon.length, caughtPokemon);
+        setPendingEncounter(null);
+        setSelectedLocation("");
+        setVisibleLocation(
+          selectedPokemon.length + 1 === TEAM_SIZE
+            ? "Team complete"
+            : "Ready to explore Kanto",
+        );
+        setLegendaryNotice("");
+        setIsSpecialEncounter(false);
+        setIsCatching(false);
+        setCatchConfirmed(false);
+      }, 650);
+    }, 950);
   }
 
-  function runAway() {
-    setPendingEncounter(null);
-    setIsSpecialEncounter(false);
+  function chooseEncounterForLocation(location: string, isLegendarySpin: boolean) {
+    const specialPokemon = isLegendarySpin
+      ? getLegendaryEncounterForLocation(location, selectedPokemon, pokemon)
+      : null;
+    const eligiblePokemon = specialPokemon
+      ? [specialPokemon]
+      : getEligiblePokemonForLocation(location, selectedPokemon, pokemon);
+
+    if (eligiblePokemon.length > 0) {
+      return {
+        location,
+        pokemon: pickRandomPokemon(eligiblePokemon),
+      };
+    }
+
+    const fallbackLocation = getAvailableLocations(selectedPokemon, pokemon).find(
+      (availableLocation) =>
+        getEligiblePokemonForLocation(availableLocation, selectedPokemon, pokemon).length >
+        0,
+    );
+
+    if (!fallbackLocation) {
+      return null;
+    }
+
+    const fallbackPokemon = getEligiblePokemonForLocation(
+      fallbackLocation,
+      selectedPokemon,
+      pokemon,
+    );
+
+    return {
+      location: fallbackLocation,
+      pokemon: pickRandomPokemon(fallbackPokemon),
+    };
   }
 
   function clearSpinTimers() {
@@ -229,10 +275,22 @@ export function CardSelectionScreen({
     }
   }
 
+  function clearCatchTimers() {
+    if (catchTimeoutRef.current !== null) {
+      window.clearTimeout(catchTimeoutRef.current);
+      catchTimeoutRef.current = null;
+    }
+
+    if (catchCompleteTimeoutRef.current !== null) {
+      window.clearTimeout(catchCompleteTimeoutRef.current);
+      catchCompleteTimeoutRef.current = null;
+    }
+  }
+
   return (
     <section className="selection-screen catch-selection" aria-label="Kanto catch selection">
       <div className="selection-header catch-header">
-        <p className="eyebrow">Build your party</p>
+        <p className="eyebrow">Adventure Mode</p>
         <h1>Catch 'em all</h1>
       </div>
 
@@ -262,26 +320,12 @@ export function CardSelectionScreen({
         >
           {isSpinning ? "Spinning..." : "Spin"}
         </button>
-        <p className="selection-hint">
-          Tap Spin to search Kanto. Hold Spin for a Legendary Location.
-        </p>
       </div>
 
       {selectedLocation && !teamIsComplete ? (
         <div className="location-results">
           <h2>{selectedLocation}</h2>
-          <div className="encounter-list" aria-label={`Pokemon available in ${selectedLocation}`}>
-            {locationPokemon.map((candidate) => (
-              <button
-                className="encounter-choice"
-                key={candidate.id}
-                type="button"
-                onClick={() => choosePokemon(candidate)}
-              >
-                {candidate.name}
-              </button>
-            ))}
-          </div>
+          <p className="encounter-message">You've encountered a Pokemon!</p>
         </div>
       ) : null}
 
@@ -341,13 +385,25 @@ export function CardSelectionScreen({
               className="encounter-card-image"
               src={getPokemonCardImagePath(pendingEncounter)}
             />
-            <h2 id="encounter-modal-title">{pendingEncounter.name}</h2>
+            <h2 id="encounter-modal-title">
+              {catchConfirmed ? "Caught!" : "You've encountered a Pokemon!"}
+            </h2>
+            <div
+              className={`poke-ball-catch${isCatching ? " catching" : ""}${
+                catchConfirmed ? " caught" : ""
+              }`}
+              aria-hidden="true"
+            >
+              <span />
+            </div>
             <div className="encounter-modal-actions">
-              <button className="primary-action" type="button" onClick={catchPokemon}>
-                Catch
-              </button>
-              <button className="secondary-action" type="button" onClick={runAway}>
-                Run away
+              <button
+                className="primary-action"
+                type="button"
+                disabled={isCatching}
+                onClick={catchPokemon}
+              >
+                {isCatching ? "CATCHING..." : "Catch"}
               </button>
             </div>
           </div>
@@ -369,4 +425,12 @@ function validateEncounterCoverage() {
       `Kanto encounter map is missing Pokemon ids: ${missingPokemonIds.join(", ")}`,
     );
   }
+}
+
+function pickRandomPokemon(pokemon: Pokemon[]) {
+  return pokemon[Math.floor(Math.random() * pokemon.length)];
+}
+
+function isLegendaryPokemon(pokemon: Pokemon) {
+  return [144, 145, 146, 150, 151].includes(pokemon.id) || Boolean(pokemon.isLegendary);
 }
