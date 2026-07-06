@@ -42,7 +42,7 @@ export function EliteFourScreen({
         <div className="stage-hero">
           <p className="eyebrow">Indigo Plateau</p>
           <h1>Elite Four</h1>
-          <p>Defeat all four members to reach Champion Gary.</p>
+          <p>Defeat all four members to reach the Champion.</p>
         </div>
 
         <button

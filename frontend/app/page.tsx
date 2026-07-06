@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { BattlePlayerCardScreen } from "@/components/BattlePlayerCardScreen";
 import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
@@ -17,7 +16,6 @@ const TEAM_SIZE = 6;
 type GameMode = "battle" | "adventure";
 type GameScreen =
   | "title"
-  | "battle-player-card"
   | "trainer-card"
   | "select-team"
   | "gym-leaders"
@@ -34,6 +32,7 @@ export default function Home() {
   const [team, setTeam] = useState<Pokemon[]>([]);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(null);
+  const [runKey, setRunKey] = useState(0);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const teamRef = useRef<Pokemon[]>(team);
@@ -99,6 +98,7 @@ export default function Home() {
     setTeam([]);
     setResult(null);
     setError("");
+    setRunKey((currentKey) => currentKey + 1);
   }
 
   function returnToMainMenu() {
@@ -110,26 +110,28 @@ export default function Home() {
 
   function resetCurrentRun() {
     clearRunState();
-    setTrainerProfile(gameMode === "battle" ? null : trainerProfile);
-    setScreen(gameMode === "battle" ? "battle-player-card" : "trainer-card");
+    if (gameMode === "battle") {
+      setTrainerProfile(createBattleTrainerProfile());
+    }
+    setScreen("select-team");
   }
 
   function tryAgain() {
     clearRunState();
     if (gameMode === "battle") {
-      setTrainerProfile(null);
-      setScreen("battle-player-card");
+      setTrainerProfile(createBattleTrainerProfile());
+      setScreen("select-team");
       return;
     }
 
-    setScreen("trainer-card");
+    setScreen("select-team");
   }
 
   function startBattleMode() {
     setGameMode("battle");
     clearRunState();
-    setTrainerProfile(null);
-    setScreen("battle-player-card");
+    setTrainerProfile(createBattleTrainerProfile());
+    setScreen("select-team");
   }
 
   function startAdventureMode() {
@@ -144,20 +146,6 @@ export default function Home() {
       <TitleScreen
         onSelectAdventureMode={startAdventureMode}
         onSelectBattleMode={startBattleMode}
-      />
-    );
-  }
-
-  if (screen === "battle-player-card") {
-    return (
-      <BattlePlayerCardScreen
-        onMainMenu={returnToMainMenu}
-        onPlayerReady={(battleTrainerProfile) => {
-          setTrainerProfile(battleTrainerProfile);
-          setGameMode("battle");
-          clearRunState();
-          setScreen("select-team");
-        }}
       />
     );
   }
@@ -230,6 +218,7 @@ export default function Home() {
     <main className="game-shell">
       {gameMode === "battle" ? (
         <BattleSelectionScreen
+          key={`battle-${runKey}`}
           error={error}
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}
@@ -241,6 +230,7 @@ export default function Home() {
         />
       ) : (
         <CardSelectionScreen
+          key={`adventure-${runKey}`}
           error={error}
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}

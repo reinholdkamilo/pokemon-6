@@ -2,9 +2,8 @@
 
 import type { ReactNode } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
-import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
-import { BADGE_IMAGE_PATHS, getPlayerTrainerSprite } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getPokemonCardImagePath } from "@/lib/imagePaths";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -44,6 +43,7 @@ export function EndResultsScreen({
   const badgesEarned = earnedBadgeNames.length;
   const teamPower = getFinalTeamPower(result);
   const resultRank = getResultRank(result);
+  const scoreBreakdownRows = getScoreBreakdownRows(result);
 
   return (
     <main className="game-shell stage-shell">
@@ -63,12 +63,17 @@ export function EndResultsScreen({
           <h2>Trainer Card</h2>
           <ResultsTrainerCard
             badges={earnedBadgeNames}
-            fallback={trainerProfile.sprite === "player-male" ? "M" : "F"}
-            hometown={trainerProfile.hometown}
-            name={playerName}
+            badgeCount={badgesEarned}
             power={teamPower}
             rank={resultRank}
-            spriteSrc={getPlayerTrainerSprite(trainerProfile.sprite)}
+          />
+        </section>
+
+        <section className="results-team-section" aria-label="Team score breakdown">
+          <h2>Team Score</h2>
+          <ScoreBreakdown
+            overallScore={teamPower}
+            rows={scoreBreakdownRows}
           />
         </section>
 
@@ -76,22 +81,12 @@ export function EndResultsScreen({
           <h2>Final Team</h2>
           <div className="results-team-grid">
             {selectedPokemon.map((pokemon) => (
-              <article
-                className={`results-pokemon-card type-${pokemon.primary_type.toLowerCase()}`}
+              <img
+                alt={`${pokemon.name} card`}
+                className="results-pokemon-card-image"
                 key={pokemon.id}
-              >
-                <LocalSprite
-                  alt={`${pokemon.name} sprite`}
-                  className="results-pokemon-sprite"
-                  fallback={pokemon.name.slice(0, 2).toUpperCase()}
-                  src={pokemon.image}
-                />
-                <div>
-                  <h3>{pokemon.name}</h3>
-                  <p>{formatTypes(pokemon)}</p>
-                  <strong>BST {pokemon.base_stat_total}</strong>
-                </div>
-              </article>
+                src={getPokemonCardImagePath(pokemon)}
+              />
             ))}
           </div>
         </section>
@@ -113,10 +108,11 @@ export function EndResultsScreen({
           />
         </ResultSection>
 
-        <ResultSection title="Champion Gary">
+        <ResultSection title="Champion">
           <ProgressionResults
             metas={[CHAMPION]}
             breakdowns={result.opponent_breakdown?.champion ?? []}
+            className="champion-final-grid"
             initialReached={ELITE_FOUR.every((member) =>
               didBeatOpponent(findBreakdown(eliteFourBreakdowns, member.name)),
             )}
@@ -129,44 +125,41 @@ export function EndResultsScreen({
 
 type ResultsTrainerCardProps = {
   badges: string[];
-  fallback: string;
-  hometown?: string;
-  name: string;
+  badgeCount: number;
   power: number;
   rank: string;
-  spriteSrc: string;
 };
 
 function ResultsTrainerCard({
   badges,
-  fallback,
-  hometown,
-  name,
+  badgeCount,
   power,
   rank,
-  spriteSrc,
 }: ResultsTrainerCardProps) {
   return (
-    <article className="battle-trainer-card results-trainer-card">
-      <div className="battle-trainer-card__top results-trainer-card__top">
+    <article className="results-trainer-card">
+      <div className="results-trainer-card__top">
         <span className="results-trainer-card__logo">POKEMON 6</span>
-        <strong>POWER {power}</strong>
+        <strong>Power: {power}/100</strong>
       </div>
 
-      <LocalSprite
-        alt={`${name} trainer sprite`}
-        className="battle-trainer-card__sprite"
-        fallback={fallback}
-        src={spriteSrc}
-      />
-
-      <div className="battle-trainer-card__identity">
-        <p className="results-trainer-card__rank">{rank}</p>
-        <h2 className="battle-trainer-card__name">{name}</h2>
-        {hometown ? <p>{hometown}</p> : null}
+      <div className="results-trainer-card__stats">
+        <div>
+          <span>Level</span>
+          <strong>{rank}</strong>
+        </div>
+        <div>
+          <span>Badges</span>
+          <strong>{badgeCount}/8</strong>
+        </div>
+        <div>
+          <span>Power</span>
+          <strong>{power}/100</strong>
+        </div>
       </div>
 
       <section className="results-trainer-card__badges" aria-label="Earned badges">
+        <strong className="results-trainer-card__badge-count">Badges: {badgeCount}/8</strong>
         {badges.length > 0 ? (
           badges.map((badge) => (
             <img
@@ -181,6 +174,35 @@ function ResultsTrainerCard({
         )}
       </section>
     </article>
+  );
+}
+
+type ScoreBreakdownProps = {
+  overallScore: number;
+  rows: ScoreBreakdownRow[];
+};
+
+type ScoreBreakdownRow = {
+  label: string;
+  value: number | null;
+};
+
+function ScoreBreakdown({ overallScore, rows }: ScoreBreakdownProps) {
+  return (
+    <div className="results-score-breakdown">
+      <div className="results-score-breakdown__overall">
+        <span>Team Score</span>
+        <strong>{overallScore}%</strong>
+      </div>
+      <div className="results-score-breakdown__rows">
+        {rows.map((row) => (
+          <div className="results-score-breakdown__row" key={row.label}>
+            <span>{row.label}</span>
+            <strong>{formatScoreValue(row.value)}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -202,6 +224,7 @@ type ProgressionResultsProps = {
   metas: Array<(typeof GYM_LEADERS)[number]>;
   breakdowns: NonNullable<TeamScoreResult["opponent_breakdown"]>["gym_leaders"];
   initialReached: boolean;
+  className?: string;
   showBadge?: boolean;
 };
 
@@ -209,12 +232,13 @@ function ProgressionResults({
   metas,
   breakdowns,
   initialReached,
+  className,
   showBadge = false,
 }: ProgressionResultsProps) {
   let reachedPrevious = initialReached;
 
   return (
-    <div className="stage-card-grid final-stage-grid">
+    <div className={["stage-card-grid", "final-stage-grid", className].filter(Boolean).join(" ")}>
       {metas.map((meta) => {
         const breakdown = findBreakdown(breakdowns, meta.name);
         const reached = reachedPrevious && Boolean(breakdown);
@@ -235,10 +259,6 @@ function ProgressionResults({
   );
 }
 
-function formatTypes(pokemon: Pokemon) {
-  return [pokemon.primary_type, pokemon.secondary_type].filter(Boolean).join(" / ");
-}
-
 function getFinalTeamPower(result: TeamScoreResult) {
   const possibleScores = [
     result.total_score,
@@ -251,7 +271,7 @@ function getFinalTeamPower(result: TeamScoreResult) {
 
   const score = possibleScores.find((value) => typeof value === "number");
 
-  return Math.round(score ?? 0);
+  return clampScore(score);
 }
 
 function getResultRank(result: TeamScoreResult) {
@@ -266,7 +286,7 @@ function getResultRank(result: TeamScoreResult) {
     result.path_result?.toLowerCase().includes("champion gary beaten");
 
   if (championBeaten) {
-    return "POKEMON MASTER";
+    return "Pokemon Master";
   }
 
   const eliteFourBeaten =
@@ -278,14 +298,20 @@ function getResultRank(result: TeamScoreResult) {
       .includes("elite four beaten, champion gary not beaten");
 
   if (eliteFourBeaten) {
-    return "POKEMON CHAMPION";
+    return "Pokemon Champion";
   }
 
-  if (getEarnedBadgeNames(result).length >= GYM_LEADERS.length) {
-    return "POKEMON TRAINER";
+  const badgeCount = getEarnedBadgeNames(result).length;
+
+  if (badgeCount >= GYM_LEADERS.length) {
+    return "Pokemon Expert";
   }
 
-  return "BEGINNER";
+  if (badgeCount > 0) {
+    return "Pokemon Trainer";
+  }
+
+  return "Beginner";
 }
 
 function getEarnedBadgeNames(result: TeamScoreResult) {
@@ -305,4 +331,71 @@ function getEarnedBadgeNames(result: TeamScoreResult) {
   }
 
   return (result.badges_earned ?? []).filter((badge) => BADGE_IMAGE_PATHS[badge]);
+}
+
+function getScoreBreakdownRows(result: TeamScoreResult): ScoreBreakdownRow[] {
+  const scoreBreakdown = result.score_breakdown ?? {};
+  const battleBreakdown = result.battle_score_breakdown ?? {};
+
+  return [
+    {
+      label: "Base Stats / Team Power",
+      value: firstNumber(
+        scoreBreakdown.base_stat_strength,
+        battleBreakdown.base_stat_strength,
+        battleBreakdown.team_power,
+        battleBreakdown.team_score,
+      ),
+    },
+    {
+      label: "Counter Matchup / Type Advantage",
+      value: firstNumber(
+        scoreBreakdown.matchup_spread,
+        battleBreakdown.matchup_spread,
+        battleBreakdown.counter_matchup,
+        battleBreakdown.type_advantage,
+      ),
+    },
+    {
+      label: "Weakness Control",
+      value: firstNumber(
+        scoreBreakdown.weakness_management,
+        battleBreakdown.weakness_management,
+        battleBreakdown.weakness_control,
+      ),
+    },
+    {
+      label: "Team Balance",
+      value: firstNumber(
+        scoreBreakdown.type_balance,
+        battleBreakdown.type_balance,
+        battleBreakdown.team_balance,
+      ),
+    },
+    {
+      label: "Ace Pokemon / Ace Factor",
+      value: firstNumber(
+        battleBreakdown.ace_factor,
+        battleBreakdown.ace_pokemon,
+        battleBreakdown.ace_score,
+        battleBreakdown.ace_bonus,
+      ),
+    },
+  ];
+}
+
+function firstNumber(...values: Array<number | undefined>) {
+  return values.find((value) => typeof value === "number") ?? null;
+}
+
+function formatScoreValue(value: number | null) {
+  return value === null ? "N/A" : `${clampScore(value)}/100`;
+}
+
+function clampScore(value: number | null | undefined) {
+  if (typeof value !== "number" || Number.isNaN(value)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(100, Math.round(value)));
 }

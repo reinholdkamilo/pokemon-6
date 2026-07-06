@@ -353,7 +353,10 @@ export function CardSelectionScreen({
 
       <div className="reveal-grid adventure-card-grid">
         {revealedCards.map((slotPokemon, index) => (
-          <div className="adventure-card-slot" key={slotPokemon?.id ?? `slot-${index}`}>
+          <div
+            className={`adventure-card-slot ${slotPokemon ? "filled" : "empty"}`}
+            key={slotPokemon?.id ?? `slot-${index}`}
+          >
             {slotPokemon ? (
               <img
                 alt={`${slotPokemon.name} card`}

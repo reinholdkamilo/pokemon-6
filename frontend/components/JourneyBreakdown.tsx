@@ -26,7 +26,7 @@ export function JourneyBreakdown({ result }: JourneyBreakdownProps) {
         lockedMessage="Locked until all 8 Kanto badges are earned."
       />
       <JourneySection
-        title="Champion Gary"
+        title="Champion"
         opponents={champion}
         locked={!eliteFourBeaten}
         lockedMessage="Locked until the Elite Four is beaten."

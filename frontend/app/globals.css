@@ -320,17 +320,22 @@ p {
 
 .reveal-card.locked {
   cursor: pointer;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .reveal-card.legendary {
-  border-color: #ffe36b;
+  border-color: transparent;
   box-shadow:
-    0 8px 0 rgba(52, 42, 32, 0.82),
     0 0 0 4px rgba(255, 227, 107, 0.58);
 }
 
 .reveal-card.revealing {
   animation: cardDraw 180ms linear infinite alternate;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .reveal-card.charging {
@@ -356,7 +361,7 @@ p {
   height: 100%;
   overflow: hidden;
   border-radius: 5px;
-  background: #ffffff;
+  background: transparent;
 }
 
 .pokemon-card-png,
@@ -652,11 +657,20 @@ p {
 .adventure-card-slot {
   min-width: 0;
   aspect-ratio: 0.64;
+  overflow: hidden;
+}
+
+.adventure-card-slot.empty {
   border: 3px solid var(--border);
   border-radius: 8px;
   background: #ffffff;
   box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82);
-  overflow: hidden;
+}
+
+.adventure-card-slot.filled {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .encounter-modal-backdrop {
@@ -1389,12 +1403,22 @@ p {
 }
 
 .results-trainer-card {
-  grid-template-rows: auto auto auto 1fr;
+  display: grid;
+  gap: 12px;
+  border: 4px solid var(--border);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.18)),
+    #fffdf3;
+  padding: 14px;
 }
 
 .results-trainer-card__top {
+  display: flex;
   align-items: start;
+  justify-content: space-between;
   gap: 8px;
+  min-width: 0;
 }
 
 .results-trainer-card__logo {
@@ -1408,22 +1432,55 @@ p {
     1px 1px 0 #ffffff,
     2px 2px 0 var(--border);
   letter-spacing: 0;
+  padding: 7px 10px;
+  font-size: clamp(1.2rem, 7vw, 2.15rem);
+  font-weight: 1000;
+  line-height: 1;
 }
 
 .results-trainer-card__top strong {
   flex: 0 1 auto;
   max-width: 46%;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 7px 9px;
+  font-size: 0.86rem;
+  font-weight: 1000;
   overflow-wrap: anywhere;
   text-align: right;
   white-space: nowrap;
 }
 
-.results-trainer-card__rank {
-  margin: 0;
+.results-trainer-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.results-trainer-card__stats div {
+  min-width: 0;
+  border: 2px solid rgba(52, 42, 32, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 8px;
+}
+
+.results-trainer-card__stats span {
+  display: block;
   color: var(--accent-dark);
-  font-size: 0.86rem;
+  font-size: 0.72rem;
   font-weight: 1000;
   text-transform: uppercase;
+}
+
+.results-trainer-card__stats strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 1000;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
 }
 
 .results-trainer-card__badges {
@@ -1436,6 +1493,12 @@ p {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.58);
   padding: 8px;
+}
+
+.results-trainer-card__badge-count {
+  grid-column: 1 / -1;
+  font-size: 0.9rem;
+  font-weight: 1000;
 }
 
 .results-trainer-card__badge {
@@ -1511,36 +1574,77 @@ p {
 }
 
 .results-team-grid {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.results-pokemon-card {
+.results-pokemon-card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  object-fit: contain;
+}
+
+.results-score-breakdown {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.18)),
-    var(--type-color, #fffdf3);
+  gap: 8px;
+  border: 3px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
   padding: 10px;
 }
 
-.results-pokemon-card div {
+.results-score-breakdown__overall,
+.results-score-breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
   min-width: 0;
 }
 
-.results-pokemon-card h3,
-.results-pokemon-card p {
-  margin: 0;
+.results-score-breakdown__overall {
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 8px;
 }
 
-.results-pokemon-card h3 {
+.results-score-breakdown__overall span,
+.results-score-breakdown__row span {
+  min-width: 0;
+  font-weight: 1000;
   overflow-wrap: anywhere;
 }
 
-.results-pokemon-card p {
+.results-score-breakdown__overall strong {
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.results-score-breakdown__rows {
+  display: grid;
+  gap: 6px;
+}
+
+.results-score-breakdown__row {
+  border-bottom: 1px solid rgba(52, 42, 32, 0.18);
+  padding: 5px 0;
+}
+
+.results-score-breakdown__row:last-child {
+  border-bottom: 0;
+}
+
+.results-score-breakdown__row strong {
   color: var(--muted);
-  font-weight: 800;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+
+.final-stage-grid.champion-final-grid {
+  grid-template-columns: minmax(0, min(100%, 260px));
+  justify-content: center;
 }
 
 .gym-card-top,

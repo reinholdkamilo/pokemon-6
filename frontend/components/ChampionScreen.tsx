@@ -53,7 +53,7 @@ export function ChampionScreen({
         <div className="stage-hero">
           <p className="eyebrow">Final challenge</p>
           <h1>Champion Battle</h1>
-          <p>{playerName} versus Champion Gary</p>
+          <p>{playerName} versus Champion</p>
         </div>
 
         <button
