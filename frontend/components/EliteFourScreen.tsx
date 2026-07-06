@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
   didBeatOpponent,
@@ -12,13 +13,17 @@ import type { TeamScoreResult } from "@/types/pokemon";
 
 type EliteFourScreenProps = {
   result: TeamScoreResult;
+  modeLabel: "Battle Mode" | "Adventure Mode";
   onChallengeChampion: () => void;
+  onMainMenu: () => void;
   onViewResults: () => void;
 };
 
 export function EliteFourScreen({
   result,
+  modeLabel,
   onChallengeChampion,
+  onMainMenu,
   onViewResults,
 }: EliteFourScreenProps) {
   const [battleRevealed, setBattleRevealed] = useState(false);
@@ -33,6 +38,7 @@ export function EliteFourScreen({
   return (
     <main className="game-shell stage-shell">
       <section className="stage-screen" aria-label="Elite Four">
+        <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
         <div className="stage-hero">
           <p className="eyebrow">Indigo Plateau</p>
           <h1>Elite Four</h1>

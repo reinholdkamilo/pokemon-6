@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
   findBreakdown,
@@ -11,13 +12,19 @@ import type { TeamScoreResult } from "@/types/pokemon";
 
 type GymLeadersScreenProps = {
   result: TeamScoreResult;
+  modeLabel: "Battle Mode" | "Adventure Mode";
   onChallengeEliteFour: () => void;
+  onMainMenu: () => void;
+  onResetRun: () => void;
   onViewResults: () => void;
 };
 
 export function GymLeadersScreen({
   result,
+  modeLabel,
   onChallengeEliteFour,
+  onMainMenu,
+  onResetRun,
   onViewResults,
 }: GymLeadersScreenProps) {
   const [battleRevealed, setBattleRevealed] = useState(false);
@@ -31,6 +38,7 @@ export function GymLeadersScreen({
   return (
     <main className="game-shell stage-shell">
       <section className="stage-screen" aria-label="Gym Leaders">
+        <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
         <div className="stage-hero">
           <p className="eyebrow">Kanto badge journey</p>
           <h1>Gym Leaders</h1>
@@ -55,6 +63,10 @@ export function GymLeadersScreen({
             : canChallengeEliteFour
               ? "CHALLENGE ELITE FOUR"
               : "VIEW FINAL RESULTS"}
+        </button>
+
+        <button className="secondary-action" type="button" onClick={onResetRun}>
+          RESET RUN
         </button>
 
         <div className="stage-card-grid gym-stage-grid">

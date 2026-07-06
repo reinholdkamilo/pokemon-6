@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { BattlePlayerCardScreen } from "@/components/BattlePlayerCardScreen";
 import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
@@ -16,6 +17,7 @@ const TEAM_SIZE = 6;
 type GameMode = "battle" | "adventure";
 type GameScreen =
   | "title"
+  | "battle-player-card"
   | "trainer-card"
   | "select-team"
   | "gym-leaders"
@@ -91,44 +93,49 @@ export default function Home() {
     }
   }
 
-  function resetToTitle() {
+  function clearRunState() {
     teamRef.current = [];
     setRevealedCards(createEmptyCards());
     setTeam([]);
     setResult(null);
+    setError("");
+  }
+
+  function returnToMainMenu() {
+    clearRunState();
     setTrainerProfile(null);
     setGameMode(null);
-    setError("");
     setScreen("title");
   }
 
+  function resetCurrentRun() {
+    clearRunState();
+    setTrainerProfile(gameMode === "battle" ? null : trainerProfile);
+    setScreen(gameMode === "battle" ? "battle-player-card" : "trainer-card");
+  }
+
   function tryAgain() {
-    teamRef.current = [];
-    setRevealedCards(createEmptyCards());
-    setTeam([]);
-    setResult(null);
-    setError("");
-    setScreen("select-team");
+    clearRunState();
+    if (gameMode === "battle") {
+      setTrainerProfile(null);
+      setScreen("battle-player-card");
+      return;
+    }
+
+    setScreen("trainer-card");
   }
 
   function startBattleMode() {
     setGameMode("battle");
-    setTrainerProfile(createBattleTrainerProfile());
-    teamRef.current = [];
-    setRevealedCards(createEmptyCards());
-    setTeam([]);
-    setResult(null);
-    setError("");
-    setScreen("select-team");
+    clearRunState();
+    setTrainerProfile(null);
+    setScreen("battle-player-card");
   }
 
   function startAdventureMode() {
     setGameMode("adventure");
-    teamRef.current = [];
-    setRevealedCards(createEmptyCards());
-    setTeam([]);
-    setResult(null);
-    setError("");
+    clearRunState();
+    setTrainerProfile(null);
     setScreen("trainer-card");
   }
 
@@ -141,9 +148,24 @@ export default function Home() {
     );
   }
 
+  if (screen === "battle-player-card") {
+    return (
+      <BattlePlayerCardScreen
+        onMainMenu={returnToMainMenu}
+        onPlayerReady={(battleTrainerProfile) => {
+          setTrainerProfile(battleTrainerProfile);
+          setGameMode("battle");
+          clearRunState();
+          setScreen("select-team");
+        }}
+      />
+    );
+  }
+
   if (screen === "trainer-card") {
     return (
       <TrainerCardScreen
+        onMainMenu={returnToMainMenu}
         onTrainerSaved={(savedTrainerProfile) => {
           setTrainerProfile(savedTrainerProfile);
           setGameMode("adventure");
@@ -157,7 +179,10 @@ export default function Home() {
     return (
       <GymLeadersScreen
         result={result}
+        modeLabel={getModeLabel(gameMode)}
         onChallengeEliteFour={() => setScreen("elite-four")}
+        onMainMenu={returnToMainMenu}
+        onResetRun={resetCurrentRun}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -167,7 +192,9 @@ export default function Home() {
     return (
       <EliteFourScreen
         result={result}
+        modeLabel={getModeLabel(gameMode)}
         onChallengeChampion={() => setScreen("champion")}
+        onMainMenu={returnToMainMenu}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -179,6 +206,8 @@ export default function Home() {
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={team}
+        modeLabel={getModeLabel(gameMode)}
+        onMainMenu={returnToMainMenu}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -190,6 +219,8 @@ export default function Home() {
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={team}
+        modeLabel={getModeLabel(gameMode)}
+        onMainMenu={returnToMainMenu}
         onTryAgain={tryAgain}
       />
     );
@@ -203,9 +234,10 @@ export default function Home() {
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}
           selectedPokemon={team}
+          onMainMenu={returnToMainMenu}
           onRevealCard={revealCard}
+          onResetRun={resetCurrentRun}
           onSubmitTeam={submitTeam}
-          onResetRun={resetToTitle}
         />
       ) : (
         <CardSelectionScreen
@@ -213,9 +245,10 @@ export default function Home() {
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}
           selectedPokemon={team}
+          onMainMenu={returnToMainMenu}
           onRevealCard={revealCard}
+          onResetRun={resetCurrentRun}
           onSubmitTeam={submitTeam}
-          onResetRun={resetToTitle}
         />
       )}
     </main>
@@ -239,4 +272,8 @@ function createBattleTrainerProfile(): TrainerProfile {
     sprite: "player-male",
     created_at: "",
   };
+}
+
+function getModeLabel(gameMode: GameMode | null) {
+  return gameMode === "adventure" ? "Adventure Mode" : "Battle Mode";
 }

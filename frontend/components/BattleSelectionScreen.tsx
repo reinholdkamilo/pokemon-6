@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
+import { PokeballProgress } from "@/components/PokeballProgress";
 import { RevealCard } from "@/components/RevealCard";
 import { getPokemon } from "@/lib/api";
 import type { Pokemon } from "@/types/pokemon";
@@ -10,9 +12,10 @@ type BattleSelectionScreenProps = {
   selectedPokemon: Pokemon[];
   error: string;
   isSubmitting: boolean;
+  onMainMenu: () => void;
   onRevealCard: (slotIndex: number, pokemon: Pokemon) => void;
-  onSubmitTeam: () => void;
   onResetRun: () => void;
+  onSubmitTeam: () => void;
 };
 
 const TEAM_SIZE = 6;
@@ -26,9 +29,10 @@ export function BattleSelectionScreen({
   selectedPokemon,
   error,
   isSubmitting,
+  onMainMenu,
   onRevealCard,
-  onSubmitTeam,
   onResetRun,
+  onSubmitTeam,
 }: BattleSelectionScreenProps) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
   const [previewBySlot, setPreviewBySlot] = useState<(Pokemon | null)[]>(
@@ -206,16 +210,13 @@ export function BattleSelectionScreen({
 
   return (
     <section className="selection-screen" aria-label="Battle Mode team selection">
+      <GameTopBar modeLabel="Battle Mode" onMainMenu={onMainMenu} />
       <div className="selection-header">
-        <p className="eyebrow">Battle Mode</p>
-        <h1>Choose Six Cards</h1>
-        <p>Tap each card to draw a unique Generation 1 Pokemon for the Champion run.</p>
+        <h1>Choose your Pokemon</h1>
+        <p>Tap each card to reveal your Pokemon team</p>
       </div>
 
-      <div className="selection-status">
-        <strong>{selectedPokemon.length}/6 revealed</strong>
-        <span>{isLoading ? "Loading deck..." : teamIsComplete ? "Team ready" : "Tap a card"}</span>
-      </div>
+      <PokeballProgress count={selectedPokemon.length} label="Revealed Pokemon" />
 
       <div className="reveal-grid">
         {revealedCards.map((slotPokemon, index) => (

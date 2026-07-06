@@ -53,7 +53,7 @@ export function RevealCard({
         .filter(Boolean)
         .join(" ")}
       type="button"
-      disabled={!canReveal || isRevealing}
+      disabled={!canReveal || isRevealing || isLocked}
       onPointerDown={() => onStartHold(index)}
       onPointerUp={() => onFinishHold(index)}
       onPointerLeave={() => onCancelHold(index)}
@@ -86,25 +86,11 @@ export function RevealCard({
             src={getPokemonCardImagePath(displayPokemon)}
           />
         ) : isRevealing ? (
-          "DRAWING"
-        ) : isLocked ? (
-          "RE-SPIN"
+          <span className="card-back-fallback" aria-hidden="true" />
         ) : (
-          "TAP"
+          <img alt="" className="pokemon-card-back" src="/images/card-back.png" />
         )}
       </span>
-
-      <span className="card-name">{displayPokemon?.name ?? "Mystery Pokemon"}</span>
-      <span className="card-type">
-        {displayPokemon ? formatTypes(displayPokemon) : "Unknown Type"}
-      </span>
-
-      {/* TODO: Add shiny draw state and rate tuning in a later task. */}
-      {isLegendary && isLocked ? <span className="legendary-tag">Legendary</span> : null}
     </button>
   );
-}
-
-function formatTypes(pokemon: Pokemon) {
-  return [pokemon.primary_type, pokemon.secondary_type].filter(Boolean).join(" / ");
 }

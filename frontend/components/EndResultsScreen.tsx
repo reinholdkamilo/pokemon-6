@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
 import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import { BADGE_IMAGE_PATHS, getPlayerTrainerSprite } from "@/lib/imagePaths";
@@ -18,6 +19,8 @@ type EndResultsScreenProps = {
   trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
+  modeLabel: "Battle Mode" | "Adventure Mode";
+  onMainMenu: () => void;
   onTryAgain: () => void;
 };
 
@@ -25,6 +28,8 @@ export function EndResultsScreen({
   trainerProfile,
   result,
   selectedPokemon,
+  modeLabel,
+  onMainMenu,
   onTryAgain,
 }: EndResultsScreenProps) {
   const championBreakdown = findBreakdown(
@@ -43,6 +48,7 @@ export function EndResultsScreen({
   return (
     <main className="game-shell stage-shell">
       <section className="stage-screen end-results-screen" aria-label="End results">
+        <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
         <div className="stage-hero">
           <p className="eyebrow">Final report</p>
           <h1>{championBeaten ? "YOU ARE THE NEW POKEMON CHAMPION" : "RUN COMPLETE"}</h1>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
+import { PokeballProgress } from "@/components/PokeballProgress";
 import { getPokemon } from "@/lib/api";
 import { getPokemonCardImagePath } from "@/lib/imagePaths";
 import {
@@ -19,9 +21,10 @@ type CardSelectionScreenProps = {
   selectedPokemon: Pokemon[];
   error: string;
   isSubmitting: boolean;
+  onMainMenu: () => void;
   onRevealCard: (slotIndex: number, pokemon: Pokemon) => void;
-  onSubmitTeam: () => void;
   onResetRun: () => void;
+  onSubmitTeam: () => void;
 };
 
 const TEAM_SIZE = 6;
@@ -30,12 +33,14 @@ const SPIN_DURATION_MS = 1200;
 const LEGENDARY_HOLD_MS = 1200;
 
 export function CardSelectionScreen({
+  revealedCards,
   selectedPokemon,
   error,
   isSubmitting,
+  onMainMenu,
   onRevealCard,
-  onSubmitTeam,
   onResetRun,
+  onSubmitTeam,
 }: CardSelectionScreenProps) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
   const [loadError, setLoadError] = useState("");
@@ -45,8 +50,8 @@ export function CardSelectionScreen({
   const [selectedLocation, setSelectedLocation] = useState("");
   const [visibleLocation, setVisibleLocation] = useState("Ready to explore Kanto");
   const [pendingEncounter, setPendingEncounter] = useState<Pokemon | null>(null);
+  const [isEncounterModalOpen, setIsEncounterModalOpen] = useState(false);
   const [isSpecialEncounter, setIsSpecialEncounter] = useState(false);
-  const [legendaryNotice, setLegendaryNotice] = useState("");
   const [isCatching, setIsCatching] = useState(false);
   const [catchConfirmed, setCatchConfirmed] = useState(false);
   const spinIntervalRef = useRef<number | null>(null);
@@ -104,10 +109,10 @@ export function CardSelectionScreen({
     clearCatchTimers();
     setLoadError("");
     setPendingEncounter(null);
+    setIsEncounterModalOpen(false);
     setIsCatching(false);
     setCatchConfirmed(false);
     setIsSpecialEncounter(isLegendarySpin);
-    setLegendaryNotice(isLegendarySpin ? "Legendary Encounter!" : "");
     setIsSpinning(true);
 
     const finalLocation = isLegendarySpin
@@ -135,7 +140,6 @@ export function CardSelectionScreen({
         setSelectedLocation("");
         setVisibleLocation("Ready to explore Kanto");
         setLoadError("No uncaught Pokemon are available. Reset the run to start again.");
-        setLegendaryNotice("");
         setIsSpecialEncounter(false);
         return;
       }
@@ -205,13 +209,13 @@ export function CardSelectionScreen({
       catchCompleteTimeoutRef.current = window.setTimeout(() => {
         onRevealCard(selectedPokemon.length, caughtPokemon);
         setPendingEncounter(null);
+        setIsEncounterModalOpen(false);
         setSelectedLocation("");
         setVisibleLocation(
           selectedPokemon.length + 1 === TEAM_SIZE
             ? "Team complete"
             : "Ready to explore Kanto",
         );
-        setLegendaryNotice("");
         setIsSpecialEncounter(false);
         setIsCatching(false);
         setCatchConfirmed(false);
@@ -289,18 +293,15 @@ export function CardSelectionScreen({
 
   return (
     <section className="selection-screen catch-selection" aria-label="Kanto catch selection">
-      <div className="selection-header catch-header">
-        <p className="eyebrow">Adventure Mode</p>
-        <h1>Catch 'em all</h1>
+      <GameTopBar modeLabel="Adventure Mode" onMainMenu={onMainMenu} />
+      <div className="selection-header">
+        <h1>Choose your Pokemon</h1>
+        <p>Tap each card to reveal your Pokemon team</p>
       </div>
 
-      <div className="selection-status">
-        <strong>Caught {selectedPokemon.length}/6</strong>
-        <span>{isLoading ? "Loading Kanto..." : teamIsComplete ? "Team ready" : "Spin for an area"}</span>
-      </div>
+      <PokeballProgress count={selectedPokemon.length} label="Caught Pokemon" />
 
       <div className="catch-main">
-        {legendaryNotice ? <p className="legendary-encounter-text">{legendaryNotice}</p> : null}
         <div
           className={`location-spinner${isSpinning ? " spinning" : ""}${
             isChargingLegendary || isSpecialEncounter ? " legendary" : ""
@@ -313,38 +314,58 @@ export function CardSelectionScreen({
           className={`spin-button${isChargingLegendary ? " charging" : ""}`}
           type="button"
           disabled={isLoading || isSpinning || teamIsComplete}
-          onPointerDown={startHold}
-          onPointerUp={finishHold}
+          onPointerDown={() => {
+            if (!pendingEncounter) {
+              startHold();
+            }
+          }}
+          onPointerUp={() => {
+            if (!pendingEncounter) {
+              finishHold();
+            }
+          }}
           onPointerCancel={cancelHold}
           onPointerLeave={cancelHold}
+          onClick={(event) => {
+            if (pendingEncounter) {
+              setIsEncounterModalOpen(true);
+              return;
+            }
+
+            if (event.detail === 0) {
+              startSpin(false);
+            }
+          }}
         >
-          {isSpinning ? "Spinning..." : "Spin"}
+          {isSpinning
+            ? "Spinning..."
+            : pendingEncounter
+              ? "You've encountered a Pokemon"
+              : "Spin"}
         </button>
       </div>
 
       {selectedLocation && !teamIsComplete ? (
         <div className="location-results">
           <h2>{selectedLocation}</h2>
-          <p className="encounter-message">You've encountered a Pokemon!</p>
         </div>
       ) : null}
 
-      {selectedPokemon.length > 0 ? (
-        <div className="caught-team">
-          <h2>{teamIsComplete ? "Completed team" : "Caught team"}</h2>
-          <div className="caught-team-grid">
-            {selectedPokemon.map((caughtPokemon) => (
-              <article className="caught-team-card" key={caughtPokemon.id}>
-                <img
-                  alt={`${caughtPokemon.name} card`}
-                  src={getPokemonCardImagePath(caughtPokemon)}
-                />
-                <strong>{caughtPokemon.name}</strong>
-              </article>
-            ))}
+      <div className="reveal-grid adventure-card-grid">
+        {revealedCards.map((slotPokemon, index) => (
+          <div className="adventure-card-slot" key={slotPokemon?.id ?? `slot-${index}`}>
+            {slotPokemon ? (
+              <img
+                alt={`${slotPokemon.name} card`}
+                className="pokemon-card-png"
+                src={getPokemonCardImagePath(slotPokemon)}
+              />
+            ) : (
+              <img alt="" className="pokemon-card-back" src="/images/card-back.png" />
+            )}
           </div>
-        </div>
-      ) : null}
+        ))}
+      </div>
 
       {activeError ? <p className="error-message">{activeError}</p> : null}
 
@@ -369,7 +390,7 @@ export function CardSelectionScreen({
         </button>
       </div>
 
-      {pendingEncounter ? (
+      {pendingEncounter && isEncounterModalOpen ? (
         <div className="encounter-modal-backdrop" role="presentation">
           <div
             className={`encounter-modal${isSpecialEncounter ? " special" : ""}`}
@@ -377,16 +398,13 @@ export function CardSelectionScreen({
             aria-modal="true"
             aria-labelledby="encounter-modal-title"
           >
-            {isSpecialEncounter ? (
-              <p className="legendary-encounter-text">Legendary Encounter!</p>
-            ) : null}
             <img
               alt={`${pendingEncounter.name} card`}
               className="encounter-card-image"
               src={getPokemonCardImagePath(pendingEncounter)}
             />
             <h2 id="encounter-modal-title">
-              {catchConfirmed ? "Caught!" : "You've encountered a Pokemon!"}
+              {catchConfirmed ? "Caught!" : getEncounterText(pendingEncounter)}
             </h2>
             <div
               className={`poke-ball-catch${isCatching ? " catching" : ""}${
@@ -411,6 +429,12 @@ export function CardSelectionScreen({
       ) : null}
     </section>
   );
+}
+
+function getEncounterText(pokemon: Pokemon) {
+  return isLegendaryPokemon(pokemon)
+    ? `${pokemon.name} has appeared`
+    : `A wild ${pokemon.name} has appeared`;
 }
 
 function validateEncounterCoverage() {

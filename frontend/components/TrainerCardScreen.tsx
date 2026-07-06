@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { GameTopBar } from "@/components/GameTopBar";
 import { LocalSprite } from "@/components/LocalSprite";
 import { saveTrainerProfile } from "@/lib/api";
 import { getPlayerTrainerSprite } from "@/lib/imagePaths";
 import type { TrainerProfile } from "@/types/pokemon";
 
 type TrainerCardScreenProps = {
+  onMainMenu?: () => void;
   onTrainerSaved: (trainerProfile: TrainerProfile) => void;
 };
 
@@ -28,7 +30,7 @@ const SPRITES: Array<Pick<TrainerProfile, "sprite"> & { label: string }> = [
   { sprite: "player-female", label: "Female trainer" },
 ];
 
-export function TrainerCardScreen({ onTrainerSaved }: TrainerCardScreenProps) {
+export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScreenProps) {
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [email, setEmail] = useState("");
@@ -100,6 +102,9 @@ export function TrainerCardScreen({ onTrainerSaved }: TrainerCardScreenProps) {
   return (
     <main className="game-shell">
       <section className="trainer-card-screen" aria-label="Trainer Card creation">
+        {onMainMenu ? (
+          <GameTopBar modeLabel="Adventure Mode" onMainMenu={onMainMenu} />
+        ) : null}
         <article className="trainer-profile-card">
           <div className="trainer-card-actions">
             <button

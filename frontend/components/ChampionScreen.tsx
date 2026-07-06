@@ -5,6 +5,7 @@ import {
   BattleTrainerCard,
   createPlayerBattleTrainerCardProps,
 } from "@/components/BattleTrainerCard";
+import { GameTopBar } from "@/components/GameTopBar";
 import { getChampionSprite } from "@/lib/imagePaths";
 import {
   CHAMPION,
@@ -19,6 +20,8 @@ type ChampionScreenProps = {
   trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
+  modeLabel: "Battle Mode" | "Adventure Mode";
+  onMainMenu: () => void;
   onViewResults: () => void;
 };
 
@@ -26,6 +29,8 @@ export function ChampionScreen({
   trainerProfile,
   result,
   selectedPokemon,
+  modeLabel,
+  onMainMenu,
   onViewResults,
 }: ChampionScreenProps) {
   const [battleRevealed, setBattleRevealed] = useState(false);
@@ -44,6 +49,7 @@ export function ChampionScreen({
   return (
     <main className="game-shell stage-shell">
       <section className="stage-screen champion-screen" aria-label="Champion battle">
+        <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
         <div className="stage-hero">
           <p className="eyebrow">Final challenge</p>
           <h1>Champion Battle</h1>
