@@ -353,7 +353,14 @@ export function CardSelectionScreen({
       <div className="reveal-grid adventure-card-grid">
         {revealedCards.map((slotPokemon, index) => (
           <div
-            className={`adventure-card-slot mystery-reveal-card ${slotPokemon ? "filled" : "empty"}`}
+            className={[
+              "adventure-card-slot",
+              "mystery-reveal-card",
+              slotPokemon ? "filled" : "empty",
+              slotPokemon ? `type-${slotPokemon.primary_type.toLowerCase()}` : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             key={slotPokemon?.id ?? `slot-${index}`}
           >
             {slotPokemon ? (
@@ -371,6 +378,9 @@ export function CardSelectionScreen({
                 <span className="mystery-card-types">
                   {slotPokemon.primary_type}
                   {slotPokemon.secondary_type ? ` / ${slotPokemon.secondary_type}` : ""}
+                </span>
+                <span className="mystery-card-stat">
+                  BST {slotPokemon.base_stat_total}
                 </span>
               </span>
             ) : (
@@ -428,6 +438,9 @@ export function CardSelectionScreen({
               <span className="mystery-card-types">
                 {pendingEncounter.primary_type}
                 {pendingEncounter.secondary_type ? ` / ${pendingEncounter.secondary_type}` : ""}
+              </span>
+              <span className="mystery-card-stat">
+                BST {pendingEncounter.base_stat_total}
               </span>
             </div>
             <h2 id="encounter-modal-title">

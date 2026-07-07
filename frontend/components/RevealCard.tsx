@@ -94,6 +94,9 @@ export function RevealCard({
               {displayPokemon.primary_type}
               {displayPokemon.secondary_type ? ` / ${displayPokemon.secondary_type}` : ""}
             </span>
+            <span className="mystery-card-stat">
+              BST {displayPokemon.base_stat_total}
+            </span>
           </span>
         ) : (
           <span className="mystery-card-template" aria-hidden="true">
