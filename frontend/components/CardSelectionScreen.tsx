@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
 import { PokeballProgress } from "@/components/PokeballProgress";
 import { getPokemon } from "@/lib/api";
-import { getPokemonCardImagePath } from "@/lib/imagePaths";
 import {
   KANTO_LOCATIONS,
   getAvailableLocations,
@@ -354,17 +353,31 @@ export function CardSelectionScreen({
       <div className="reveal-grid adventure-card-grid">
         {revealedCards.map((slotPokemon, index) => (
           <div
-            className={`adventure-card-slot ${slotPokemon ? "filled" : "empty"}`}
+            className={`adventure-card-slot mystery-reveal-card ${slotPokemon ? "filled" : "empty"}`}
             key={slotPokemon?.id ?? `slot-${index}`}
           >
             {slotPokemon ? (
-              <img
-                alt={`${slotPokemon.name} card`}
-                className="pokemon-card-png"
-                src={getPokemonCardImagePath(slotPokemon)}
-              />
+              <span className="mystery-card-revealed">
+                {slotPokemon.image ? (
+                  <img
+                    alt={slotPokemon.name}
+                    className="pokemon-sprite mystery-card-sprite"
+                    src={slotPokemon.image}
+                  />
+                ) : (
+                  <span className="sprite-fallback">?</span>
+                )}
+                <strong className="mystery-card-name">{slotPokemon.name}</strong>
+                <span className="mystery-card-types">
+                  {slotPokemon.primary_type}
+                  {slotPokemon.secondary_type ? ` / ${slotPokemon.secondary_type}` : ""}
+                </span>
+              </span>
             ) : (
-              <img alt="" className="pokemon-card-back" src="/images/card-back.png" />
+              <span className="mystery-card-template" aria-hidden="true">
+                <span className="mystery-question">?</span>
+                <span className="mystery-label">Mystery Pokémon</span>
+              </span>
             )}
           </div>
         ))}
@@ -401,11 +414,22 @@ export function CardSelectionScreen({
             aria-modal="true"
             aria-labelledby="encounter-modal-title"
           >
-            <img
-              alt={`${pendingEncounter.name} card`}
-              className="encounter-card-image"
-              src={getPokemonCardImagePath(pendingEncounter)}
-            />
+            <div className="encounter-sprite-card">
+              {pendingEncounter.image ? (
+                <img
+                  alt={pendingEncounter.name}
+                  className="pokemon-sprite encounter-pokemon-sprite"
+                  src={pendingEncounter.image}
+                />
+              ) : (
+                <span className="sprite-fallback">?</span>
+              )}
+              <strong className="mystery-card-name">{pendingEncounter.name}</strong>
+              <span className="mystery-card-types">
+                {pendingEncounter.primary_type}
+                {pendingEncounter.secondary_type ? ` / ${pendingEncounter.secondary_type}` : ""}
+              </span>
+            </div>
             <h2 id="encounter-modal-title">
               {catchConfirmed ? "Caught!" : getEncounterText(pendingEncounter)}
             </h2>

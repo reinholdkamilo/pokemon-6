@@ -1,6 +1,5 @@
 "use client";
 
-import { getPokemonCardImagePath } from "@/lib/imagePaths";
 import type { Pokemon } from "@/types/pokemon";
 
 type RevealCardProps = {
@@ -32,7 +31,6 @@ export function RevealCard({
 }: RevealCardProps) {
   const displayPokemon = previewPokemon ?? pokemon;
   const isLocked = Boolean(pokemon);
-  const shouldShowCardImage = Boolean(displayPokemon) && (isLocked || isRevealing);
   const typeClass = displayPokemon
     ? `type-${displayPokemon.primary_type.toLowerCase()}`
     : "type-blank";
@@ -44,6 +42,7 @@ export function RevealCard({
     <button
       className={[
         "reveal-card",
+        "mystery-reveal-card",
         typeClass,
         isLocked ? "locked" : "",
         isRevealing ? "revealing" : "",
@@ -79,16 +78,28 @@ export function RevealCard({
       }
     >
       <span className="card-portrait">
-        {shouldShowCardImage && displayPokemon ? (
-          <img
-            alt={`${displayPokemon.name} card`}
-            className="pokemon-card-png"
-            src={getPokemonCardImagePath(displayPokemon)}
-          />
-        ) : isRevealing ? (
-          <span className="card-back-fallback" aria-hidden="true" />
+        {displayPokemon ? (
+          <span className="mystery-card-revealed">
+            {displayPokemon.image ? (
+              <img
+                alt={displayPokemon.name}
+                className="pokemon-sprite mystery-card-sprite"
+                src={displayPokemon.image}
+              />
+            ) : (
+              <span className="sprite-fallback">?</span>
+            )}
+            <strong className="mystery-card-name">{displayPokemon.name}</strong>
+            <span className="mystery-card-types">
+              {displayPokemon.primary_type}
+              {displayPokemon.secondary_type ? ` / ${displayPokemon.secondary_type}` : ""}
+            </span>
+          </span>
         ) : (
-          <img alt="" className="pokemon-card-back" src="/images/card-back.png" />
+          <span className="mystery-card-template" aria-hidden="true">
+            <span className="mystery-question">?</span>
+            <span className="mystery-label">Mystery Pokémon</span>
+          </span>
         )}
       </span>
     </button>

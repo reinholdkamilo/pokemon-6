@@ -2403,3 +2403,251 @@ p {
   overflow-wrap: normal !important;
   hyphens: none !important;
 }
+
+
+/* Restore mystery Pokémon selection cards and sprite reveals */
+.mystery-reveal-card {
+  border: 3px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: #fff8df !important;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.mystery-reveal-card.locked,
+.mystery-reveal-card.revealing {
+  border: 3px solid var(--border) !important;
+  background: #fff8df !important;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82) !important;
+}
+
+.mystery-reveal-card .card-portrait,
+.adventure-card-slot.mystery-reveal-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  place-items: stretch;
+  background: transparent;
+}
+
+.mystery-card-template,
+.mystery-card-revealed,
+.encounter-sprite-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-items: center;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.95) 0 18%, rgba(243, 197, 54, 0.3) 18% 32%, transparent 32%),
+    linear-gradient(180deg, #fff8df 0%, #fff2b8 100%);
+}
+
+.mystery-card-template {
+  grid-template-rows: 1fr auto;
+}
+
+.mystery-question {
+  width: 58%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--accent-dark);
+  font-size: clamp(2rem, 10vw, 4.4rem);
+  font-weight: 1000;
+  line-height: 1;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
+}
+
+.mystery-label,
+.mystery-card-name,
+.mystery-card-types {
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.mystery-label {
+  color: var(--accent-dark);
+  font-size: clamp(0.7rem, 2.4vw, 0.95rem);
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.mystery-card-name {
+  color: var(--text);
+  font-size: clamp(0.78rem, 2.8vw, 1.15rem);
+  font-weight: 1000;
+  overflow-wrap: anywhere;
+}
+
+.mystery-card-types {
+  color: var(--muted);
+  font-size: clamp(0.62rem, 2.2vw, 0.82rem);
+  font-weight: 900;
+}
+
+.mystery-card-sprite,
+.encounter-pokemon-sprite {
+  width: 100%;
+  height: 100%;
+  max-height: 118px;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: pixelated;
+}
+
+.adventure-card-slot.empty,
+.adventure-card-slot.filled {
+  aspect-ratio: 0.64;
+  min-width: 0;
+}
+
+.encounter-sprite-card {
+  width: min(260px, 76vw);
+  aspect-ratio: 0.72;
+  border: 3px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82);
+}
+
+.encounter-pokemon-sprite {
+  max-height: 170px;
+}
+
+.pokemon-card-back {
+  display: none !important;
+}
+
+
+/* Restore mystery Pokémon selection cards and sprite reveals */
+.mystery-reveal-card {
+  border: 3px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: #fff8df !important;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.mystery-reveal-card.locked,
+.mystery-reveal-card.revealing {
+  border: 3px solid var(--border) !important;
+  background: #fff8df !important;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82) !important;
+}
+
+.mystery-reveal-card .card-portrait,
+.adventure-card-slot.mystery-reveal-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  place-items: stretch;
+  background: transparent;
+}
+
+.mystery-card-template,
+.mystery-card-revealed,
+.encounter-sprite-card {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-items: center;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(255, 255, 255, 0.95) 0 18%, rgba(243, 197, 54, 0.3) 18% 32%, transparent 32%),
+    linear-gradient(180deg, #fff8df 0%, #fff2b8 100%);
+}
+
+.mystery-card-template {
+  grid-template-rows: 1fr auto;
+}
+
+.mystery-question {
+  width: 58%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--accent-dark);
+  font-size: clamp(2rem, 10vw, 4.4rem);
+  font-weight: 1000;
+  line-height: 1;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
+}
+
+.mystery-label,
+.mystery-card-name,
+.mystery-card-types {
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.mystery-label {
+  color: var(--accent-dark);
+  font-size: clamp(0.7rem, 2.4vw, 0.95rem);
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.mystery-card-name {
+  color: var(--text);
+  font-size: clamp(0.78rem, 2.8vw, 1.15rem);
+  font-weight: 1000;
+  overflow-wrap: anywhere;
+}
+
+.mystery-card-types {
+  color: var(--muted);
+  font-size: clamp(0.62rem, 2.2vw, 0.82rem);
+  font-weight: 900;
+}
+
+.mystery-card-sprite,
+.encounter-pokemon-sprite {
+  width: 100%;
+  height: 100%;
+  max-height: 118px;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: pixelated;
+}
+
+.adventure-card-slot.empty,
+.adventure-card-slot.filled {
+  aspect-ratio: 0.64;
+  min-width: 0;
+}
+
+.encounter-sprite-card {
+  width: min(260px, 76vw);
+  aspect-ratio: 0.72;
+  border: 3px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 0 rgba(52, 42, 32, 0.82);
+}
+
+.encounter-pokemon-sprite {
+  max-height: 170px;
+}
+
+.pokemon-card-back {
+  display: none !important;
+}
