@@ -97,6 +97,7 @@ export function RevealCard({
             <span className="mystery-card-stat">
               BST {displayPokemon.base_stat_total}
             </span>
+            <span className="mystery-card-bottom-spacer" aria-hidden="true" />
           </span>
         ) : (
           <span className="mystery-card-template" aria-hidden="true">

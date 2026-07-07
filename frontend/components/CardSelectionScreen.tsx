@@ -382,6 +382,7 @@ export function CardSelectionScreen({
                 <span className="mystery-card-stat">
                   BST {slotPokemon.base_stat_total}
                 </span>
+                <span className="mystery-card-bottom-spacer" aria-hidden="true" />
               </span>
             ) : (
               <span className="mystery-card-template" aria-hidden="true">
@@ -442,6 +443,7 @@ export function CardSelectionScreen({
               <span className="mystery-card-stat">
                 BST {pendingEncounter.base_stat_total}
               </span>
+              <span className="mystery-card-bottom-spacer" aria-hidden="true" />
             </div>
             <h2 id="encounter-modal-title">
               {catchConfirmed ? "Caught!" : getEncounterText(pendingEncounter)}

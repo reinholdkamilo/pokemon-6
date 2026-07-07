@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
 import { ProgressionCard } from "@/components/ProgressionCard";
-import { BADGE_IMAGE_PATHS, getPokemonCardImagePath } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS } from "@/lib/imagePaths";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -81,12 +81,30 @@ export function EndResultsScreen({
           <h2>Final Team</h2>
           <div className="results-team-grid">
             {selectedPokemon.map((pokemon) => (
-              <img
-                alt={`${pokemon.name} card`}
-                className="results-pokemon-card-image"
+              <article
+                className={`results-pokemon-summary-card type-${pokemon.primary_type.toLowerCase()}`}
                 key={pokemon.id}
-                src={getPokemonCardImagePath(pokemon)}
-              />
+              >
+                <div className="results-pokemon-summary-card__sprite-wrap">
+                  {pokemon.image ? (
+                    <img
+                      alt={pokemon.name}
+                      className="results-pokemon-summary-card__sprite"
+                      src={pokemon.image}
+                    />
+                  ) : (
+                    <span className="sprite-fallback">?</span>
+                  )}
+                </div>
+                <strong className="results-pokemon-summary-card__name">{pokemon.name}</strong>
+                <span className="results-pokemon-summary-card__type">
+                  {pokemon.primary_type}
+                  {pokemon.secondary_type ? ` / ${pokemon.secondary_type}` : ""}
+                </span>
+                <span className="results-pokemon-summary-card__stat">
+                  BST {pokemon.base_stat_total}
+                </span>
+              </article>
             ))}
           </div>
         </section>

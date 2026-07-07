@@ -2839,3 +2839,235 @@ p {
     padding: 2px 6px;
   }
 }
+
+
+/* Results final team: sprite summary cards, not full Pokémon card PNGs */
+.results-pokemon-summary-card {
+  --pokemon-type-bg: #fff2b8;
+  --pokemon-type-bg-strong: #f3c536;
+  --pokemon-type-border: var(--border);
+  min-width: 0;
+  aspect-ratio: 0.72;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  align-items: center;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px 8px 11px;
+  border: 3px solid var(--pokemon-type-border);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong));
+  box-shadow: 0 7px 0 rgba(52, 42, 32, 0.82);
+  overflow: hidden;
+}
+
+.results-pokemon-summary-card.type-normal,
+.mystery-reveal-card.type-normal {
+  --pokemon-type-bg: #e8e1c8;
+  --pokemon-type-bg-strong: #a8a77a;
+  --pokemon-type-border: #6f6e4d;
+}
+
+.results-pokemon-summary-card.type-fire,
+.mystery-reveal-card.type-fire {
+  --pokemon-type-bg: #ffd8b2;
+  --pokemon-type-bg-strong: #ee8130;
+  --pokemon-type-border: #9c4b12;
+}
+
+.results-pokemon-summary-card.type-water,
+.mystery-reveal-card.type-water {
+  --pokemon-type-bg: #cfe4ff;
+  --pokemon-type-bg-strong: #6390f0;
+  --pokemon-type-border: #2452a7;
+}
+
+.results-pokemon-summary-card.type-electric,
+.mystery-reveal-card.type-electric {
+  --pokemon-type-bg: #fff1a8;
+  --pokemon-type-bg-strong: #f7d02c;
+  --pokemon-type-border: #9d7f00;
+}
+
+.results-pokemon-summary-card.type-grass,
+.mystery-reveal-card.type-grass {
+  --pokemon-type-bg: #d6f5c4;
+  --pokemon-type-bg-strong: #7ac74c;
+  --pokemon-type-border: #3f8424;
+}
+
+.results-pokemon-summary-card.type-ice,
+.mystery-reveal-card.type-ice {
+  --pokemon-type-bg: #d8fbff;
+  --pokemon-type-bg-strong: #96d9d6;
+  --pokemon-type-border: #4b8c89;
+}
+
+.results-pokemon-summary-card.type-fighting,
+.mystery-reveal-card.type-fighting {
+  --pokemon-type-bg: #f0bbb6;
+  --pokemon-type-bg-strong: #c22e28;
+  --pokemon-type-border: #7c1714;
+}
+
+.results-pokemon-summary-card.type-poison,
+.mystery-reveal-card.type-poison {
+  --pokemon-type-bg: #ead2f2;
+  --pokemon-type-bg-strong: #a33ea1;
+  --pokemon-type-border: #671f65;
+}
+
+.results-pokemon-summary-card.type-ground,
+.mystery-reveal-card.type-ground {
+  --pokemon-type-bg: #f0ddaa;
+  --pokemon-type-bg-strong: #e2bf65;
+  --pokemon-type-border: #94742f;
+}
+
+.results-pokemon-summary-card.type-flying,
+.mystery-reveal-card.type-flying {
+  --pokemon-type-bg: #e2d8ff;
+  --pokemon-type-bg-strong: #a98ff3;
+  --pokemon-type-border: #6d56a6;
+}
+
+.results-pokemon-summary-card.type-psychic,
+.mystery-reveal-card.type-psychic {
+  --pokemon-type-bg: #ffd2e0;
+  --pokemon-type-bg-strong: #f95587;
+  --pokemon-type-border: #a51f4a;
+}
+
+.results-pokemon-summary-card.type-bug,
+.mystery-reveal-card.type-bug {
+  --pokemon-type-bg: #edf2b8;
+  --pokemon-type-bg-strong: #a6b91a;
+  --pokemon-type-border: #6d7910;
+}
+
+.results-pokemon-summary-card.type-rock,
+.mystery-reveal-card.type-rock {
+  --pokemon-type-bg: #e6d9a8;
+  --pokemon-type-bg-strong: #b6a136;
+  --pokemon-type-border: #76671d;
+}
+
+.results-pokemon-summary-card.type-ghost,
+.mystery-reveal-card.type-ghost {
+  --pokemon-type-bg: #ddd2ef;
+  --pokemon-type-bg-strong: #735797;
+  --pokemon-type-border: #46315f;
+}
+
+.results-pokemon-summary-card.type-dragon,
+.mystery-reveal-card.type-dragon {
+  --pokemon-type-bg: #dac8ff;
+  --pokemon-type-bg-strong: #6f35fc;
+  --pokemon-type-border: #431ea0;
+}
+
+.results-pokemon-summary-card__sprite-wrap {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: end center;
+}
+
+.results-pokemon-summary-card__sprite {
+  width: 100%;
+  height: 100%;
+  max-height: 138px;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22));
+}
+
+.results-pokemon-summary-card__name {
+  max-width: 100%;
+  color: var(--text);
+  font-size: clamp(0.82rem, 2.6vw, 1.12rem);
+  font-weight: 1000;
+  line-height: 1.02;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.results-pokemon-summary-card__type {
+  max-width: 100%;
+  color: rgba(29, 33, 27, 0.78);
+  font-size: clamp(0.58rem, 1.8vw, 0.78rem);
+  font-weight: 1000;
+  line-height: 1;
+  text-align: center;
+}
+
+.results-pokemon-summary-card__stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  padding: 2px 7px;
+  border: 2px solid rgba(52, 42, 32, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-size: clamp(0.56rem, 1.7vw, 0.72rem);
+  font-weight: 1000;
+  line-height: 1;
+}
+
+/* Selection card polish: bigger sprites and cleaner space below BST */
+.mystery-card-revealed,
+.encounter-sprite-card {
+  grid-template-rows: minmax(0, 1fr) auto auto auto 8px !important;
+  gap: 2px !important;
+  padding: 7px 7px 0 !important;
+}
+
+.mystery-card-sprite,
+.encounter-pokemon-sprite {
+  max-height: 138px !important;
+  transform: scale(1.12);
+  transform-origin: center bottom;
+}
+
+.mystery-card-name {
+  margin-top: 5px !important;
+}
+
+.mystery-card-bottom-spacer {
+  display: block;
+  width: 100%;
+  height: 8px;
+}
+
+@media (max-width: 560px) {
+  .results-pokemon-summary-card {
+    padding: 8px 6px 9px;
+  }
+
+  .results-pokemon-summary-card__sprite {
+    max-height: 108px;
+  }
+
+  .mystery-card-revealed,
+  .encounter-sprite-card {
+    grid-template-rows: minmax(0, 1fr) auto auto auto 7px !important;
+    padding: 6px 6px 0 !important;
+  }
+
+  .mystery-card-sprite,
+  .encounter-pokemon-sprite {
+    max-height: 118px !important;
+    transform: scale(1.15);
+  }
+
+  .mystery-card-bottom-spacer {
+    height: 7px;
+  }
+}
