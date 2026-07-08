@@ -30,6 +30,7 @@ type BattleFrame = {
   playerAction?: boolean;
   opponentAction?: boolean;
   itemEffect?: "potion" | "berry" | "power";
+  instantHp?: boolean;
 };
 
 const FRAME_MS = 1150;
@@ -231,6 +232,7 @@ function PokemonBattleScene({
       <BattleHud
         className="battle-hud-opponent"
         hpPercent={frame.opponentHp}
+        instantHp={frame.instantHp}
         name={frame.opponentPokemonName}
       />
 
@@ -287,6 +289,7 @@ function PokemonBattleScene({
       <BattleHud
         className="battle-hud-player"
         hpPercent={frame.playerHp}
+        instantHp={frame.instantHp}
         name={frame.playerPokemon?.name ?? "Pokemon"}
         rightAligned
       />
@@ -306,12 +309,21 @@ type BattleHudProps = {
   name: string;
   hpPercent: number;
   className: string;
+  instantHp?: boolean;
   rightAligned?: boolean;
 };
 
-function BattleHud({ name, hpPercent, className, rightAligned = false }: BattleHudProps) {
+function BattleHud({
+  name,
+  hpPercent,
+  className,
+  instantHp = false,
+  rightAligned = false,
+}: BattleHudProps) {
   return (
-    <div className={`battle-hud ${className} ${rightAligned ? "right-aligned" : ""}`}>
+    <div className={`battle-hud ${className} ${rightAligned ? "right-aligned" : ""} ${
+      instantHp ? "instant-hp" : ""
+    }`}>
       <strong>{name}</strong>
       <span>Lv50</span>
       <div className="battle-hp-row">
@@ -498,6 +510,7 @@ function buildBattleFrames({
           opponentPokemonName: nextOpponentPokemonName,
           playerHp,
           opponentHp,
+          instantHp: true,
         });
       }
 
@@ -542,6 +555,7 @@ function buildBattleFrames({
           opponentPokemonName,
           playerHp,
           opponentHp,
+          instantHp: true,
         });
       }
     }

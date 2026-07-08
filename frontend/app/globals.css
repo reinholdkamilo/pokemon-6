@@ -4909,3 +4909,9 @@ p {
     transform: scale(1.2);
   }
 }
+
+
+/* Instant HP on Pokemon send out */
+.battle-hud.instant-hp .battle-hp-bar i {
+  transition: none !important;
+}
