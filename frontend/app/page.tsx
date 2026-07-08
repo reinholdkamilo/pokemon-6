@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
+import { BattleSimulationScreen } from "@/components/BattleSimulationScreen";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
 import { EliteFourScreen } from "@/components/EliteFourScreen";
@@ -10,7 +11,14 @@ import { GymLeadersScreen } from "@/components/GymLeadersScreen";
 import { TrainerCardScreen } from "@/components/TrainerCardScreen";
 import { TitleScreen } from "@/components/TitleScreen";
 import { scoreTeam } from "@/lib/api";
-import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
+import {
+  CHAMPION,
+  ELITE_FOUR,
+  findBreakdown,
+  GYM_LEADERS,
+  type OpponentMeta,
+} from "@/lib/progression";
+import type { OpponentBreakdown, Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
 type GameMode = "battle" | "adventure";
@@ -21,7 +29,17 @@ type GameScreen =
   | "gym-leaders"
   | "elite-four"
   | "champion"
+  | "battle-simulation"
   | "end-results";
+
+type BattleSimulationStage = "gym" | "elite-four" | "champion";
+
+type BattleSimulationConfig = {
+  stage: BattleSimulationStage;
+  opponentIndex: number;
+  opponent: OpponentMeta;
+  breakdown?: OpponentBreakdown;
+};
 
 export default function Home() {
   const [screen, setScreen] = useState<GameScreen>("title");
@@ -35,6 +53,11 @@ export default function Home() {
   const [runKey, setRunKey] = useState(0);
   const [error, setError] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [gymRevealedCount, setGymRevealedCount] = useState(0);
+  const [eliteRevealedCount, setEliteRevealedCount] = useState(0);
+  const [championRevealed, setChampionRevealed] = useState(false);
+  const [battleSimulationConfig, setBattleSimulationConfig] =
+    useState<BattleSimulationConfig | null>(null);
   const teamRef = useRef<Pokemon[]>(team);
   teamRef.current = team;
 
@@ -79,6 +102,10 @@ export default function Home() {
     try {
       const scoreResult = await scoreTeam(currentTeam.map((pokemon) => pokemon.name));
       setResult(scoreResult);
+      setGymRevealedCount(0);
+      setEliteRevealedCount(0);
+      setChampionRevealed(false);
+      setBattleSimulationConfig(null);
       setScreen("gym-leaders");
     } catch (caughtError) {
       setResult(null);
@@ -98,6 +125,10 @@ export default function Home() {
     setTeam([]);
     setResult(null);
     setError("");
+    setGymRevealedCount(0);
+    setEliteRevealedCount(0);
+    setChampionRevealed(false);
+    setBattleSimulationConfig(null);
     setRunKey((currentKey) => currentKey + 1);
   }
 
@@ -141,6 +172,76 @@ export default function Home() {
     setScreen("trainer-card");
   }
 
+  function startGymBattle(index: number) {
+    if (!result) {
+      return;
+    }
+
+    const opponent = GYM_LEADERS[index];
+    setBattleSimulationConfig({
+      stage: "gym",
+      opponentIndex: index,
+      opponent,
+      breakdown: findBreakdown(result.opponent_breakdown?.gym_leaders, opponent.name),
+    });
+    setScreen("battle-simulation");
+  }
+
+  function startEliteFourBattle(index: number) {
+    if (!result) {
+      return;
+    }
+
+    const opponent = ELITE_FOUR[index];
+    setBattleSimulationConfig({
+      stage: "elite-four",
+      opponentIndex: index,
+      opponent,
+      breakdown: findBreakdown(result.opponent_breakdown?.elite_four, opponent.name),
+    });
+    setScreen("battle-simulation");
+  }
+
+  function startChampionBattle() {
+    if (!result) {
+      return;
+    }
+
+    setBattleSimulationConfig({
+      stage: "champion",
+      opponentIndex: 0,
+      opponent: CHAMPION,
+      breakdown: findBreakdown(result.opponent_breakdown?.champion, CHAMPION.name),
+    });
+    setScreen("battle-simulation");
+  }
+
+  function completeBattleSimulation() {
+    if (!battleSimulationConfig) {
+      setScreen("end-results");
+      return;
+    }
+
+    if (battleSimulationConfig.stage === "gym") {
+      setGymRevealedCount((currentCount) =>
+        Math.max(currentCount, battleSimulationConfig.opponentIndex + 1),
+      );
+      setScreen("gym-leaders");
+      return;
+    }
+
+    if (battleSimulationConfig.stage === "elite-four") {
+      setEliteRevealedCount((currentCount) =>
+        Math.max(currentCount, battleSimulationConfig.opponentIndex + 1),
+      );
+      setScreen("elite-four");
+      return;
+    }
+
+    setChampionRevealed(true);
+    setScreen("champion");
+  }
+
   if (screen === "title") {
     return (
       <TitleScreen
@@ -167,10 +268,14 @@ export default function Home() {
     return (
       <GymLeadersScreen
         result={result}
+        revealedCount={gymRevealedCount}
         modeLabel={getModeLabel(gameMode)}
+        onBattleLeader={startGymBattle}
         onChallengeEliteFour={() => setScreen("elite-four")}
         onMainMenu={returnToMainMenu}
         onResetRun={resetCurrentRun}
+        onSimulateBattles={() => setGymRevealedCount(GYM_LEADERS.length)}
+        onSkipBattles={() => setGymRevealedCount(GYM_LEADERS.length)}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -180,9 +285,13 @@ export default function Home() {
     return (
       <EliteFourScreen
         result={result}
+        revealedCount={eliteRevealedCount}
         modeLabel={getModeLabel(gameMode)}
+        onBattleEliteMember={startEliteFourBattle}
         onChallengeChampion={() => setScreen("champion")}
         onMainMenu={returnToMainMenu}
+        onSimulateBattles={() => setEliteRevealedCount(ELITE_FOUR.length)}
+        onSkipBattles={() => setEliteRevealedCount(ELITE_FOUR.length)}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -194,9 +303,27 @@ export default function Home() {
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={team}
+        revealed={championRevealed}
         modeLabel={getModeLabel(gameMode)}
+        onBattleChampion={startChampionBattle}
         onMainMenu={returnToMainMenu}
+        onSimulateBattle={() => setChampionRevealed(true)}
+        onSkipBattle={() => setChampionRevealed(true)}
         onViewResults={() => setScreen("end-results")}
+      />
+    );
+  }
+
+  if (screen === "battle-simulation" && result && battleSimulationConfig) {
+    return (
+      <BattleSimulationScreen
+        trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
+        selectedPokemon={team}
+        opponent={battleSimulationConfig.opponent}
+        breakdown={battleSimulationConfig.breakdown}
+        modeLabel={getModeLabel(gameMode)}
+        onComplete={completeBattleSimulation}
+        onMainMenu={returnToMainMenu}
       />
     );
   }

@@ -4506,3 +4506,328 @@ p {
 
 /* End progression card stamp + sprite centering fixes */
 
+
+
+/* Retro battle simulator first version */
+.battle-choice-panel {
+  width: min(100%, 720px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+}
+
+.battle-choice-panel .primary-action,
+.battle-choice-panel .secondary-action {
+  width: 100%;
+}
+
+.battle-sim-shell {
+  display: grid;
+  place-items: center;
+}
+
+.battle-sim-screen {
+  width: min(100%, 760px);
+  display: grid;
+  gap: 12px;
+  border: 3px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 248, 223, 0.96);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.battle-sim-stage {
+  position: relative;
+  min-height: clamp(300px, 52vw, 430px);
+  border: 4px solid #111;
+  background: #f8f4fb;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.battle-intro-scene,
+.pokemon-battle-scene {
+  position: absolute;
+  inset: 0;
+}
+
+.battle-intro-trainer {
+  position: absolute;
+  width: clamp(82px, 17vw, 145px);
+  height: clamp(115px, 21vw, 190px);
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.battle-intro-opponent {
+  top: 26px;
+  right: 56px;
+  animation: trainerSlideInRight 420ms ease both;
+}
+
+.battle-intro-player {
+  left: 46px;
+  bottom: 26px;
+  animation: trainerSlideInLeft 420ms ease both;
+}
+
+.battle-party-row {
+  display: flex;
+  gap: 4px;
+}
+
+.opponent-party {
+  position: absolute;
+  top: 52px;
+  left: 48px;
+}
+
+.player-party {
+  position: absolute;
+  right: 54px;
+  bottom: 72px;
+}
+
+.battle-player-party {
+  position: absolute;
+  right: 38px;
+  bottom: 24px;
+}
+
+.battle-party-ball {
+  width: 15px;
+  height: 15px;
+  border: 2px solid #111;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, #fff 0 18%, #111 18% 29%, transparent 29%),
+    linear-gradient(#fff 0 45%, #111 45% 56%, #777 56% 100%);
+}
+
+.battle-hud {
+  position: absolute;
+  width: min(46%, 300px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 8px;
+  color: #111;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.battle-hud strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-hud-opponent {
+  top: 24px;
+  left: 28px;
+}
+
+.battle-hud-player {
+  right: 28px;
+  bottom: 54px;
+}
+
+.battle-hp-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
+.battle-hp-bar {
+  height: 10px;
+  border: 3px solid #111;
+  background: #fff;
+  overflow: hidden;
+}
+
+.battle-hp-bar i {
+  display: block;
+  height: 100%;
+  background: #2fb95d;
+  transition: width 420ms ease;
+}
+
+.battle-opponent-sprite-wrap {
+  position: absolute;
+  top: 92px;
+  right: 78px;
+  width: clamp(92px, 18vw, 155px);
+  height: clamp(92px, 18vw, 155px);
+  display: grid;
+  place-items: center;
+}
+
+.battle-player-sprite-wrap {
+  position: absolute;
+  left: 72px;
+  bottom: 88px;
+  width: clamp(110px, 22vw, 190px);
+  height: clamp(110px, 22vw, 190px);
+  display: grid;
+  place-items: center;
+}
+
+.battle-pokemon-sprite {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.22));
+}
+
+.battle-opponent-pokemon {
+  animation: pokemonEnterRight 420ms ease both;
+}
+
+.battle-player-pokemon {
+  animation: pokemonEnterLeft 420ms ease both;
+}
+
+.battle-pokemon-sprite.fainting {
+  animation: pokemonFaint 680ms ease both;
+}
+
+.battle-text-box {
+  position: relative;
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  border: 4px solid #111;
+  background: #fff;
+  color: #111;
+  padding: 14px 44px 14px 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(1rem, 3.8vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.battle-text-box p {
+  margin: 0;
+}
+
+.battle-text-caret {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  animation: battleCaretBlink 720ms steps(1) infinite;
+}
+
+.battle-sim-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@keyframes trainerSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes trainerSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pokemonEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pokemonEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pokemonFaint {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(38px);
+  }
+}
+
+@keyframes battleCaretBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .battle-choice-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-sim-stage {
+    min-height: 320px;
+  }
+
+  .battle-hud {
+    width: 52%;
+    font-size: 0.78rem;
+  }
+
+  .battle-intro-opponent {
+    right: 26px;
+  }
+
+  .battle-intro-player {
+    left: 22px;
+  }
+
+  .battle-opponent-sprite-wrap {
+    right: 32px;
+  }
+
+  .battle-player-sprite-wrap {
+    left: 28px;
+  }
+
+  .opponent-party {
+    left: 22px;
+  }
+
+  .player-party {
+    right: 28px;
+  }
+}

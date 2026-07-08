@@ -1,17 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import {
-  BattleTrainerCard,
-  createPlayerBattleTrainerCardProps,
-} from "@/components/BattleTrainerCard";
 import { GameTopBar } from "@/components/GameTopBar";
-import { getChampionSprite } from "@/lib/imagePaths";
+import { ProgressionCard } from "@/components/ProgressionCard";
 import {
   CHAMPION,
   didBeatOpponent,
   findBreakdown,
-  formatBattleOutcome,
   getBattleStatus,
 } from "@/lib/progression";
 import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
@@ -20,31 +14,35 @@ type ChampionScreenProps = {
   trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
+  revealed: boolean;
   modeLabel: "Battle Mode" | "Adventure Mode";
+  onBattleChampion: () => void;
   onMainMenu: () => void;
+  onSimulateBattle: () => void;
+  onSkipBattle: () => void;
   onViewResults: () => void;
 };
 
 export function ChampionScreen({
   trainerProfile,
   result,
-  selectedPokemon,
+  revealed,
   modeLabel,
+  onBattleChampion,
   onMainMenu,
+  onSimulateBattle,
+  onSkipBattle,
   onViewResults,
 }: ChampionScreenProps) {
-  const [battleRevealed, setBattleRevealed] = useState(false);
   const championBreakdown = findBreakdown(
     result.opponent_breakdown?.champion,
     CHAMPION.name,
   );
-  const championStatus = battleRevealed
+  const championStatus = revealed
     ? getBattleStatus(championBreakdown, Boolean(championBreakdown))
     : "pending";
   const championBeaten = didBeatOpponent(championBreakdown);
   const playerName = trainerProfile.name || "Trainer";
-  const badgesEarned = result.badges_earned?.length ?? 0;
-  const championStamp = formatBattleOutcome(championStatus, championBreakdown);
 
   return (
     <main className="game-shell stage-shell">
@@ -56,45 +54,36 @@ export function ChampionScreen({
           <p>{playerName} versus Champion</p>
         </div>
 
-        <button
-          className="primary-action stage-action"
-          type="button"
-          onClick={!battleRevealed ? () => setBattleRevealed(true) : onViewResults}
-        >
-          {!battleRevealed
-            ? "BATTLE"
-            : championBeaten
-              ? "VIEW CHAMPION RESULTS"
-              : "VIEW FINAL RESULTS"}
-        </button>
+        <div className="battle-choice-panel">
+          {!revealed ? (
+            <>
+              <button
+                className="primary-action stage-action"
+                type="button"
+                onClick={onBattleChampion}
+              >
+                BATTLE CHAMPION
+              </button>
+              <button className="secondary-action" type="button" onClick={onSimulateBattle}>
+                SIMULATE CHAMPION
+              </button>
+              <button className="secondary-action" type="button" onClick={onSkipBattle}>
+                SKIP BATTLE
+              </button>
+            </>
+          ) : (
+            <button className="primary-action stage-action" type="button" onClick={onViewResults}>
+              {championBeaten ? "VIEW CHAMPION RESULTS" : "VIEW FINAL RESULTS"}
+            </button>
+          )}
+        </div>
 
-        <div className="champion-versus-layout">
-          <BattleTrainerCard
-            {...createPlayerBattleTrainerCardProps(trainerProfile)}
-            badges={badgesEarned}
-            className="player-card"
-            pokemonCount={6}
-            team={selectedPokemon}
+        <div className="stage-card-grid final-stage-grid champion-final-grid">
+          <ProgressionCard
+            breakdown={championBreakdown}
+            meta={CHAMPION}
+            status={championStatus}
           />
-
-          <div className="versus-mark" aria-hidden="true">
-            VS
-          </div>
-
-          <div className={`champion-card ${championStatus}`}>
-            {championStamp ? (
-              <strong className="result-stamp">{championStamp}</strong>
-            ) : null}
-            <BattleTrainerCard
-              badges={8}
-              fallback={CHAMPION.fallback}
-              hometown="Pallet Town"
-              name="Gary"
-              pokemonCount={CHAMPION.pokemonCount}
-              role="Champion"
-              spriteSrc={getChampionSprite(CHAMPION.name)}
-            />
-          </div>
         </div>
       </section>
     </main>
