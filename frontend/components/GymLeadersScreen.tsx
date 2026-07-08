@@ -107,16 +107,21 @@ export function GymLeadersScreen({
             const revealed = index < revealedCount;
             const reached = reachedPrevious && Boolean(breakdown);
             const status = revealed ? getBattleStatus(breakdown, reached) : "pending";
+            const isGreyedOutAfterLoss = hasLoss && !revealed;
             reachedPrevious = revealed ? reached && status === "cleared" : reachedPrevious;
 
             return (
-              <ProgressionCard
-                breakdown={breakdown}
+              <div
+                className={isGreyedOutAfterLoss ? "unchallenged-after-loss" : ""}
                 key={leader.name}
-                meta={leader}
-                status={status}
-                showBadge
-              />
+              >
+                <ProgressionCard
+                  breakdown={breakdown}
+                  meta={leader}
+                  status={status}
+                  showBadge
+                />
+              </div>
             );
           })}
         </div>

@@ -99,15 +99,20 @@ export function EliteFourScreen({
             const revealed = index < revealedCount;
             const reached = reachedPrevious && Boolean(breakdown);
             const status = revealed ? getBattleStatus(breakdown, reached) : "pending";
+            const isGreyedOutAfterLoss = hasLoss && !revealed;
             reachedPrevious = revealed ? reached && status === "cleared" : reachedPrevious;
 
             return (
-              <ProgressionCard
-                breakdown={breakdown}
+              <div
+                className={isGreyedOutAfterLoss ? "unchallenged-after-loss" : ""}
                 key={member.name}
-                meta={member}
-                status={status}
-              />
+              >
+                <ProgressionCard
+                  breakdown={breakdown}
+                  meta={member}
+                  status={status}
+                />
+              </div>
             );
           })}
         </div>
