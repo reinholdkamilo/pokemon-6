@@ -18,7 +18,6 @@ type ChampionScreenProps = {
   modeLabel: "Battle Mode" | "Adventure Mode";
   onBattleChampion: () => void;
   onMainMenu: () => void;
-  onSimulateBattle: () => void;
   onSkipBattle: () => void;
   onViewResults: () => void;
 };
@@ -30,7 +29,6 @@ export function ChampionScreen({
   modeLabel,
   onBattleChampion,
   onMainMenu,
-  onSimulateBattle,
   onSkipBattle,
   onViewResults,
 }: ChampionScreenProps) {
@@ -63,9 +61,6 @@ export function ChampionScreen({
                 onClick={onBattleChampion}
               >
                 BATTLE CHAMPION
-              </button>
-              <button className="secondary-action" type="button" onClick={onSimulateBattle}>
-                SIMULATE CHAMPION
               </button>
               <button className="secondary-action" type="button" onClick={onSkipBattle}>
                 SKIP BATTLE

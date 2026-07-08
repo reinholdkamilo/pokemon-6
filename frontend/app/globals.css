@@ -4985,3 +4985,19 @@ p {
   color: #b91c1c !important;
   background: rgba(254, 226, 226, 0.96) !important;
 }
+
+
+/* Two-button battle choice layout */
+.battle-choice-panel {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.battle-choice-panel:has(.primary-action:only-child) {
+  grid-template-columns: 1fr !important;
+}
+
+@media (max-width: 700px) {
+  .battle-choice-panel {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -18,7 +18,6 @@ type GymLeadersScreenProps = {
   onChallengeEliteFour: () => void;
   onMainMenu: () => void;
   onResetRun: () => void;
-  onSimulateBattles: () => void;
   onSkipBattles: () => void;
   onViewResults: () => void;
 };
@@ -31,7 +30,6 @@ export function GymLeadersScreen({
   onChallengeEliteFour,
   onMainMenu,
   onResetRun,
-  onSimulateBattles,
   onSkipBattles,
   onViewResults,
 }: GymLeadersScreenProps) {
@@ -77,9 +75,6 @@ export function GymLeadersScreen({
                 onClick={() => onBattleLeader(nextBattleIndex)}
               >
                 BATTLE {nextLeader.name.toUpperCase()}
-              </button>
-              <button className="secondary-action" type="button" onClick={onSimulateBattles}>
-                SIMULATE GYM LEADERS
               </button>
               <button className="secondary-action" type="button" onClick={onSkipBattles}>
                 SKIP BATTLES

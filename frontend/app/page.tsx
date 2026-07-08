@@ -275,7 +275,6 @@ export default function Home() {
         onChallengeEliteFour={() => setScreen("elite-four")}
         onMainMenu={returnToMainMenu}
         onResetRun={resetCurrentRun}
-        onSimulateBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
         onSkipBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
         onViewResults={() => setScreen("end-results")}
       />
@@ -291,7 +290,6 @@ export default function Home() {
         onBattleEliteMember={startEliteFourBattle}
         onChallengeChampion={() => setScreen("champion")}
         onMainMenu={returnToMainMenu}
-        onSimulateBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
         onSkipBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
         onViewResults={() => setScreen("end-results")}
       />
@@ -308,7 +306,6 @@ export default function Home() {
         modeLabel={getModeLabel(gameMode)}
         onBattleChampion={startChampionBattle}
         onMainMenu={returnToMainMenu}
-        onSimulateBattle={() => setChampionRevealed(true)}
         onSkipBattle={() => setChampionRevealed(true)}
         onViewResults={() => setScreen("end-results")}
       />

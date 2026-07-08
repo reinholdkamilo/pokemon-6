@@ -17,7 +17,6 @@ type EliteFourScreenProps = {
   onBattleEliteMember: (index: number) => void;
   onChallengeChampion: () => void;
   onMainMenu: () => void;
-  onSimulateBattles: () => void;
   onSkipBattles: () => void;
   onViewResults: () => void;
 };
@@ -29,7 +28,6 @@ export function EliteFourScreen({
   onBattleEliteMember,
   onChallengeChampion,
   onMainMenu,
-  onSimulateBattles,
   onSkipBattles,
   onViewResults,
 }: EliteFourScreenProps) {
@@ -74,9 +72,6 @@ export function EliteFourScreen({
                 onClick={() => onBattleEliteMember(nextBattleIndex)}
               >
                 BATTLE {nextMember.name.toUpperCase()}
-              </button>
-              <button className="secondary-action" type="button" onClick={onSimulateBattles}>
-                SIMULATE ELITE FOUR
               </button>
               <button className="secondary-action" type="button" onClick={onSkipBattles}>
                 SKIP BATTLES
