@@ -136,6 +136,7 @@ export const CHAMPION: OpponentMeta = {
   stage: "Champion",
   specialty: "Mixed",
   pokemonCount: 6,
+  pokemonTeam: ["Pidgeot", "Alakazam", "Rhydon", "Arcanine", "Exeggutor", "Blastoise"],
   fallback: "G",
 };
 
@@ -173,5 +174,5 @@ export function formatBattleOutcome(
   }
 
   return breakdown?.outcome === "Beat" ? "DEFEATED" : "WIPED OUT";
-}  pokemonTeam: ["Pidgeot", "Alakazam", "Rhydon", "Arcanine", "Exeggutor", "Blastoise"],
+}
 
