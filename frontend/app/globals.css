@@ -3631,3 +3631,183 @@ p {
     linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
     linear-gradient(180deg, #fff2b8, #f3c536) !important;
 }
+
+
+/* Final hard override: centred result grid and selection type colours */
+
+/* Centre the Final Team card group instead of stretching/left-justifying across the full row */
+.results-team-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 190px)) !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+.results-pokemon-summary-card {
+  width: 100% !important;
+  max-width: 190px !important;
+}
+
+/* Keep selection cards the same visual size/format as result cards */
+.reveal-card.mystery-reveal-card,
+.adventure-card-slot.mystery-reveal-card {
+  width: 100% !important;
+  max-width: 190px !important;
+  justify-self: center !important;
+}
+
+/* Force primary type variables on Pokémon selection cards.
+   This fixes later duplicate/neutral CSS overriding them back to yellow. */
+.reveal-card.mystery-reveal-card.type-normal,
+.adventure-card-slot.mystery-reveal-card.type-normal {
+  --pokemon-type-bg: #e8e1c8 !important;
+  --pokemon-type-bg-strong: #a8a77a !important;
+  --pokemon-type-border: #6f6e4d !important;
+}
+
+.reveal-card.mystery-reveal-card.type-fire,
+.adventure-card-slot.mystery-reveal-card.type-fire {
+  --pokemon-type-bg: #ffd8b2 !important;
+  --pokemon-type-bg-strong: #ee8130 !important;
+  --pokemon-type-border: #9c4b12 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-water,
+.adventure-card-slot.mystery-reveal-card.type-water {
+  --pokemon-type-bg: #cfe4ff !important;
+  --pokemon-type-bg-strong: #6390f0 !important;
+  --pokemon-type-border: #2452a7 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-electric,
+.adventure-card-slot.mystery-reveal-card.type-electric {
+  --pokemon-type-bg: #fff1a8 !important;
+  --pokemon-type-bg-strong: #f7d02c !important;
+  --pokemon-type-border: #9d7f00 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-grass,
+.adventure-card-slot.mystery-reveal-card.type-grass {
+  --pokemon-type-bg: #d6f5c4 !important;
+  --pokemon-type-bg-strong: #7ac74c !important;
+  --pokemon-type-border: #3f8424 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-ice,
+.adventure-card-slot.mystery-reveal-card.type-ice {
+  --pokemon-type-bg: #d8fbff !important;
+  --pokemon-type-bg-strong: #96d9d6 !important;
+  --pokemon-type-border: #4b8c89 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-fighting,
+.adventure-card-slot.mystery-reveal-card.type-fighting {
+  --pokemon-type-bg: #f0bbb6 !important;
+  --pokemon-type-bg-strong: #c22e28 !important;
+  --pokemon-type-border: #7c1714 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-poison,
+.adventure-card-slot.mystery-reveal-card.type-poison {
+  --pokemon-type-bg: #ead2f2 !important;
+  --pokemon-type-bg-strong: #a33ea1 !important;
+  --pokemon-type-border: #671f65 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-ground,
+.adventure-card-slot.mystery-reveal-card.type-ground {
+  --pokemon-type-bg: #f0ddaa !important;
+  --pokemon-type-bg-strong: #e2bf65 !important;
+  --pokemon-type-border: #94742f !important;
+}
+
+.reveal-card.mystery-reveal-card.type-flying,
+.adventure-card-slot.mystery-reveal-card.type-flying {
+  --pokemon-type-bg: #e2d8ff !important;
+  --pokemon-type-bg-strong: #a98ff3 !important;
+  --pokemon-type-border: #6d56a6 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-psychic,
+.adventure-card-slot.mystery-reveal-card.type-psychic {
+  --pokemon-type-bg: #ffd2e0 !important;
+  --pokemon-type-bg-strong: #f95587 !important;
+  --pokemon-type-border: #a51f4a !important;
+}
+
+.reveal-card.mystery-reveal-card.type-bug,
+.adventure-card-slot.mystery-reveal-card.type-bug {
+  --pokemon-type-bg: #edf2b8 !important;
+  --pokemon-type-bg-strong: #a6b91a !important;
+  --pokemon-type-border: #6d7910 !important;
+}
+
+.reveal-card.mystery-reveal-card.type-rock,
+.adventure-card-slot.mystery-reveal-card.type-rock {
+  --pokemon-type-bg: #e6d9a8 !important;
+  --pokemon-type-bg-strong: #b6a136 !important;
+  --pokemon-type-border: #76671d !important;
+}
+
+.reveal-card.mystery-reveal-card.type-ghost,
+.adventure-card-slot.mystery-reveal-card.type-ghost {
+  --pokemon-type-bg: #ddd2ef !important;
+  --pokemon-type-bg-strong: #735797 !important;
+  --pokemon-type-border: #46315f !important;
+}
+
+.reveal-card.mystery-reveal-card.type-dragon,
+.adventure-card-slot.mystery-reveal-card.type-dragon {
+  --pokemon-type-bg: #dac8ff !important;
+  --pokemon-type-bg-strong: #6f35fc !important;
+  --pokemon-type-border: #431ea0 !important;
+}
+
+/* Apply the forced type colours to the actual visible selection card surface */
+.reveal-card.mystery-reveal-card[class*="type-"]:not(.type-blank),
+.adventure-card-slot.mystery-reveal-card[class*="type-"]:not(.empty):not(.type-blank) {
+  border-color: var(--pokemon-type-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong)) !important;
+}
+
+.reveal-card.mystery-reveal-card[class*="type-"]:not(.type-blank) .mystery-card-revealed,
+.adventure-card-slot.mystery-reveal-card[class*="type-"]:not(.empty):not(.type-blank) .mystery-card-revealed {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong)) !important;
+}
+
+/* Mystery unrevealed cards stay neutral/yellow */
+.reveal-card.mystery-reveal-card.type-blank,
+.adventure-card-slot.mystery-reveal-card.empty,
+.adventure-card-slot.mystery-reveal-card.type-blank {
+  --pokemon-type-bg: #fff2b8 !important;
+  --pokemon-type-bg-strong: #f3c536 !important;
+  --pokemon-type-border: var(--border) !important;
+}
+
+/* Responsive centring */
+@media (max-width: 560px) {
+  .results-team-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .results-pokemon-summary-card,
+  .reveal-card.mystery-reveal-card,
+  .adventure-card-slot.mystery-reveal-card {
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 760px) {
+  .results-team-grid {
+    grid-template-columns: repeat(3, minmax(150px, 190px)) !important;
+    justify-content: center !important;
+  }
+}
