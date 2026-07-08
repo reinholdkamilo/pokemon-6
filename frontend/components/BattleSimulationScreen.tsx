@@ -487,6 +487,20 @@ function buildBattleFrames({
       opponentIndex += 1;
       opponentHp = 100;
 
+      if (opponentIndex < opponent.pokemonTeam.length && playerIndex < selectedPokemon.length) {
+        const nextOpponentPokemon = opponentTeam[opponentIndex];
+        const nextOpponentPokemonName = opponent.pokemonTeam[opponentIndex] ?? "Pokemon";
+
+        frames.push({
+          message: `${opponentDisplayName.toUpperCase()} sent out ${nextOpponentPokemonName.toUpperCase()}!`,
+          playerPokemon,
+          opponentPokemon: nextOpponentPokemon ?? undefined,
+          opponentPokemonName: nextOpponentPokemonName,
+          playerHp,
+          opponentHp,
+        });
+      }
+
       if (!playerWinsBattle && opponentIndex >= opponentDefeatLimit) {
         playerHp = Math.max(12, playerHp - 20);
       }
@@ -517,6 +531,19 @@ function buildBattleFrames({
 
       playerIndex += 1;
       playerHp = 100;
+
+      if (playerIndex < selectedPokemon.length && opponentIndex < opponent.pokemonTeam.length) {
+        const nextPlayerPokemon = selectedPokemon[playerIndex];
+
+        frames.push({
+          message: `Go! ${nextPlayerPokemon.name.toUpperCase()}!`,
+          playerPokemon: nextPlayerPokemon,
+          opponentPokemon: opponentPokemon ?? undefined,
+          opponentPokemonName,
+          playerHp,
+          opponentHp,
+        });
+      }
     }
 
     if (playerWinsBattle && opponentIndex >= opponent.pokemonTeam.length) {
