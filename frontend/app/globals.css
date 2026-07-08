@@ -3071,3 +3071,140 @@ p {
     height: 7px;
   }
 }
+
+
+/* Match Pokémon selection cards to Results final-team sprite card format */
+.reveal-card.mystery-reveal-card,
+.adventure-card-slot.mystery-reveal-card {
+  --pokemon-type-bg: #fff2b8;
+  --pokemon-type-bg-strong: #f3c536;
+  --pokemon-type-border: var(--border);
+  aspect-ratio: 0.72 !important;
+  min-width: 0;
+  border: 3px solid var(--pokemon-type-border) !important;
+  border-radius: 10px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong)) !important;
+  box-shadow: 0 7px 0 rgba(52, 42, 32, 0.82) !important;
+  overflow: hidden !important;
+}
+
+/* Revealed selection cards use the same internal structure as result cards */
+.reveal-card .mystery-card-revealed,
+.adventure-card-slot .mystery-card-revealed {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto auto auto 8px !important;
+  align-items: center;
+  justify-items: center;
+  gap: 4px !important;
+  padding: 10px 8px 0 !important;
+  background: transparent !important;
+}
+
+/* Maximise the sprite inside the card like the Results team cards */
+.reveal-card .mystery-card-sprite,
+.adventure-card-slot .mystery-card-sprite {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 145px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  image-rendering: pixelated;
+  transform: scale(1.14);
+  transform-origin: center bottom;
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22));
+}
+
+/* Clean professional text layout */
+.reveal-card .mystery-card-name,
+.adventure-card-slot .mystery-card-name {
+  max-width: 100%;
+  color: var(--text) !important;
+  font-size: clamp(0.82rem, 2.6vw, 1.12rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1.02 !important;
+  text-align: center !important;
+  overflow-wrap: anywhere;
+  margin-top: 4px !important;
+}
+
+.reveal-card .mystery-card-types,
+.adventure-card-slot .mystery-card-types {
+  max-width: 100%;
+  color: rgba(29, 33, 27, 0.78) !important;
+  font-size: clamp(0.58rem, 1.8vw, 0.78rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+.reveal-card .mystery-card-stat,
+.adventure-card-slot .mystery-card-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18px;
+  padding: 2px 7px;
+  border: 2px solid rgba(52, 42, 32, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  font-size: clamp(0.56rem, 1.7vw, 0.72rem);
+  font-weight: 1000;
+  line-height: 1;
+}
+
+/* Mystery unrevealed cards: remove middle image/question mark and centre text only */
+.mystery-card-template {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid !important;
+  place-items: center !important;
+  padding: 12px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, #fff2b8, #f3c536) !important;
+}
+
+.mystery-question {
+  display: none !important;
+}
+
+.mystery-card-template .mystery-label {
+  max-width: 100%;
+  color: var(--accent-dark) !important;
+  font-size: clamp(0.95rem, 3vw, 1.4rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+  text-transform: uppercase;
+}
+
+/* Keep the 3x2 grid neat */
+.reveal-grid {
+  align-items: stretch;
+}
+
+@media (max-width: 560px) {
+  .reveal-card .mystery-card-revealed,
+  .adventure-card-slot .mystery-card-revealed {
+    grid-template-rows: minmax(0, 1fr) auto auto auto 7px !important;
+    gap: 3px !important;
+    padding: 8px 6px 0 !important;
+  }
+
+  .reveal-card .mystery-card-sprite,
+  .adventure-card-slot .mystery-card-sprite {
+    max-height: 122px !important;
+    transform: scale(1.16);
+  }
+
+  .mystery-card-template .mystery-label {
+    font-size: clamp(0.82rem, 2.8vw, 1.08rem) !important;
+  }
+}

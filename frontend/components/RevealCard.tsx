@@ -101,7 +101,6 @@ export function RevealCard({
           </span>
         ) : (
           <span className="mystery-card-template" aria-hidden="true">
-            <span className="mystery-question">?</span>
             <span className="mystery-label">Mystery Pokémon</span>
           </span>
         )}
