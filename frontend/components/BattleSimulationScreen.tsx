@@ -365,10 +365,19 @@ function buildBattleFrames({
   let opponentHp = 100;
   let safety = 0;
 
+  const opponentDefeatLimit = playerWinsBattle
+    ? opponent.pokemonTeam.length
+    : getOpponentDefeatLimitForPlayerLoss({
+        selectedPokemon,
+        opponent,
+        opponentTeam,
+        opponentDisplayName,
+      });
+
   while (
     playerIndex < selectedPokemon.length &&
     opponentIndex < opponent.pokemonTeam.length &&
-    safety < 24
+    safety < 30
   ) {
     safety += 1;
 
@@ -376,18 +385,22 @@ function buildBattleFrames({
     const opponentPokemon = opponentTeam[opponentIndex];
     const opponentPokemonName = opponent.pokemonTeam[opponentIndex] ?? "Pokemon";
     const duelScore = matchupScore(playerPokemon, opponentPokemon, opponentPokemonName, safety);
-    const needPlayerWin =
+
+    const playerMustWinThisDuel =
       playerWinsBattle && opponentIndex >= opponent.pokemonTeam.length - 1;
-    const needOpponentWin =
-      !playerWinsBattle && playerIndex >= selectedPokemon.length - 1;
+
+    const opponentMustWinThisDuel =
+      !playerWinsBattle &&
+      (playerIndex >= selectedPokemon.length - 1 ||
+        opponentIndex >= opponentDefeatLimit);
 
     let playerWinsDuel = duelScore >= 0;
 
-    if (needPlayerWin) {
+    if (playerMustWinThisDuel) {
       playerWinsDuel = true;
     }
 
-    if (needOpponentWin) {
+    if (opponentMustWinThisDuel) {
       playerWinsDuel = false;
     }
 
@@ -473,6 +486,10 @@ function buildBattleFrames({
 
       opponentIndex += 1;
       opponentHp = 100;
+
+      if (!playerWinsBattle && opponentIndex >= opponentDefeatLimit) {
+        playerHp = Math.max(12, playerHp - 20);
+      }
     } else {
       playerHp = Math.max(0, playerHp - opponentDamage);
       opponentHp = Math.max(18, opponentHp - Math.floor(playerDamage * 0.45));
@@ -501,21 +518,172 @@ function buildBattleFrames({
       playerIndex += 1;
       playerHp = 100;
     }
+
+    if (playerWinsBattle && opponentIndex >= opponent.pokemonTeam.length) {
+      break;
+    }
+
+    if (!playerWinsBattle && playerIndex >= selectedPokemon.length) {
+      break;
+    }
   }
+
+  if (playerWinsBattle && opponentIndex < opponent.pokemonTeam.length) {
+    while (opponentIndex < opponent.pokemonTeam.length && safety < 36) {
+      safety += 1;
+
+      const playerPokemon = selectedPokemon[Math.min(playerIndex, selectedPokemon.length - 1)];
+      const opponentPokemon = opponentTeam[opponentIndex];
+      const opponentPokemonName = opponent.pokemonTeam[opponentIndex] ?? "Pokemon";
+
+      frames.push({
+        message: `${playerPokemon.name.toUpperCase()} found one last opening!`,
+        playerPokemon,
+        opponentPokemon: opponentPokemon ?? undefined,
+        opponentPokemonName,
+        playerHp: Math.max(20, playerHp),
+        opponentHp: 0,
+        playerAction: true,
+      });
+
+      frames.push({
+        message: `${opponentPokemonName.toUpperCase()} fainted!`,
+        playerPokemon,
+        opponentPokemon: opponentPokemon ?? undefined,
+        opponentPokemonName,
+        playerHp: Math.max(20, playerHp),
+        opponentHp: 0,
+        opponentFainting: true,
+      });
+
+      opponentIndex += 1;
+    }
+  }
+
+  if (!playerWinsBattle && playerIndex < selectedPokemon.length) {
+    const survivingOpponentIndex = Math.min(
+      opponentIndex,
+      Math.max(0, opponent.pokemonTeam.length - 1),
+    );
+    const opponentPokemon = opponentTeam[survivingOpponentIndex];
+    const opponentPokemonName = opponent.pokemonTeam[survivingOpponentIndex] ?? "Pokemon";
+
+    while (playerIndex < selectedPokemon.length && safety < 42) {
+      safety += 1;
+
+      const playerPokemon = selectedPokemon[playerIndex];
+      const remainingPlayerCount = selectedPokemon.length - playerIndex;
+      const message =
+        opponent.name === "Gary"
+          ? remainingPlayerCount <= 2
+            ? `Champion pressure overwhelmed ${playerPokemon.name.toUpperCase()}!`
+            : `${opponentPokemonName.toUpperCase()} countered ${playerPokemon.name.toUpperCase()}!`
+          : `${opponentPokemonName.toUpperCase()} overpowered ${playerPokemon.name.toUpperCase()}!`;
+
+      frames.push({
+        message,
+        playerPokemon,
+        opponentPokemon: opponentPokemon ?? undefined,
+        opponentPokemonName,
+        playerHp: remainingPlayerCount <= 2 ? 0 : 22,
+        opponentHp: Math.max(24, opponentHp),
+        opponentAction: true,
+      });
+
+      frames.push({
+        message: `${playerPokemon.name.toUpperCase()} fainted!`,
+        playerPokemon,
+        opponentPokemon: opponentPokemon ?? undefined,
+        opponentPokemonName,
+        playerHp: 0,
+        opponentHp: Math.max(24, opponentHp),
+        playerFainting: true,
+      });
+
+      playerIndex += 1;
+    }
+  }
+
+  const finalPlayerPokemon =
+    selectedPokemon[Math.min(Math.max(playerIndex, 0), selectedPokemon.length - 1)];
+  const finalOpponentIndex = Math.min(
+    Math.max(playerWinsBattle ? opponent.pokemonTeam.length - 1 : opponentIndex, 0),
+    opponent.pokemonTeam.length - 1,
+  );
+  const finalOpponentPokemon = opponentTeam[finalOpponentIndex];
+  const finalOpponentPokemonName = opponent.pokemonTeam[finalOpponentIndex] ?? "Pokemon";
 
   frames.push({
     message: playerWinsBattle
       ? `${opponentDisplayName.toUpperCase()} was ${outcomeText || "DEFEATED"}!`
       : `${playerName.toUpperCase()} was ${outcomeText || "WIPED OUT"}!`,
-    playerPokemon: selectedPokemon[Math.min(playerIndex, selectedPokemon.length - 1)],
-    opponentPokemon: opponentTeam[Math.min(opponentIndex, opponentTeam.length - 1)] ?? undefined,
-    opponentPokemonName:
-      opponent.pokemonTeam[Math.min(opponentIndex, opponent.pokemonTeam.length - 1)] ?? "Pokemon",
+    playerPokemon: finalPlayerPokemon,
+    opponentPokemon: finalOpponentPokemon ?? undefined,
+    opponentPokemonName: finalOpponentPokemonName,
     playerHp: playerWinsBattle ? Math.max(22, playerHp) : 0,
     opponentHp: playerWinsBattle ? 0 : Math.max(22, opponentHp),
+    playerFainting: !playerWinsBattle,
+    opponentFainting: playerWinsBattle,
   });
 
   return frames;
+}
+
+function getOpponentDefeatLimitForPlayerLoss({
+  selectedPokemon,
+  opponent,
+  opponentTeam,
+  opponentDisplayName,
+}: {
+  selectedPokemon: Pokemon[];
+  opponent: OpponentMeta;
+  opponentTeam: Array<Pokemon | null>;
+  opponentDisplayName: string;
+}) {
+  const playerStrength = selectedPokemon.reduce(
+    (total, pokemon) => total + pokemon.base_stat_total,
+    0,
+  );
+  const opponentStrength = opponentTeam.reduce(
+    (total, pokemon) => total + (pokemon?.base_stat_total ?? 440),
+    0,
+  );
+  const closeness = playerStrength - opponentStrength;
+  const maxOpponentDefeats = Math.max(0, opponent.pokemonTeam.length - 1);
+
+  if (opponentDisplayName === "Champion" || opponent.name === "Gary") {
+    if (closeness > 520) {
+      return Math.min(maxOpponentDefeats, 5);
+    }
+
+    if (closeness > 260) {
+      return Math.min(maxOpponentDefeats, 4);
+    }
+
+    if (closeness > 80) {
+      return Math.min(maxOpponentDefeats, 3);
+    }
+
+    if (closeness > -120) {
+      return Math.min(maxOpponentDefeats, 2);
+    }
+
+    return Math.min(maxOpponentDefeats, 1);
+  }
+
+  if (closeness > 420) {
+    return Math.min(maxOpponentDefeats, 4);
+  }
+
+  if (closeness > 180) {
+    return Math.min(maxOpponentDefeats, 3);
+  }
+
+  if (closeness > -80) {
+    return Math.min(maxOpponentDefeats, 2);
+  }
+
+  return Math.min(maxOpponentDefeats, 1);
 }
 
 function matchupScore(
