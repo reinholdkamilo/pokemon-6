@@ -27,8 +27,10 @@ export function ProgressionCard({
   const teamLayoutClass =
     meta.pokemonTeam.length <= 3 ? "team-count-small" : "team-count-large";
 
+  const championClass = meta.name === "Gary" ? "champion-progression-card" : "";
+
   return (
-    <article className={`progression-card ${status} ${teamLayoutClass}`}>
+    <article className={`progression-card ${status} ${teamLayoutClass} ${championClass}`}>
       <div className="progression-card-top">
         <strong className="trainer-card-name-label">{displayName}</strong>
 
