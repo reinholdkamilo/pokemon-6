@@ -4046,3 +4046,126 @@ p {
     grid-template-columns: repeat(auto-fit, minmax(150px, 190px)) !important;
   }
 }
+
+
+/* Final Champion Gary card sizing fix */
+
+/* Champion section should centre one card but not shrink it */
+.champion-final-grid,
+.final-stage-grid.champion-final-grid,
+.stage-card-grid.final-stage-grid.champion-final-grid {
+  display: grid !important;
+  grid-template-columns: minmax(150px, 190px) !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  gap: 14px !important;
+}
+
+/* Gary/Champion card must use the same size as Gym Leader and Elite Four cards */
+.champion-final-grid .progression-card,
+.final-stage-grid.champion-final-grid .progression-card,
+.stage-card-grid.final-stage-grid.champion-final-grid .progression-card {
+  width: 100% !important;
+  max-width: 190px !important;
+  min-width: 150px !important;
+  aspect-ratio: 0.72 !important;
+  margin: 0 auto !important;
+  padding: 8px 7px 9px !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(0, auto) auto !important;
+  gap: 4px !important;
+}
+
+/* Remove the small top-left Gary label so Champion matches the other cards */
+.champion-final-grid .progression-card-top > span {
+  display: none !important;
+}
+
+/* Gary sprite should not be boxed or smaller than the other trainer sprites */
+.champion-final-grid .progression-sprite-area {
+  width: 100% !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: end center !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.champion-final-grid .progression-card .trainer-sprite,
+.champion-final-grid .progression-card .stage-trainer-sprite {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 120px !important;
+  max-height: 126px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Champion title and team list should match Gym/Elite formatting */
+.champion-final-grid .progression-card h2 {
+  width: 100% !important;
+  margin: 0 !important;
+  font-size: clamp(0.86rem, 2vw, 1.08rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1.02 !important;
+  text-align: center !important;
+}
+
+.champion-final-grid .trainer-team-list {
+  width: 100% !important;
+  padding: 0 3px !important;
+  display: grid !important;
+  gap: 2px !important;
+  margin: 0 !important;
+}
+
+.champion-final-grid .trainer-team-list li {
+  display: grid !important;
+  grid-template-columns: 11px minmax(0, 1fr) !important;
+  gap: 4px !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  font-size: clamp(0.54rem, 1.35vw, 0.7rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.02 !important;
+}
+
+.champion-final-grid .trainer-team-list li span:last-child {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Keep the same mobile behaviour as the other trainer cards */
+@media (max-width: 560px) {
+  .champion-final-grid,
+  .final-stage-grid.champion-final-grid,
+  .stage-card-grid.final-stage-grid.champion-final-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .champion-final-grid .progression-card,
+  .final-stage-grid.champion-final-grid .progression-card,
+  .stage-card-grid.final-stage-grid.champion-final-grid .progression-card {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .champion-final-grid .progression-card .trainer-sprite,
+  .champion-final-grid .progression-card .stage-trainer-sprite {
+    max-width: 94px !important;
+    max-height: 100px !important;
+  }
+
+  .champion-final-grid .trainer-team-list li {
+    grid-template-columns: 9px minmax(0, 1fr) !important;
+    gap: 3px !important;
+    font-size: clamp(0.5rem, 1.75vw, 0.62rem) !important;
+  }
+}
