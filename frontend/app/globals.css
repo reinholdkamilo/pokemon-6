@@ -3401,3 +3401,202 @@ p {
     max-height: 128px !important;
   }
 }
+
+
+/* Global player Pokémon card consistency fix
+   Applies to:
+   - Battle selection revealed cards
+   - Adventure selection revealed cards
+   - Adventure encounter modal
+   - Results final team cards
+*/
+.reveal-card.mystery-reveal-card,
+.adventure-card-slot.mystery-reveal-card,
+.results-pokemon-summary-card {
+  aspect-ratio: 0.72 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Keep all revealed Pokémon card content visually centred instead of stuck at the bottom */
+.reveal-card .mystery-card-revealed,
+.adventure-card-slot .mystery-card-revealed,
+.encounter-sprite-card,
+.results-pokemon-summary-card {
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto auto auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  align-content: center !important;
+  gap: clamp(3px, 0.7vw, 7px) !important;
+  padding: clamp(9px, 1.2vw, 14px) clamp(7px, 1vw, 11px) clamp(11px, 1.4vw, 16px) !important;
+}
+
+/* Remove old forced bottom spacer behaviour where present */
+.mystery-card-bottom-spacer {
+  display: none !important;
+}
+
+/* Sprite area should fill available space but stay balanced inside the card */
+.reveal-card .mystery-card-revealed > .pokemon-sprite,
+.adventure-card-slot .mystery-card-revealed > .pokemon-sprite,
+.encounter-pokemon-sprite,
+.results-pokemon-summary-card__sprite {
+  align-self: end !important;
+  justify-self: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 82% !important;
+  max-height: clamp(88px, 17vw, 150px) !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  image-rendering: pixelated !important;
+  transform: none !important;
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22));
+}
+
+/* Results screen sprite wrapper should not push the sprite/text to the bottom */
+.results-pokemon-summary-card__sprite-wrap {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: grid !important;
+  place-items: end center !important;
+}
+
+/* Text should remain centred and consistent on every Pokémon card */
+.mystery-card-name,
+.results-pokemon-summary-card__name {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  color: var(--text) !important;
+  font-size: clamp(0.82rem, 2.25vw, 1.12rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1.02 !important;
+  text-align: center !important;
+  overflow-wrap: anywhere !important;
+}
+
+.mystery-card-types,
+.results-pokemon-summary-card__type {
+  width: 100% !important;
+  max-width: 100% !important;
+  color: rgba(29, 33, 27, 0.78) !important;
+  font-size: clamp(0.58rem, 1.55vw, 0.78rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.mystery-card-stat,
+.results-pokemon-summary-card__stat {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: clamp(16px, 2vw, 20px) !important;
+  padding: 2px 7px !important;
+  border: 2px solid rgba(52, 42, 32, 0.72) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  color: var(--text) !important;
+  font-size: clamp(0.55rem, 1.45vw, 0.72rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  text-align: center !important;
+}
+
+/* Results grid should keep cards consistent and stop them becoming too tall in landscape/tablet/desktop */
+.results-team-grid {
+  align-items: stretch !important;
+}
+
+.results-pokemon-summary-card {
+  max-height: 310px !important;
+}
+
+/* Selection grid should keep each card equal and stable */
+.reveal-grid {
+  align-items: stretch !important;
+}
+
+.reveal-card .card-portrait,
+.adventure-card-slot.mystery-reveal-card {
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Unrevealed mystery cards remain text-only and centred */
+.mystery-card-template {
+  display: grid !important;
+  place-items: center !important;
+  text-align: center !important;
+  padding: clamp(10px, 1.5vw, 16px) !important;
+}
+
+.mystery-card-template .mystery-label {
+  margin: 0 !important;
+  color: var(--accent-dark) !important;
+  font-size: clamp(0.88rem, 2.4vw, 1.3rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+}
+
+/* iPhone portrait: keep cards compact but balanced */
+@media (max-width: 560px) {
+  .reveal-card .mystery-card-revealed,
+  .adventure-card-slot .mystery-card-revealed,
+  .encounter-sprite-card,
+  .results-pokemon-summary-card {
+    gap: 3px !important;
+    padding: 8px 6px 10px !important;
+  }
+
+  .reveal-card .mystery-card-revealed > .pokemon-sprite,
+  .adventure-card-slot .mystery-card-revealed > .pokemon-sprite,
+  .encounter-pokemon-sprite,
+  .results-pokemon-summary-card__sprite {
+    max-width: 86% !important;
+    max-height: 112px !important;
+  }
+
+  .results-pokemon-summary-card {
+    max-height: 245px !important;
+  }
+}
+
+/* Landscape/tablet/desktop: prevent huge empty top area by capping card height and balancing content */
+@media (min-width: 760px) {
+  .results-pokemon-summary-card,
+  .reveal-card.mystery-reveal-card,
+  .adventure-card-slot.mystery-reveal-card {
+    max-height: 295px !important;
+  }
+
+  .results-pokemon-summary-card__sprite,
+  .reveal-card .mystery-card-revealed > .pokemon-sprite,
+  .adventure-card-slot .mystery-card-revealed > .pokemon-sprite {
+    max-height: 138px !important;
+  }
+}
+
+/* Wide desktop: keep cards professional rather than oversized */
+@media (min-width: 1100px) {
+  .results-pokemon-summary-card,
+  .reveal-card.mystery-reveal-card,
+  .adventure-card-slot.mystery-reveal-card {
+    max-height: 280px !important;
+  }
+
+  .results-pokemon-summary-card__sprite,
+  .reveal-card .mystery-card-revealed > .pokemon-sprite,
+  .adventure-card-slot .mystery-card-revealed > .pokemon-sprite {
+    max-height: 128px !important;
+  }
+}
