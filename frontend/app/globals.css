@@ -3600,3 +3600,34 @@ p {
     max-height: 128px !important;
   }
 }
+
+
+/* Final selection card type-colour inheritance fix */
+.reveal-card.mystery-reveal-card[class*="type-"],
+.adventure-card-slot.mystery-reveal-card[class*="type-"] {
+  border-color: var(--pokemon-type-border) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong)) !important;
+}
+
+.reveal-card.mystery-reveal-card[class*="type-"] .mystery-card-revealed,
+.adventure-card-slot.mystery-reveal-card[class*="type-"] .mystery-card-revealed {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg), var(--pokemon-type-bg-strong)) !important;
+}
+
+.reveal-card.mystery-reveal-card.type-blank,
+.adventure-card-slot.mystery-reveal-card.empty,
+.adventure-card-slot.mystery-reveal-card.type-blank {
+  border-color: var(--border) !important;
+}
+
+.reveal-card.mystery-reveal-card.type-blank .mystery-card-template,
+.adventure-card-slot.mystery-reveal-card.empty .mystery-card-template,
+.adventure-card-slot.mystery-reveal-card.type-blank .mystery-card-template {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, #fff2b8, #f3c536) !important;
+}
