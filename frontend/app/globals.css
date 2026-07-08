@@ -5001,3 +5001,99 @@ p {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* Mobile Champion result card fix */
+.champion-final-grid,
+.final-stage-grid.champion-final-grid {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 280px) !important;
+  justify-content: center !important;
+  align-items: start !important;
+}
+
+.champion-final-grid .progression-card,
+.final-stage-grid.champion-final-grid .progression-card {
+  width: 100% !important;
+  max-width: 280px !important;
+  min-height: 360px !important;
+  height: 360px !important;
+  aspect-ratio: auto !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  align-items: stretch !important;
+  padding: 14px !important;
+}
+
+.champion-final-grid .progression-card-top {
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+.champion-final-grid .progression-sprite-area {
+  min-height: 0 !important;
+  height: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  align-self: stretch !important;
+  margin: 0 !important;
+  padding: 8px 0 !important;
+}
+
+.champion-final-grid .trainer-sprite,
+.champion-final-grid .stage-trainer-sprite,
+.champion-final-grid .sprite-fallback {
+  width: auto !important;
+  max-width: 104px !important;
+  max-height: 140px !important;
+  margin: 0 auto !important;
+  justify-self: center !important;
+  align-self: center !important;
+  object-fit: contain !important;
+}
+
+.champion-final-grid .trainer-team-list {
+  width: 100% !important;
+  align-self: end !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 4px 10px !important;
+  margin-top: auto !important;
+  padding-top: 8px !important;
+  font-size: 0.76rem !important;
+  line-height: 1.05 !important;
+}
+
+.champion-final-grid .trainer-team-list li {
+  min-width: 0 !important;
+  white-space: normal !important;
+}
+
+@media (max-width: 700px) {
+  .champion-final-grid,
+  .final-stage-grid.champion-final-grid {
+    grid-template-columns: minmax(0, 260px) !important;
+    justify-content: center !important;
+  }
+
+  .champion-final-grid .progression-card,
+  .final-stage-grid.champion-final-grid .progression-card {
+    max-width: 260px !important;
+    min-height: 340px !important;
+    height: 340px !important;
+    padding: 12px !important;
+  }
+
+  .champion-final-grid .trainer-sprite,
+  .champion-final-grid .stage-trainer-sprite,
+  .champion-final-grid .sprite-fallback {
+    max-width: 92px !important;
+    max-height: 126px !important;
+  }
+
+  .champion-final-grid .trainer-team-list {
+    font-size: 0.72rem !important;
+    gap: 3px 8px !important;
+  }
+}
