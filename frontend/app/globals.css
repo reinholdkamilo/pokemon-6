@@ -4426,3 +4426,83 @@ p {
     max-width: 100% !important;
   }
 }
+
+
+
+/* Progression card stamp + sprite centering fixes */
+
+/* Force trainer sprite centering on all progression cards */
+.progression-card__sprite-wrap,
+.progression-card__sprite,
+.progression-card__trainer-sprite,
+.progression-card__figure,
+.progression-card__body,
+.progression-card__content {
+  justify-items: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.progression-card__sprite-wrap,
+.progression-card__figure {
+  width: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 auto !important;
+}
+
+.progression-card__sprite,
+.progression-card__figure img,
+.progression-card__sprite-wrap img,
+.progression-card img {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  justify-self: center !important;
+  align-self: center !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+
+/* Default stamp treatment */
+.progression-card__stamp,
+.progression-card__status-stamp,
+.progression-card [class*="stamp"] {
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: none !important;
+}
+
+/* DEFEATED = green */
+.progression-card__stamp--defeated,
+.progression-card__status-stamp--defeated,
+.progression-card.is-defeated .progression-card__stamp,
+.progression-card.is-defeated .progression-card__status-stamp,
+.progression-card .stamp-defeated,
+.progression-card [data-status="defeated"] {
+  color: #15803d !important;
+  border-color: #15803d !important;
+  background: rgba(220, 252, 231, 0.98) !important;
+}
+
+/* WIPED OUT = red */
+.progression-card__stamp--wiped-out,
+.progression-card__status-stamp--wiped-out,
+.progression-card.is-wiped-out .progression-card__stamp,
+.progression-card.is-wiped-out .progression-card__status-stamp,
+.progression-card .stamp-wiped-out,
+.progression-card [data-status="wiped-out"] {
+  color: #b91c1c !important;
+  border-color: #b91c1c !important;
+  background: rgba(254, 226, 226, 0.98) !important;
+}
+
+/* Make sure the stamp stays readable over sprites */
+.progression-card__stamp,
+.progression-card__status-stamp {
+  z-index: 3 !important;
+  position: relative !important;
+}
+
+/* End progression card stamp + sprite centering fixes */
+
