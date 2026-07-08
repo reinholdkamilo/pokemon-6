@@ -4831,3 +4831,81 @@ p {
     right: 28px;
   }
 }
+
+
+/* Smarter battle simulator effects */
+.battle-pokemon-sprite.attacking.battle-player-pokemon {
+  animation: pokemonPlayerAttack 520ms ease both;
+}
+
+.battle-pokemon-sprite.attacking.battle-opponent-pokemon {
+  animation: pokemonOpponentAttack 520ms ease both;
+}
+
+.battle-hp-bar i.warning {
+  background: #e4b72e !important;
+}
+
+.battle-hp-bar i.danger {
+  background: #d93636 !important;
+}
+
+.battle-item-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.84), transparent 34%);
+  animation: itemFlashPulse 620ms ease both;
+  z-index: 2;
+}
+
+.item-effect-potion .battle-item-flash {
+  background: radial-gradient(circle, rgba(88, 216, 112, 0.46), transparent 38%);
+}
+
+.item-effect-berry .battle-item-flash {
+  background: radial-gradient(circle, rgba(255, 101, 174, 0.42), transparent 38%);
+}
+
+.item-effect-power .battle-item-flash {
+  background: radial-gradient(circle, rgba(255, 222, 74, 0.5), transparent 38%);
+}
+
+@keyframes pokemonPlayerAttack {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(34px) translateY(-8px) scale(1.05);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pokemonOpponentAttack {
+  0% {
+    transform: translateX(0);
+  }
+  45% {
+    transform: translateX(-34px) translateY(8px) scale(1.05);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes itemFlashPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}

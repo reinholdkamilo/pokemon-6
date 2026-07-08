@@ -34,10 +34,17 @@ export function EliteFourScreen({
   onViewResults,
 }: EliteFourScreenProps) {
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
+  const revealedBreakdowns = ELITE_FOUR.slice(0, revealedCount).map((member) =>
+    findBreakdown(eliteFourBreakdowns, member.name),
+  );
+  const hasLoss = revealedBreakdowns.some(
+    (breakdown) => breakdown && !didBeatOpponent(breakdown),
+  );
   const allBattlesRevealed = revealedCount >= ELITE_FOUR.length;
   const nextBattleIndex = Math.min(revealedCount, ELITE_FOUR.length - 1);
   const nextMember = ELITE_FOUR[nextBattleIndex];
   const eliteFourBeaten =
+    !hasLoss &&
     eliteFourBreakdowns.length >= ELITE_FOUR.length &&
     ELITE_FOUR.every((member) =>
       didBeatOpponent(findBreakdown(eliteFourBreakdowns, member.name)),
@@ -55,7 +62,11 @@ export function EliteFourScreen({
         </div>
 
         <div className="battle-choice-panel">
-          {!allBattlesRevealed ? (
+          {hasLoss ? (
+            <button className="primary-action stage-action" type="button" onClick={onViewResults}>
+              VIEW RESULTS
+            </button>
+          ) : !allBattlesRevealed ? (
             <>
               <button
                 className="primary-action stage-action"

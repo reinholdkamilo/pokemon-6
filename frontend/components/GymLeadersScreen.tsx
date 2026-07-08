@@ -3,6 +3,7 @@
 import { GameTopBar } from "@/components/GameTopBar";
 import { ProgressionCard } from "@/components/ProgressionCard";
 import {
+  didBeatOpponent,
   findBreakdown,
   getBattleStatus,
   GYM_LEADERS,
@@ -37,11 +38,17 @@ export function GymLeadersScreen({
   const gymBreakdowns = result.opponent_breakdown?.gym_leaders ?? [];
   const earnedBadges = new Set(result.badges_earned ?? []);
   const badgesRequired = result.badges_required ?? 8;
+  const revealedBreakdowns = GYM_LEADERS.slice(0, revealedCount).map((leader) =>
+    findBreakdown(gymBreakdowns, leader.name),
+  );
+  const hasLoss = revealedBreakdowns.some(
+    (breakdown) => breakdown && !didBeatOpponent(breakdown),
+  );
   const allBattlesRevealed = revealedCount >= GYM_LEADERS.length;
   const nextBattleIndex = Math.min(revealedCount, GYM_LEADERS.length - 1);
   const nextLeader = GYM_LEADERS[nextBattleIndex];
   const canChallengeEliteFour =
-    Boolean(result.elite_four_unlocked) && earnedBadges.size >= badgesRequired;
+    !hasLoss && Boolean(result.elite_four_unlocked) && earnedBadges.size >= badgesRequired;
 
   let reachedPrevious = true;
 
@@ -58,7 +65,11 @@ export function GymLeadersScreen({
         </div>
 
         <div className="battle-choice-panel">
-          {!allBattlesRevealed ? (
+          {hasLoss ? (
+            <button className="primary-action stage-action" type="button" onClick={onViewResults}>
+              VIEW RESULTS
+            </button>
+          ) : !allBattlesRevealed ? (
             <>
               <button
                 className="primary-action stage-action"

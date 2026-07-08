@@ -16,6 +16,7 @@ import {
   ELITE_FOUR,
   findBreakdown,
   GYM_LEADERS,
+  didBeatOpponent,
   type OpponentMeta,
 } from "@/lib/progression";
 import type { OpponentBreakdown, Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
@@ -274,8 +275,8 @@ export default function Home() {
         onChallengeEliteFour={() => setScreen("elite-four")}
         onMainMenu={returnToMainMenu}
         onResetRun={resetCurrentRun}
-        onSimulateBattles={() => setGymRevealedCount(GYM_LEADERS.length)}
-        onSkipBattles={() => setGymRevealedCount(GYM_LEADERS.length)}
+        onSimulateBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
+        onSkipBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -290,8 +291,8 @@ export default function Home() {
         onBattleEliteMember={startEliteFourBattle}
         onChallengeChampion={() => setScreen("champion")}
         onMainMenu={returnToMainMenu}
-        onSimulateBattles={() => setEliteRevealedCount(ELITE_FOUR.length)}
-        onSkipBattles={() => setEliteRevealedCount(ELITE_FOUR.length)}
+        onSimulateBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
+        onSkipBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
         onViewResults={() => setScreen("end-results")}
       />
     );
@@ -370,6 +371,26 @@ export default function Home() {
       )}
     </main>
   );
+}
+
+
+function getRevealCountUntilLoss(
+  opponents: OpponentMeta[],
+  breakdowns: OpponentBreakdown[] | undefined,
+) {
+  for (let index = 0; index < opponents.length; index += 1) {
+    const breakdown = findBreakdown(breakdowns, opponents[index].name);
+
+    if (!breakdown) {
+      return index;
+    }
+
+    if (!didBeatOpponent(breakdown)) {
+      return index + 1;
+    }
+  }
+
+  return opponents.length;
 }
 
 function createEmptyCards() {
