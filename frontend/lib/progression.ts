@@ -7,6 +7,7 @@ export type OpponentMeta = {
   specialty: string;
   badge?: string;
   pokemonCount: number;
+  pokemonTeam: string[];
   fallback: string;
 };
 
@@ -21,7 +22,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Boulder Badge",
     pokemonCount: 2,
     fallback: "B",
-  },
+    pokemonTeam: ["Geodude", "Onix"],
+},
   {
     name: "Misty",
     stage: "Gym Leader 2",
@@ -30,7 +32,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Cascade Badge",
     pokemonCount: 2,
     fallback: "M",
-  },
+    pokemonTeam: ["Staryu", "Starmie"],
+},
   {
     name: "Lt. Surge",
     stage: "Gym Leader 3",
@@ -39,7 +42,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Thunder Badge",
     pokemonCount: 3,
     fallback: "LS",
-  },
+    pokemonTeam: ["Voltorb", "Pikachu", "Raichu"],
+},
   {
     name: "Erika",
     stage: "Gym Leader 4",
@@ -48,7 +52,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Rainbow Badge",
     pokemonCount: 4,
     fallback: "E",
-  },
+    pokemonTeam: ["Victreebel", "Tangela", "Vileplume"],
+},
   {
     name: "Koga",
     stage: "Gym Leader 5",
@@ -57,7 +62,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Soul Badge",
     pokemonCount: 4,
     fallback: "K",
-  },
+    pokemonTeam: ["Koffing", "Muk", "Koffing", "Weezing"],
+},
   {
     name: "Sabrina",
     stage: "Gym Leader 6",
@@ -66,7 +72,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Marsh Badge",
     pokemonCount: 4,
     fallback: "S",
-  },
+    pokemonTeam: ["Kadabra", "Mr. Mime", "Venomoth", "Alakazam"],
+},
   {
     name: "Blaine",
     stage: "Gym Leader 7",
@@ -75,7 +82,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Volcano Badge",
     pokemonCount: 4,
     fallback: "B",
-  },
+    pokemonTeam: ["Growlithe", "Ponyta", "Rapidash", "Arcanine"],
+},
   {
     name: "Giovanni",
     stage: "Gym Leader 8",
@@ -84,7 +92,8 @@ export const GYM_LEADERS: OpponentMeta[] = [
     badge: "Earth Badge",
     pokemonCount: 5,
     fallback: "G",
-  },
+    pokemonTeam: ["Rhyhorn", "Dugtrio", "Nidoqueen", "Nidoking", "Rhydon"],
+},
 ];
 
 export const ELITE_FOUR: OpponentMeta[] = [
@@ -94,28 +103,32 @@ export const ELITE_FOUR: OpponentMeta[] = [
     specialty: "Ice / Water",
     pokemonCount: 5,
     fallback: "L",
-  },
+    pokemonTeam: ["Dewgong", "Cloyster", "Slowbro", "Jynx", "Lapras"],
+},
   {
     name: "Bruno",
     stage: "Elite Four 2",
     specialty: "Fighting / Rock",
     pokemonCount: 5,
     fallback: "B",
-  },
+    pokemonTeam: ["Onix", "Hitmonchan", "Hitmonlee", "Onix", "Machamp"],
+},
   {
     name: "Agatha",
     stage: "Elite Four 3",
     specialty: "Ghost / Poison",
     pokemonCount: 5,
     fallback: "A",
-  },
+    pokemonTeam: ["Gengar", "Golbat", "Haunter", "Arbok", "Gengar"],
+},
   {
     name: "Lance",
     stage: "Elite Four 4",
     specialty: "Dragon / Flying",
     pokemonCount: 5,
     fallback: "L",
-  },
+    pokemonTeam: ["Gyarados", "Dragonair", "Dragonair", "Aerodactyl", "Dragonite"],
+},
 ];
 
 export const CHAMPION: OpponentMeta = {
@@ -160,4 +173,5 @@ export function formatBattleOutcome(
   }
 
   return breakdown?.outcome === "Beat" ? "DEFEATED" : "WIPED OUT";
-}
+}  pokemonTeam: ["Pidgeot", "Alakazam", "Rhydon", "Arcanine", "Exeggutor", "Blastoise"],
+

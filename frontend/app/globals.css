@@ -3208,3 +3208,196 @@ p {
     font-size: clamp(0.82rem, 2.8vw, 1.08rem) !important;
   }
 }
+
+
+/* Progression opponent cards: match Pokémon card style */
+.progression-card {
+  --opponent-card-bg: #fff2b8;
+  --opponent-card-strong: #f3c536;
+  --opponent-card-border: var(--border);
+  min-width: 0;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto minmax(0, auto) auto;
+  gap: 5px !important;
+  align-items: center;
+  justify-items: center;
+  border: 3px solid var(--opponent-card-border) !important;
+  border-radius: 10px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--opponent-card-bg), var(--opponent-card-strong)) !important;
+  box-shadow: 0 7px 0 rgba(52, 42, 32, 0.82) !important;
+  overflow: hidden;
+}
+
+.progression-card .progression-card-top {
+  width: 100%;
+  min-width: 0;
+}
+
+.progression-sprite-area {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: end center;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+
+.progression-card .stage-trainer-sprite,
+.progression-card .trainer-sprite {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 118px !important;
+  max-height: 130px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22));
+}
+
+.progression-card h2 {
+  width: 100%;
+  margin: 0 !important;
+  color: var(--text);
+  font-size: clamp(0.88rem, 2.3vw, 1.15rem) !important;
+  font-weight: 1000;
+  line-height: 1.02;
+  text-align: center;
+}
+
+/* Hide old trainer type/specialty text and pokeball count rows */
+.progression-card > p,
+.progression-card .pokeball-row {
+  display: none !important;
+}
+
+/* Trainer Pokémon list */
+.trainer-team-list {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 4px !important;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+  align-self: start;
+}
+
+.trainer-team-list li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+  color: rgba(29, 33, 27, 0.88);
+  font-size: clamp(0.58rem, 1.55vw, 0.74rem);
+  font-weight: 900;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.trainer-team-list li span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trainer-team-pokeball {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at center, #ffffff 0 18%, var(--border) 18% 30%, transparent 30%),
+    linear-gradient(#d7352b 0 48%, var(--border) 48% 56%, #ffffff 56% 100%);
+  box-shadow: 0 1px 0 rgba(52, 42, 32, 0.35);
+}
+
+/* Keep badge compact after team list */
+.progression-card .stage-badge-row {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  font-size: clamp(0.56rem, 1.55vw, 0.72rem);
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.progression-card .mini-badge-sprite {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Slight colour personality by stage/status without exposing type text */
+.progression-card.cleared {
+  --opponent-card-bg: #d6f5c4;
+  --opponent-card-strong: #7ac74c;
+  --opponent-card-border: #3f8424;
+}
+
+.progression-card.failed {
+  --opponent-card-bg: #ffd2d2;
+  --opponent-card-strong: #f26b6b;
+  --opponent-card-border: #9f211d;
+}
+
+.progression-card.not-reached {
+  --opponent-card-bg: #ece7d8;
+  --opponent-card-strong: #c9c1a8;
+  --opponent-card-border: #6f6a5b;
+}
+
+/* Champion card can breathe more */
+.champion-final-grid .progression-card {
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+.champion-final-grid .progression-card .stage-trainer-sprite {
+  max-width: 150px !important;
+  max-height: 150px !important;
+}
+
+@media (max-width: 560px) {
+  .progression-card {
+    gap: 4px !important;
+    padding: 7px 5px !important;
+  }
+
+  .progression-card .stage-trainer-sprite,
+  .progression-card .trainer-sprite {
+    max-width: 96px !important;
+    max-height: 104px !important;
+  }
+
+  .trainer-team-list {
+    gap: 1px;
+    padding: 0 2px !important;
+  }
+
+  .trainer-team-list li {
+    grid-template-columns: 10px minmax(0, 1fr);
+    gap: 3px;
+    font-size: clamp(0.52rem, 1.85vw, 0.66rem);
+  }
+
+  .trainer-team-pokeball {
+    width: 8px;
+    height: 8px;
+    border-width: 1px;
+  }
+
+  .champion-final-grid .progression-card .stage-trainer-sprite {
+    max-width: 125px !important;
+    max-height: 128px !important;
+  }
+}

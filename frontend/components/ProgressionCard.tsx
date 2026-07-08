@@ -31,15 +31,25 @@ export function ProgressionCard({
         {outcome ? <strong className="result-stamp">{outcome}</strong> : null}
       </div>
 
-      <LocalSprite
-        alt={`${meta.name} sprite`}
-        className="trainer-sprite stage-trainer-sprite"
-        fallback={meta.fallback}
-        src={getTrainerSprite(meta.name)}
-      />
+      <div className="progression-sprite-area">
+        <LocalSprite
+          alt={`${meta.name} sprite`}
+          className="trainer-sprite stage-trainer-sprite"
+          fallback={meta.fallback}
+          src={getTrainerSprite(meta.name)}
+        />
+      </div>
 
-      <h2>{meta.name}</h2>
-      <p>{meta.specialty}</p>
+      <h2>{meta.name === "Gary" ? "Champion" : meta.name}</h2>
+
+      <ul className="trainer-team-list" aria-label={`${meta.name} Pokemon team`}>
+        {meta.pokemonTeam.map((pokemonName, index) => (
+          <li key={`${pokemonName}-${index}`}>
+            <span className="trainer-team-pokeball" aria-hidden="true" />
+            <span>{pokemonName}</span>
+          </li>
+        ))}
+      </ul>
 
       {showBadge && meta.badge ? (
         <div className="stage-badge-row">
@@ -52,12 +62,6 @@ export function ProgressionCard({
           <span>{meta.badge}</span>
         </div>
       ) : null}
-
-      <div className="pokeball-row" aria-label={`${meta.pokemonCount} Pokemon`}>
-        {Array.from({ length: meta.pokemonCount }, (_, index) => (
-          <span className="pokeball-dot" key={index} aria-hidden="true" />
-        ))}
-      </div>
     </article>
   );
 }
