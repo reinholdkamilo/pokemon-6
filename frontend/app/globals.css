@@ -4169,3 +4169,260 @@ p {
     font-size: clamp(0.5rem, 1.75vw, 0.62rem) !important;
   }
 }
+
+
+/* Final trainer card content layout restructure */
+
+/* One consistent card structure for Gym Leaders, Elite Four and Champion */
+.progression-card {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 190px !important;
+  aspect-ratio: 0.72 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-rows: 24px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 4px !important;
+  padding: 8px 8px 10px !important;
+  overflow: hidden !important;
+}
+
+/* Top row: trainer name on the left, badge sprite on the right */
+.progression-card .progression-card-top {
+  width: 100% !important;
+  min-height: 24px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  justify-items: start !important;
+  gap: 6px !important;
+  pointer-events: none;
+}
+
+.progression-card .progression-card-top > span {
+  display: none !important;
+}
+
+.trainer-card-name-label {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  color: var(--text) !important;
+  font-size: clamp(0.68rem, 1.6vw, 0.86rem) !important;
+  font-weight: 1000 !important;
+  line-height: 1 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.trainer-card-badge-sprite {
+  width: 20px !important;
+  height: 20px !important;
+  object-fit: contain !important;
+  image-rendering: pixelated;
+}
+
+/* Remove old bottom badge text/row completely */
+.stage-badge-row,
+.progression-card .stage-badge-row,
+.progression-card .mini-badge-sprite {
+  display: none !important;
+}
+
+/* Stamp is now centred over the card, not in the top corner */
+.progression-card > .result-stamp {
+  position: absolute !important;
+  top: 47% !important;
+  left: 50% !important;
+  z-index: 4 !important;
+  transform: translate(-50%, -50%) rotate(-8deg) !important;
+  transform-origin: center !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  font-size: clamp(0.72rem, 1.75vw, 0.96rem) !important;
+  line-height: 1 !important;
+  box-shadow: 0 2px 0 rgba(52, 42, 32, 0.34) !important;
+}
+
+/* Sprite area gets dedicated space so it does not collide with names/team list */
+.progression-sprite-area {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  place-items: end center !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+.progression-card .trainer-sprite,
+.progression-card .stage-trainer-sprite {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 122px !important;
+  max-height: 122px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  image-rendering: pixelated;
+}
+
+/* Hide the old big middle h2 name if older CSS/markup still leaves it around */
+.progression-card h2 {
+  display: none !important;
+}
+
+/* Team list area: 1 column for 1-3, two columns for 4-6.
+   CSS grid-auto-flow: column fills left column first, giving:
+   4 = 3 left / 1 right
+   5 = 3 left / 2 right
+   6 = 3 left / 3 right */
+.trainer-team-list {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 4px 2px 0 !important;
+  list-style: none !important;
+  align-self: end !important;
+}
+
+.progression-card.team-count-small .trainer-team-list {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-flow: row !important;
+  gap: 3px !important;
+}
+
+.progression-card.team-count-large .trainer-team-list {
+  display: grid !important;
+  grid-template-rows: repeat(3, auto) !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: minmax(0, 1fr) !important;
+  column-gap: 7px !important;
+  row-gap: 3px !important;
+}
+
+.trainer-team-list li {
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 10px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 3px !important;
+  color: rgba(29, 33, 27, 0.9) !important;
+  font-size: clamp(0.5rem, 1.2vw, 0.66rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.02 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+}
+
+.trainer-team-list li span:last-child {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Small Poké Ball bullet remains beside each Pokémon name */
+.trainer-team-pokeball {
+  width: 8px !important;
+  height: 8px !important;
+  border: 1.2px solid var(--border) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at center, #ffffff 0 18%, var(--border) 18% 30%, transparent 30%),
+    linear-gradient(#d7352b 0 48%, var(--border) 48% 56%, #ffffff 56% 100%) !important;
+  box-shadow: 0 1px 0 rgba(52, 42, 32, 0.32) !important;
+}
+
+/* Grids remain centred and consistent */
+.stage-card-grid.final-stage-grid,
+.final-stage-grid {
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+}
+
+/* Champion uses the same card width rules as the rest */
+.champion-final-grid,
+.final-stage-grid.champion-final-grid,
+.stage-card-grid.final-stage-grid.champion-final-grid {
+  display: grid !important;
+  grid-template-columns: minmax(150px, 190px) !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  gap: 14px !important;
+}
+
+.champion-final-grid .progression-card {
+  width: 100% !important;
+  max-width: 190px !important;
+  min-width: 150px !important;
+  margin: 0 auto !important;
+}
+
+/* Mobile refinement */
+@media (max-width: 560px) {
+  .progression-card {
+    max-width: 100% !important;
+    padding: 7px 6px 8px !important;
+    grid-template-rows: 22px minmax(0, 1fr) auto !important;
+  }
+
+  .trainer-card-badge-sprite {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .progression-card .trainer-sprite,
+  .progression-card .stage-trainer-sprite {
+    max-width: 94px !important;
+    max-height: 96px !important;
+  }
+
+  .progression-card > .result-stamp {
+    font-size: clamp(0.58rem, 2vw, 0.74rem) !important;
+  }
+
+  .progression-card.team-count-large .trainer-team-list {
+    column-gap: 4px !important;
+    row-gap: 2px !important;
+  }
+
+  .trainer-team-list li {
+    grid-template-columns: 8px minmax(0, 1fr) !important;
+    gap: 2px !important;
+    font-size: clamp(0.46rem, 1.65vw, 0.58rem) !important;
+  }
+
+  .trainer-team-pokeball {
+    width: 7px !important;
+    height: 7px !important;
+    border-width: 1px !important;
+  }
+
+  .champion-final-grid,
+  .final-stage-grid.champion-final-grid,
+  .stage-card-grid.final-stage-grid.champion-final-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .champion-final-grid .progression-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}

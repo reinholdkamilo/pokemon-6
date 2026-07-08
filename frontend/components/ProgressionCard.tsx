@@ -23,13 +23,26 @@ export function ProgressionCard({
   showBadge = false,
 }: ProgressionCardProps) {
   const outcome = formatBattleOutcome(status, breakdown);
+  const displayName = meta.name === "Gary" ? "Champion" : meta.name;
+  const teamLayoutClass =
+    meta.pokemonTeam.length <= 3 ? "team-count-small" : "team-count-large";
 
   return (
-    <article className={`progression-card ${status}`}>
+    <article className={`progression-card ${status} ${teamLayoutClass}`}>
       <div className="progression-card-top">
-        {meta.number ? <span>{`GYM ${meta.number}`}</span> : <span>{meta.name}</span>}
-        {outcome ? <strong className="result-stamp">{outcome}</strong> : null}
+        <strong className="trainer-card-name-label">{displayName}</strong>
+
+        {showBadge && meta.badge ? (
+          <LocalSprite
+            alt={`${meta.badge} sprite`}
+            className="trainer-card-badge-sprite"
+            fallback={String(meta.number ?? "BD")}
+            src={BADGE_IMAGE_PATHS[meta.badge]}
+          />
+        ) : null}
       </div>
+
+      {outcome ? <strong className="result-stamp">{outcome}</strong> : null}
 
       <div className="progression-sprite-area">
         <LocalSprite
@@ -40,8 +53,6 @@ export function ProgressionCard({
         />
       </div>
 
-      <h2>{meta.name === "Gary" ? "Champion" : meta.name}</h2>
-
       <ul className="trainer-team-list" aria-label={`${meta.name} Pokemon team`}>
         {meta.pokemonTeam.map((pokemonName, index) => (
           <li key={`${pokemonName}-${index}`}>
@@ -50,18 +61,6 @@ export function ProgressionCard({
           </li>
         ))}
       </ul>
-
-      {showBadge && meta.badge ? (
-        <div className="stage-badge-row">
-          <LocalSprite
-            alt={`${meta.badge} sprite`}
-            className="mini-badge-sprite"
-            fallback={String(meta.number ?? "BD")}
-            src={BADGE_IMAGE_PATHS[meta.badge]}
-          />
-          <span>{meta.badge}</span>
-        </div>
-      ) : null}
     </article>
   );
 }
