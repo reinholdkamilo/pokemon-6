@@ -5360,3 +5360,44 @@ p {
     transform: scale(1.22) !important;
   }
 }
+
+
+/* FINAL Gary same size as other trainer sprites */
+/*
+  Gary Champion sprite display size now matches all other trainer sprites:
+
+  Desktop/tablet: 118px wide x 130px tall
+  Mobile:         96px wide x 104px tall
+*/
+.end-results-screen .champion-final-grid .champion-progression-card {
+  --gary-sprite-width: 118px !important;
+  --gary-sprite-height: 130px !important;
+}
+
+.end-results-screen .champion-final-grid .champion-progression-card .trainer-sprite,
+.end-results-screen .champion-final-grid .champion-progression-card .stage-trainer-sprite,
+.end-results-screen .champion-final-grid .champion-progression-card .sprite-fallback {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 118px !important;
+  max-height: 130px !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  transform: none !important;
+  image-rendering: pixelated !important;
+}
+
+@media (max-width: 560px) {
+  .end-results-screen .champion-final-grid .champion-progression-card {
+    --gary-sprite-width: 96px !important;
+    --gary-sprite-height: 104px !important;
+  }
+
+  .end-results-screen .champion-final-grid .champion-progression-card .trainer-sprite,
+  .end-results-screen .champion-final-grid .champion-progression-card .stage-trainer-sprite,
+  .end-results-screen .champion-final-grid .champion-progression-card .sprite-fallback {
+    max-width: 96px !important;
+    max-height: 104px !important;
+    transform: none !important;
+  }
+}
