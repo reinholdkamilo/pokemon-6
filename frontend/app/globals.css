@@ -5194,3 +5194,131 @@ p {
     gap: 3px 8px !important;
   }
 }
+
+
+/* FINAL Gary result card same size on desktop and mobile */
+.end-results-screen .final-results-section:has(.champion-final-grid) {
+  display: grid !important;
+  justify-items: center !important;
+}
+
+.end-results-screen .champion-final-grid,
+.end-results-screen .stage-card-grid.champion-final-grid,
+.end-results-screen .final-stage-grid.champion-final-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  justify-items: center !important;
+  grid-template-columns: none !important;
+}
+
+.end-results-screen .champion-final-grid > .progression-card,
+.end-results-screen .champion-final-grid .champion-progression-card,
+.end-results-screen .final-stage-grid.champion-final-grid > .progression-card,
+.end-results-screen .final-stage-grid.champion-final-grid .champion-progression-card {
+  flex: 0 0 250px !important;
+  width: 250px !important;
+  min-width: 250px !important;
+  max-width: 250px !important;
+  height: 330px !important;
+  min-height: 330px !important;
+  max-height: 330px !important;
+  aspect-ratio: auto !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  padding: 12px !important;
+  margin: 0 auto !important;
+  overflow: hidden !important;
+}
+
+.end-results-screen .champion-final-grid .progression-card-top,
+.end-results-screen .champion-final-grid .champion-progression-card .progression-card-top {
+  min-height: 24px !important;
+  height: 24px !important;
+}
+
+.end-results-screen .champion-final-grid .progression-sprite-area,
+.end-results-screen .champion-final-grid .champion-progression-card .progression-sprite-area {
+  height: auto !important;
+  min-height: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 4px 0 !important;
+  margin: 0 !important;
+  align-self: stretch !important;
+}
+
+.end-results-screen .champion-final-grid .trainer-sprite,
+.end-results-screen .champion-final-grid .stage-trainer-sprite,
+.end-results-screen .champion-final-grid .sprite-fallback,
+.end-results-screen .champion-final-grid .champion-progression-card .trainer-sprite,
+.end-results-screen .champion-final-grid .champion-progression-card .stage-trainer-sprite,
+.end-results-screen .champion-final-grid .champion-progression-card .sprite-fallback {
+  width: auto !important;
+  max-width: 86px !important;
+  max-height: 112px !important;
+  object-fit: contain !important;
+  justify-self: center !important;
+  align-self: center !important;
+  margin: 0 auto !important;
+}
+
+.end-results-screen .champion-final-grid .trainer-team-list,
+.end-results-screen .champion-final-grid .champion-progression-card .trainer-team-list {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 3px 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-self: end !important;
+  font-size: 0.69rem !important;
+  line-height: 1.05 !important;
+}
+
+.end-results-screen .champion-final-grid .trainer-team-list li,
+.end-results-screen .champion-final-grid .champion-progression-card .trainer-team-list li {
+  min-width: 0 !important;
+  white-space: normal !important;
+}
+
+/* Override broad mobile result/grid rules that stretch cards */
+@media (max-width: 900px) {
+  .end-results-screen .champion-final-grid,
+  .end-results-screen .stage-card-grid.champion-final-grid,
+  .end-results-screen .final-stage-grid.champion-final-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    justify-content: center !important;
+  }
+
+  .end-results-screen .champion-final-grid > .progression-card,
+  .end-results-screen .champion-final-grid .champion-progression-card,
+  .end-results-screen .final-stage-grid.champion-final-grid > .progression-card,
+  .end-results-screen .final-stage-grid.champion-final-grid .champion-progression-card {
+    flex-basis: 250px !important;
+    width: 250px !important;
+    min-width: 250px !important;
+    max-width: 250px !important;
+    height: 330px !important;
+    min-height: 330px !important;
+    max-height: 330px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .end-results-screen .champion-final-grid > .progression-card,
+  .end-results-screen .champion-final-grid .champion-progression-card,
+  .end-results-screen .final-stage-grid.champion-final-grid > .progression-card,
+  .end-results-screen .final-stage-grid.champion-final-grid .champion-progression-card {
+    flex-basis: 238px !important;
+    width: 238px !important;
+    min-width: 238px !important;
+    max-width: 238px !important;
+    height: 318px !important;
+    min-height: 318px !important;
+    max-height: 318px !important;
+  }
+}
