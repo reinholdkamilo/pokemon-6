@@ -5425,3 +5425,197 @@ p {
   transform: none !important;
   image-rendering: pixelated !important;
 }
+
+
+/* Evolution modal feature */
+.evolution-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(10, 12, 18, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.evolution-modal {
+  width: min(100%, 420px);
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  border: 4px solid var(--border);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.92) 0 12%, transparent 32%),
+    linear-gradient(180deg, #fff8df, #fff2b8);
+  box-shadow:
+    0 10px 0 rgba(52, 42, 32, 0.92),
+    0 24px 42px rgba(0, 0, 0, 0.38);
+  padding: 20px;
+  text-align: center;
+}
+
+.evolution-modal h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 5.8vw, 2.05rem);
+  line-height: 1.02;
+  font-weight: 1000;
+}
+
+.evolution-action {
+  width: min(100%, 240px);
+}
+
+.evolution-pokemon-card {
+  width: min(210px, 68vw);
+  aspect-ratio: 0.72;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  gap: 5px;
+  align-items: center;
+  justify-items: center;
+  border: 3px solid var(--border);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.16)),
+    linear-gradient(180deg, var(--pokemon-type-bg, #fff2b8), var(--pokemon-type-bg-strong, #f3c536));
+  box-shadow: 0 7px 0 rgba(52, 42, 32, 0.82);
+  padding: 10px 8px 12px;
+  overflow: hidden;
+}
+
+.evolution-pokemon-card__sprite-wrap {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: end center;
+  min-height: 0;
+}
+
+.evolution-pokemon-card__sprite {
+  width: 100%;
+  height: 100%;
+  max-width: 86%;
+  max-height: 146px;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22));
+}
+
+.evolution-pokemon-card__name {
+  width: 100%;
+  font-size: clamp(1rem, 4vw, 1.22rem);
+  font-weight: 1000;
+  line-height: 1.02;
+}
+
+.evolution-pokemon-card__type {
+  width: 100%;
+  color: rgba(29, 33, 27, 0.78);
+  font-size: 0.78rem;
+  font-weight: 1000;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.evolution-pokemon-card__stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  padding: 2px 8px;
+  border: 2px solid rgba(52, 42, 32, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 1000;
+  line-height: 1;
+}
+
+.evolution-animation-stage {
+  position: relative;
+  width: min(230px, 72vw);
+  aspect-ratio: 0.72;
+  display: grid;
+  place-items: center;
+}
+
+.evolution-animation-stage .evolution-pokemon-card {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+
+.evolution-card-from {
+  animation: evolutionFlashFrom 1.8s steps(1, end) forwards;
+}
+
+.evolution-card-to {
+  animation: evolutionFlashTo 1.8s steps(1, end) forwards;
+}
+
+.evolution-card-flash {
+  filter: invert(1) brightness(1.24) saturate(1.25);
+}
+
+.evolution-card-final {
+  animation: evolutionReveal 420ms ease-out both;
+}
+
+@keyframes evolutionFlashFrom {
+  0%, 18%, 36%, 54%, 72% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  9%, 27%, 45%, 63%, 81%, 100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes evolutionFlashTo {
+  0%, 18%, 36%, 54%, 72% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  9%, 27%, 45%, 63%, 81%, 100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes evolutionReveal {
+  from {
+    transform: scale(0.86);
+    filter: brightness(1.6);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .evolution-modal {
+    gap: 12px;
+    padding: 16px 14px;
+  }
+
+  .evolution-pokemon-card {
+    width: min(190px, 70vw);
+  }
+
+  .evolution-pokemon-card__sprite {
+    max-height: 124px;
+  }
+}

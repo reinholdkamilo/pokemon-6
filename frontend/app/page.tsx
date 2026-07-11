@@ -1,16 +1,19 @@
 "use client";
 
 import { useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { BattleSimulationScreen } from "@/components/BattleSimulationScreen";
 import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
 import { EliteFourScreen } from "@/components/EliteFourScreen";
 import { EndResultsScreen } from "@/components/EndResultsScreen";
+import { EvolutionModal } from "@/components/EvolutionModal";
 import { GymLeadersScreen } from "@/components/GymLeadersScreen";
 import { TrainerCardScreen } from "@/components/TrainerCardScreen";
 import { TitleScreen } from "@/components/TitleScreen";
-import { scoreTeam } from "@/lib/api";
+import { getPokemon, scoreTeam } from "@/lib/api";
+import { EVOLUTION_TRIGGER_WINS, getNextEvolutionName } from "@/lib/evolutions";
 import {
   CHAMPION,
   ELITE_FOUR,
@@ -42,6 +45,12 @@ type BattleSimulationConfig = {
   breakdown?: OpponentBreakdown;
 };
 
+type PendingEvolution = {
+  fromPokemon: Pokemon;
+  toPokemon: Pokemon;
+  teamIndex: number;
+};
+
 export default function Home() {
   const [screen, setScreen] = useState<GameScreen>("title");
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
@@ -49,6 +58,10 @@ export default function Home() {
     createEmptyCards,
   );
   const [team, setTeam] = useState<Pokemon[]>([]);
+  const [activeTeam, setActiveTeam] = useState<Pokemon[]>([]);
+  const [pokemonCatalog, setPokemonCatalog] = useState<Pokemon[]>([]);
+  const [completedBattleWins, setCompletedBattleWins] = useState(0);
+  const [pendingEvolution, setPendingEvolution] = useState<PendingEvolution | null>(null);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(null);
   const [runKey, setRunKey] = useState(0);
@@ -101,7 +114,14 @@ export default function Home() {
     setError("");
 
     try {
-      const scoreResult = await scoreTeam(currentTeam.map((pokemon) => pokemon.name));
+      const [scoreResult, allPokemon] = await Promise.all([
+        scoreTeam(currentTeam.map((pokemon) => pokemon.name)),
+        getPokemon(),
+      ]);
+      setPokemonCatalog(allPokemon);
+      setActiveTeam(currentTeam);
+      setCompletedBattleWins(0);
+      setPendingEvolution(null);
       setResult(scoreResult);
       setGymRevealedCount(0);
       setEliteRevealedCount(0);
@@ -124,6 +144,9 @@ export default function Home() {
     teamRef.current = [];
     setRevealedCards(createEmptyCards());
     setTeam([]);
+    setActiveTeam([]);
+    setCompletedBattleWins(0);
+    setPendingEvolution(null);
     setResult(null);
     setError("");
     setGymRevealedCount(0);
@@ -223,6 +246,14 @@ export default function Home() {
       return;
     }
 
+    const didWinBattle = didBeatOpponent(battleSimulationConfig.breakdown);
+
+    if (didWinBattle) {
+      const nextCompletedBattleWins = completedBattleWins + 1;
+      setCompletedBattleWins(nextCompletedBattleWins);
+      queueEvolutionIfNeeded(nextCompletedBattleWins);
+    }
+
     if (battleSimulationConfig.stage === "gym") {
       setGymRevealedCount((currentCount) =>
         Math.max(currentCount, battleSimulationConfig.opponentIndex + 1),
@@ -241,6 +272,72 @@ export default function Home() {
 
     setChampionRevealed(true);
     setScreen("champion");
+  }
+
+  function queueEvolutionIfNeeded(nextCompletedBattleWins: number) {
+    if (!EVOLUTION_TRIGGER_WINS.has(nextCompletedBattleWins)) {
+      return;
+    }
+
+    const currentTeam = activeTeam.length > 0 ? activeTeam : team;
+
+    for (let teamIndex = 0; teamIndex < currentTeam.length; teamIndex += 1) {
+      const fromPokemon = currentTeam[teamIndex];
+      const nextEvolutionName = getNextEvolutionName(fromPokemon.name);
+
+      if (!nextEvolutionName) {
+        continue;
+      }
+
+      const toPokemon = pokemonCatalog.find(
+        (pokemon) => pokemon.name.toLowerCase() === nextEvolutionName.toLowerCase(),
+      );
+
+      if (!toPokemon) {
+        continue;
+      }
+
+      setPendingEvolution({
+        fromPokemon,
+        toPokemon,
+        teamIndex,
+      });
+      return;
+    }
+  }
+
+  function completeEvolution() {
+    if (!pendingEvolution) {
+      return;
+    }
+
+    setActiveTeam((currentTeam) => {
+      const nextTeam = [...(currentTeam.length > 0 ? currentTeam : team)];
+      nextTeam[pendingEvolution.teamIndex] = pendingEvolution.toPokemon;
+      return nextTeam;
+    });
+    setPendingEvolution(null);
+  }
+
+  function withEvolutionModal(children: ReactNode) {
+    if (!pendingEvolution) {
+      return children;
+    }
+
+    return (
+      <>
+        {children}
+        <EvolutionModal
+          fromPokemon={pendingEvolution.fromPokemon}
+          toPokemon={pendingEvolution.toPokemon}
+          onComplete={completeEvolution}
+        />
+      </>
+    );
+  }
+
+  function getRunTeam() {
+    return activeTeam.length > 0 ? activeTeam : team;
   }
 
   if (screen === "title") {
@@ -266,7 +363,7 @@ export default function Home() {
   }
 
   if (screen === "gym-leaders" && result) {
-    return (
+    return withEvolutionModal(
       <GymLeadersScreen
         result={result}
         revealedCount={gymRevealedCount}
@@ -277,12 +374,12 @@ export default function Home() {
         onResetRun={resetCurrentRun}
         onSkipBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
         onViewResults={() => setScreen("end-results")}
-      />
+      />,
     );
   }
 
   if (screen === "elite-four" && result) {
-    return (
+    return withEvolutionModal(
       <EliteFourScreen
         result={result}
         revealedCount={eliteRevealedCount}
@@ -292,23 +389,23 @@ export default function Home() {
         onMainMenu={returnToMainMenu}
         onSkipBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
         onViewResults={() => setScreen("end-results")}
-      />
+      />,
     );
   }
 
   if (screen === "champion" && result) {
-    return (
+    return withEvolutionModal(
       <ChampionScreen
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
-        selectedPokemon={team}
+        selectedPokemon={getRunTeam()}
         revealed={championRevealed}
         modeLabel={getModeLabel(gameMode)}
         onBattleChampion={startChampionBattle}
         onMainMenu={returnToMainMenu}
         onSkipBattle={() => setChampionRevealed(true)}
         onViewResults={() => setScreen("end-results")}
-      />
+      />,
     );
   }
 
@@ -316,7 +413,7 @@ export default function Home() {
     return (
       <BattleSimulationScreen
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
-        selectedPokemon={team}
+        selectedPokemon={getRunTeam()}
         opponent={battleSimulationConfig.opponent}
         breakdown={battleSimulationConfig.breakdown}
         modeLabel={getModeLabel(gameMode)}
@@ -331,7 +428,7 @@ export default function Home() {
       <EndResultsScreen
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
-        selectedPokemon={team}
+        selectedPokemon={getRunTeam()}
         modeLabel={getModeLabel(gameMode)}
         onMainMenu={returnToMainMenu}
         onTryAgain={tryAgain}
@@ -347,7 +444,7 @@ export default function Home() {
           error={error}
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}
-          selectedPokemon={team}
+          selectedPokemon={getRunTeam()}
           onMainMenu={returnToMainMenu}
           onRevealCard={revealCard}
           onResetRun={resetCurrentRun}
@@ -359,7 +456,7 @@ export default function Home() {
           error={error}
           revealedCards={revealedCards}
           isSubmitting={isSubmitting}
-          selectedPokemon={team}
+          selectedPokemon={getRunTeam()}
           onMainMenu={returnToMainMenu}
           onRevealCard={revealCard}
           onResetRun={resetCurrentRun}
