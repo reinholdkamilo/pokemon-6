@@ -9,6 +9,8 @@ type RevealCardProps = {
   isRevealing: boolean;
   isCharging: boolean;
   canReveal: boolean;
+  canSelectLocked?: boolean;
+  isSelected?: boolean;
   onReveal: (index: number) => void;
   onStartHold: (index: number) => void;
   onFinishHold: (index: number) => void;
@@ -24,6 +26,8 @@ export function RevealCard({
   isRevealing,
   isCharging,
   canReveal,
+  canSelectLocked = false,
+  isSelected = false,
   onReveal,
   onStartHold,
   onFinishHold,
@@ -37,6 +41,7 @@ export function RevealCard({
   const isLegendary =
     Boolean(displayPokemon?.isLegendary) ||
     Boolean(displayPokemon && LEGENDARY_NAMES.has(displayPokemon.name));
+  const isDisabled = !canReveal || isRevealing || (isLocked && !canSelectLocked);
 
   return (
     <button
@@ -52,17 +57,28 @@ export function RevealCard({
         .filter(Boolean)
         .join(" ")}
       type="button"
-      disabled={!canReveal || isRevealing || isLocked}
-      onPointerDown={() => onStartHold(index)}
-      onPointerUp={() => onFinishHold(index)}
+      disabled={isDisabled}
+      style={
+        isSelected
+          ? { outline: "4px solid currentColor", outlineOffset: "4px", transform: "translateY(-4px)" }
+          : undefined
+      }
+      onPointerDown={() => {
+        if (!canSelectLocked) {
+          onStartHold(index);
+        }
+      }}
+      onPointerUp={() => {
+        if (canSelectLocked) {
+          onReveal(index);
+        } else {
+          onFinishHold(index);
+        }
+      }}
       onPointerLeave={() => onCancelHold(index)}
       onPointerCancel={() => onCancelHold(index)}
-      onClick={(event) => {
-        event.preventDefault();
-      }}
-      onContextMenu={(event) => {
-        event.preventDefault();
-      }}
+      onClick={(event) => event.preventDefault()}
+      onContextMenu={(event) => event.preventDefault()}
       onKeyDown={(event) => {
         if (event.repeat || (event.key !== "Enter" && event.key !== " ")) {
           return;
@@ -71,10 +87,13 @@ export function RevealCard({
         event.preventDefault();
         onReveal(index);
       }}
+      aria-pressed={canSelectLocked ? isSelected : undefined}
       aria-label={
-        displayPokemon
-          ? `Card ${index + 1}: ${displayPokemon.name}`
-          : `Reveal team card ${index + 1}`
+        canSelectLocked && displayPokemon
+          ? `${isSelected ? "Deselect" : "Select"} ${displayPokemon.name} for re-spin`
+          : displayPokemon
+            ? `Card ${index + 1}: ${displayPokemon.name}`
+            : `Reveal team card ${index + 1}`
       }
     >
       <span className="card-portrait">
@@ -94,9 +113,7 @@ export function RevealCard({
               {displayPokemon.primary_type}
               {displayPokemon.secondary_type ? ` / ${displayPokemon.secondary_type}` : ""}
             </span>
-            <span className="mystery-card-stat">
-              BST {displayPokemon.base_stat_total}
-            </span>
+            <span className="mystery-card-stat">BST {displayPokemon.base_stat_total}</span>
             <span className="mystery-card-bottom-spacer" aria-hidden="true" />
           </span>
         ) : (
