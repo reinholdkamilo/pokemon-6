@@ -142,6 +142,36 @@ export function BattleSelectionScreen({
     }, REVEAL_DURATION_MS);
   }
 
+  function autoPickTeam() {
+    if (isLoading || isRevealing || teamIsComplete || pokemon.length === 0) {
+      return;
+    }
+
+    const usedIds = new Set(
+      revealedCards
+        .filter((selected): selected is Pokemon => Boolean(selected))
+        .map((selected) => selected.id),
+    );
+
+    const availablePokemon = shufflePokemon(
+      pokemon.filter((candidate) => !usedIds.has(candidate.id)),
+    );
+
+    const emptySlotIndexes = revealedCards
+      .map((selected, index) => (selected ? null : index))
+      .filter((index): index is number => index !== null);
+
+    emptySlotIndexes.forEach((slotIndex, pickIndex) => {
+      const selectedPokemon = availablePokemon[pickIndex];
+
+      if (selectedPokemon) {
+        onRevealCard(slotIndex, selectedPokemon);
+      }
+    });
+
+    setLoadError("");
+  }
+
   function startHold(slotIndex: number) {
     if (isLoading || isRevealing) {
       return;
@@ -218,6 +248,21 @@ export function BattleSelectionScreen({
 
       <PokeballProgress count={selectedPokemon.length} label="Revealed Pokemon" />
 
+      <div className="selection-card-toolbar">
+        <button
+          className="secondary-action auto-pick-action"
+          type="button"
+          disabled={isLoading || isRevealing || teamIsComplete}
+          onClick={autoPickTeam}
+        >
+          AUTO PICK
+        </button>
+
+        <span className="selection-card-toolbar__hint">
+          Fill all remaining cards at once
+        </span>
+      </div>
+
       <div className="reveal-grid">
         {revealedCards.map((slotPokemon, index) => (
           <RevealCard
@@ -268,6 +313,20 @@ function createEmptySlots() {
 
 function pickRandomPokemon(pokemon: Pokemon[]) {
   return pokemon[Math.floor(Math.random() * pokemon.length)];
+}
+
+function shufflePokemon(pokemon: Pokemon[]) {
+  const shuffled = [...pokemon];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
 }
 
 function isLegendaryPokemon(pokemon: Pokemon) {

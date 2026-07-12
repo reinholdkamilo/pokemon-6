@@ -5893,3 +5893,56 @@ p {
     outline-color: rgba(255, 245, 170, 1);
   }
 }
+
+
+/* Pokemon selection auto-pick controls */
+.selection-card-toolbar {
+  width: min(100%, 780px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px auto 18px;
+}
+
+.auto-pick-action {
+  min-width: 150px;
+  font-weight: 1000;
+}
+
+.selection-card-toolbar__hint {
+  font-size: 0.82rem;
+  font-weight: 900;
+  opacity: 0.72;
+}
+
+.auto-pick-action:not(:disabled) {
+  animation: autoPickPulse 1.7s ease-in-out infinite;
+}
+
+@keyframes autoPickPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@media (max-width: 560px) {
+  .selection-card-toolbar {
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 8px;
+  }
+
+  .auto-pick-action {
+    width: min(100%, 240px);
+  }
+
+  .selection-card-toolbar__hint {
+    text-align: center;
+  }
+}

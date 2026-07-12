@@ -99,6 +99,44 @@ export function CardSelectionScreen({
     };
   }, []);
 
+  function autoPickTeam() {
+    if (
+      isLoading ||
+      isSpinning ||
+      isCatching ||
+      teamIsComplete ||
+      pokemon.length === 0
+    ) {
+      return;
+    }
+
+    clearSpinTimers();
+    clearHoldTimer();
+    clearCatchTimers();
+
+    const usedIds = new Set(selectedPokemon.map((selected) => selected.id));
+
+    const availablePokemon = shufflePokemon(
+      pokemon.filter((candidate) => !usedIds.has(candidate.id)),
+    );
+
+    const remainingSlots = TEAM_SIZE - selectedPokemon.length;
+    const autoPickedPokemon = availablePokemon.slice(0, remainingSlots);
+
+    autoPickedPokemon.forEach((selected, offset) => {
+      onRevealCard(selectedPokemon.length + offset, selected);
+    });
+
+    setPendingEncounter(null);
+    setIsEncounterModalOpen(false);
+    setSelectedLocation("");
+    setVisibleLocation("Team complete");
+    setIsSpecialEncounter(false);
+    setIsCatching(false);
+    setCatchConfirmed(false);
+    setLoadError("");
+  }
+
   function startSpin(isLegendarySpin = false) {
     if (isLoading || isSpinning || teamIsComplete || pokemon.length === 0) {
       return;
@@ -300,6 +338,26 @@ export function CardSelectionScreen({
 
       <PokeballProgress count={selectedPokemon.length} label="Caught Pokemon" />
 
+      <div className="selection-card-toolbar">
+        <button
+          className="secondary-action auto-pick-action"
+          type="button"
+          disabled={
+            isLoading ||
+            isSpinning ||
+            isCatching ||
+            teamIsComplete
+          }
+          onClick={autoPickTeam}
+        >
+          AUTO PICK
+        </button>
+
+        <span className="selection-card-toolbar__hint">
+          Fill all remaining team cards at once
+        </span>
+      </div>
+
       <div className="catch-main">
         <div
           className={`location-spinner${isSpinning ? " spinning" : ""}${
@@ -498,4 +556,19 @@ function pickRandomPokemon(pokemon: Pokemon[]) {
 
 function isLegendaryPokemon(pokemon: Pokemon) {
   return [144, 145, 146, 150, 151].includes(pokemon.id) || Boolean(pokemon.isLegendary);
+}
+
+
+function shufflePokemon(pokemon: Pokemon[]) {
+  const shuffled = [...pokemon];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
 }
