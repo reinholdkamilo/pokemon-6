@@ -5619,3 +5619,31 @@ p {
     max-height: 124px;
   }
 }
+
+
+/* Evolution animation white sprite only override */
+/*
+  Evolution animation behaviour:
+  - Card colours stay normal.
+  - Only the current Pokémon sprite and evolved Pokémon sprite turn white while cycling.
+  - Final evolved Pokémon reveal returns to the normal full-colour sprite.
+*/
+.evolution-card-flash {
+  filter: none !important;
+}
+
+.evolution-card-flash .evolution-pokemon-card__sprite {
+  filter:
+    brightness(0)
+    invert(1)
+    drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22)) !important;
+}
+
+.evolution-card-final,
+.evolution-card-final .evolution-pokemon-card__sprite {
+  filter: none !important;
+}
+
+.evolution-card-final .evolution-pokemon-card__sprite {
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22)) !important;
+}
