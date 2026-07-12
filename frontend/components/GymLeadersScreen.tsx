@@ -61,9 +61,6 @@ export function GymLeadersScreen({
         <div className="stage-hero">
           <p className="eyebrow">Kanto badge journey</p>
           <h1>Gym Leaders</h1>
-          <p>
-            {earnedBadges.size}/{badgesRequired} badges earned
-          </p>
           {!hasLoss && !allBattlesRevealed ? (
             <p className="trainer-card-instruction">
               Select the highlighted trainer card to begin the next battle.
