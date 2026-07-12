@@ -51,6 +51,12 @@ type PendingEvolution = {
   teamIndex: number;
 };
 
+type SkipContinuation = {
+  stage: "gym";
+  fromIndex: number;
+  toIndex: number;
+};
+
 export default function Home() {
   const [screen, setScreen] = useState<GameScreen>("title");
   const [gameMode, setGameMode] = useState<GameMode | null>(null);
@@ -62,6 +68,7 @@ export default function Home() {
   const [pokemonCatalog, setPokemonCatalog] = useState<Pokemon[]>([]);
   const [completedBattleWins, setCompletedBattleWins] = useState(0);
   const [pendingEvolution, setPendingEvolution] = useState<PendingEvolution | null>(null);
+  const [skipContinuation, setSkipContinuation] = useState<SkipContinuation | null>(null);
   const [result, setResult] = useState<TeamScoreResult | null>(null);
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfile | null>(null);
   const [runKey, setRunKey] = useState(0);
@@ -129,6 +136,7 @@ export default function Home() {
       setActiveTeam(currentTeam);
       setCompletedBattleWins(0);
       setPendingEvolution(null);
+      setSkipContinuation(null);
       setResult(scoreResult);
       setGymRevealedCount(0);
       setEliteRevealedCount(0);
@@ -154,6 +162,7 @@ export default function Home() {
     setActiveTeam([]);
     setCompletedBattleWins(0);
     setPendingEvolution(null);
+    setSkipContinuation(null);
     setResult(null);
     setError("");
     setGymRevealedCount(0);
@@ -281,14 +290,8 @@ export default function Home() {
     setScreen("champion");
   }
 
-  function queueEvolutionIfNeeded(nextCompletedBattleWins: number) {
-    if (!EVOLUTION_TRIGGER_WINS.has(nextCompletedBattleWins)) {
-      return;
-    }
-
-    const currentTeam = activeTeam.length > 0 ? activeTeam : team;
-
-    const eligibleEvolutions = currentTeam.flatMap((fromPokemon, teamIndex) => {
+  function getEligibleEvolutions(currentTeam: Pokemon[]) {
+    return currentTeam.flatMap((fromPokemon, teamIndex) => {
       const nextEvolutionName = getNextEvolutionName(fromPokemon.name);
 
       if (!nextEvolutionName) {
@@ -311,15 +314,162 @@ export default function Home() {
         },
       ];
     });
+  }
+
+  function queueEvolutionIfNeeded(
+    nextCompletedBattleWins: number,
+    currentTeam: Pokemon[] = getRunTeam(),
+  ) {
+    if (!EVOLUTION_TRIGGER_WINS.has(nextCompletedBattleWins)) {
+      return false;
+    }
+
+    const eligibleEvolutions = getEligibleEvolutions(currentTeam);
 
     if (eligibleEvolutions.length === 0) {
-      return;
+      return false;
     }
 
     const randomEvolution =
       eligibleEvolutions[Math.floor(Math.random() * eligibleEvolutions.length)];
 
     setPendingEvolution(randomEvolution);
+    return true;
+  }
+
+  function countSkippedWins(
+    opponents: OpponentMeta[],
+    breakdowns: OpponentBreakdown[] | undefined,
+    fromIndex: number,
+    toIndex: number,
+  ) {
+    let wins = 0;
+
+    for (let index = fromIndex; index < toIndex; index += 1) {
+      const breakdown = findBreakdown(breakdowns, opponents[index].name);
+
+      if (didBeatOpponent(breakdown)) {
+        wins += 1;
+      }
+    }
+
+    return wins;
+  }
+
+  function finishSkippedGymBattles(
+    fromIndex: number,
+    toIndex: number,
+    currentTeam: Pokemon[] = getRunTeam(),
+  ) {
+    if (!result || toIndex <= fromIndex) {
+      return;
+    }
+
+    const skippedWins = countSkippedWins(
+      GYM_LEADERS,
+      result.opponent_breakdown?.gym_leaders,
+      fromIndex,
+      toIndex,
+    );
+    const nextCompletedBattleWins = completedBattleWins + skippedWins;
+
+    setGymRevealedCount(toIndex);
+    setCompletedBattleWins(nextCompletedBattleWins);
+    queueEvolutionIfNeeded(nextCompletedBattleWins, currentTeam);
+  }
+
+  function skipGymBattles() {
+    if (!result) {
+      return;
+    }
+
+    const finalRevealCount = getRevealCountUntilLoss(
+      GYM_LEADERS,
+      result.opponent_breakdown?.gym_leaders,
+    );
+
+    if (finalRevealCount <= gymRevealedCount) {
+      return;
+    }
+
+    const currentTeam = getRunTeam();
+    const hasAvailableEvolution = getEligibleEvolutions(currentTeam).length > 0;
+
+    if (!hasAvailableEvolution) {
+      finishSkippedGymBattles(gymRevealedCount, finalRevealCount, currentTeam);
+      return;
+    }
+
+    const firstRevealCount =
+      gymRevealedCount < 4 ? Math.min(4, finalRevealCount) : finalRevealCount;
+    const skippedWins = countSkippedWins(
+      GYM_LEADERS,
+      result.opponent_breakdown?.gym_leaders,
+      gymRevealedCount,
+      firstRevealCount,
+    );
+    const nextCompletedBattleWins = completedBattleWins + skippedWins;
+
+    setGymRevealedCount(firstRevealCount);
+    setCompletedBattleWins(nextCompletedBattleWins);
+
+    const evolutionQueued = queueEvolutionIfNeeded(
+      nextCompletedBattleWins,
+      currentTeam,
+    );
+
+    if (evolutionQueued && firstRevealCount < finalRevealCount) {
+      setSkipContinuation({
+        stage: "gym",
+        fromIndex: firstRevealCount,
+        toIndex: finalRevealCount,
+      });
+      return;
+    }
+
+    if (firstRevealCount < finalRevealCount) {
+      const remainingWins = countSkippedWins(
+        GYM_LEADERS,
+        result.opponent_breakdown?.gym_leaders,
+        firstRevealCount,
+        finalRevealCount,
+      );
+      const finalCompletedBattleWins = nextCompletedBattleWins + remainingWins;
+
+      setGymRevealedCount(finalRevealCount);
+      setCompletedBattleWins(finalCompletedBattleWins);
+      queueEvolutionIfNeeded(finalCompletedBattleWins, currentTeam);
+    }
+  }
+
+  function skipEliteFourBattles() {
+    if (!result) {
+      return;
+    }
+
+    const finalRevealCount = getRevealCountUntilLoss(
+      ELITE_FOUR,
+      result.opponent_breakdown?.elite_four,
+    );
+
+    if (finalRevealCount <= eliteRevealedCount) {
+      return;
+    }
+
+    const skippedWins = countSkippedWins(
+      ELITE_FOUR,
+      result.opponent_breakdown?.elite_four,
+      eliteRevealedCount,
+      finalRevealCount,
+    );
+    const nextCompletedBattleWins = completedBattleWins + skippedWins;
+
+    setEliteRevealedCount(finalRevealCount);
+    setCompletedBattleWins(nextCompletedBattleWins);
+
+    if (getEligibleEvolutions(getRunTeam()).length > 0) {
+      queueEvolutionIfNeeded(nextCompletedBattleWins);
+    }
   }
 
   function completeEvolution() {
@@ -327,12 +477,17 @@ export default function Home() {
       return;
     }
 
-    setActiveTeam((currentTeam) => {
-      const nextTeam = [...(currentTeam.length > 0 ? currentTeam : team)];
-      nextTeam[pendingEvolution.teamIndex] = pendingEvolution.toPokemon;
-      return nextTeam;
-    });
+    const nextTeam = [...getRunTeam()];
+    nextTeam[pendingEvolution.teamIndex] = pendingEvolution.toPokemon;
+
+    setActiveTeam(nextTeam);
     setPendingEvolution(null);
+
+    if (skipContinuation?.stage === "gym") {
+      const { fromIndex, toIndex } = skipContinuation;
+      setSkipContinuation(null);
+      finishSkippedGymBattles(fromIndex, toIndex, nextTeam);
+    }
   }
 
   function withEvolutionModal(children: ReactNode) {
@@ -388,7 +543,7 @@ export default function Home() {
         onChallengeEliteFour={() => setScreen("elite-four")}
         onMainMenu={returnToMainMenu}
         onResetRun={resetCurrentRun}
-        onSkipBattles={() => setGymRevealedCount(getRevealCountUntilLoss(GYM_LEADERS, result.opponent_breakdown?.gym_leaders))}
+        onSkipBattles={skipGymBattles}
         onViewResults={() => setScreen("end-results")}
       />,
     );
@@ -403,7 +558,7 @@ export default function Home() {
         onBattleEliteMember={startEliteFourBattle}
         onChallengeChampion={() => setScreen("champion")}
         onMainMenu={returnToMainMenu}
-        onSkipBattles={() => setEliteRevealedCount(getRevealCountUntilLoss(ELITE_FOUR, result.opponent_breakdown?.elite_four))}
+        onSkipBattles={skipEliteFourBattles}
         onViewResults={() => setScreen("end-results")}
       />,
     );
