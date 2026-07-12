@@ -32,82 +32,101 @@ export function EliteFourScreen({
   onViewResults,
 }: EliteFourScreenProps) {
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
+
   const revealedBreakdowns = ELITE_FOUR.slice(0, revealedCount).map((member) =>
     findBreakdown(eliteFourBreakdowns, member.name),
   );
+
   const hasLoss = revealedBreakdowns.some(
     (breakdown) => breakdown && !didBeatOpponent(breakdown),
   );
+
   const allBattlesRevealed = revealedCount >= ELITE_FOUR.length;
-  const nextBattleIndex = Math.min(revealedCount, ELITE_FOUR.length - 1);
-  const nextMember = ELITE_FOUR[nextBattleIndex];
+
   const eliteFourBeaten =
     !hasLoss &&
-    eliteFourBreakdowns.length >= ELITE_FOUR.length &&
+    allBattlesRevealed &&
     ELITE_FOUR.every((member) =>
       didBeatOpponent(findBreakdown(eliteFourBreakdowns, member.name)),
     );
-  let reachedPrevious = Boolean(result.elite_four_unlocked);
 
   return (
     <main className="game-shell stage-shell">
       <section className="stage-screen" aria-label="Elite Four">
         <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
+
         <div className="stage-hero">
           <p className="eyebrow">Indigo Plateau</p>
           <h1>Elite Four</h1>
           <p>Defeat all four members to reach the Champion.</p>
+
+          {!hasLoss && !allBattlesRevealed ? (
+            <p className="trainer-card-instruction">
+              Select the highlighted trainer card to begin the next battle.
+            </p>
+          ) : null}
         </div>
 
         <div className="battle-choice-panel">
           {hasLoss ? (
-            <button className="primary-action stage-action" type="button" onClick={onViewResults}>
+            <button
+              className="primary-action stage-action"
+              type="button"
+              onClick={onViewResults}
+            >
               VIEW RESULTS
             </button>
           ) : !allBattlesRevealed ? (
-            <>
-              <button
-                className="primary-action stage-action"
-                type="button"
-                onClick={() => onBattleEliteMember(nextBattleIndex)}
-              >
-                BATTLE {nextMember.name.toUpperCase()}
-              </button>
-              <button className="secondary-action" type="button" onClick={onSkipBattles}>
-                SKIP BATTLES
-              </button>
-            </>
+            <button
+              className="secondary-action"
+              type="button"
+              onClick={onSkipBattles}
+            >
+              SKIP BATTLES
+            </button>
           ) : (
             <button
               className="primary-action stage-action"
               type="button"
               onClick={eliteFourBeaten ? onChallengeChampion : onViewResults}
             >
-              {eliteFourBeaten ? "CHALLENGE CHAMPION" : "VIEW FINAL RESULTS"}
+              {eliteFourBeaten
+                ? "CHALLENGE CHAMPION"
+                : "VIEW FINAL RESULTS"}
             </button>
           )}
         </div>
 
         <div className="stage-card-grid elite-stage-grid">
           {ELITE_FOUR.map((member, index) => {
-            const breakdown = findBreakdown(eliteFourBreakdowns, member.name);
+            const breakdown = findBreakdown(
+              eliteFourBreakdowns,
+              member.name,
+            );
+
             const revealed = index < revealedCount;
-            const reached = reachedPrevious && Boolean(breakdown);
-            const status = revealed ? getBattleStatus(breakdown, reached) : "pending";
-            const isGreyedOutAfterLoss = hasLoss && !revealed;
-            reachedPrevious = revealed ? reached && status === "cleared" : reachedPrevious;
+            const status = revealed
+              ? getBattleStatus(breakdown, Boolean(breakdown))
+              : "pending";
+
+            const isNextTrainer =
+              Boolean(result.elite_four_unlocked) &&
+              !hasLoss &&
+              !allBattlesRevealed &&
+              index === revealedCount;
+
+            const isLocked = !revealed && !isNextTrainer;
 
             return (
-              <div
-                className={isGreyedOutAfterLoss ? "unchallenged-after-loss" : ""}
+              <ProgressionCard
+                breakdown={breakdown}
+                isLocked={isLocked}
+                isSelectable={isNextTrainer}
                 key={member.name}
-              >
-                <ProgressionCard
-                  breakdown={breakdown}
-                  meta={member}
-                  status={status}
-                />
-              </div>
+                meta={member}
+                onSelect={() => onBattleEliteMember(index)}
+                status={status}
+              />
             );
           })}
         </div>

@@ -5840,3 +5840,56 @@ p {
     max-height: 160px !important;
   }
 }
+
+
+/* Select trainer cards to battle */
+.trainer-card-instruction {
+  margin-top: 8px !important;
+  font-weight: 900;
+}
+
+.progression-card.trainer-card-selectable {
+  cursor: pointer;
+  outline: 4px solid rgba(255, 213, 55, 0.92);
+  outline-offset: 4px;
+  animation: selectableTrainerPulse 1.4s ease-in-out infinite;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease,
+    filter 150ms ease;
+}
+
+.progression-card.trainer-card-selectable:hover,
+.progression-card.trainer-card-selectable:focus-visible {
+  transform: translateY(-5px) scale(1.025);
+  box-shadow:
+    0 10px 0 rgba(52, 42, 32, 0.9),
+    0 18px 32px rgba(0, 0, 0, 0.25);
+}
+
+.progression-card.trainer-card-selectable:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.progression-card.trainer-card-locked {
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(1) brightness(0.72);
+  opacity: 0.54;
+}
+
+.progression-card.trainer-card-locked .trainer-card-name-label,
+.progression-card.trainer-card-locked .trainer-team-list {
+  opacity: 0.6;
+}
+
+@keyframes selectableTrainerPulse {
+  0%,
+  100% {
+    outline-color: rgba(255, 213, 55, 0.75);
+  }
+
+  50% {
+    outline-color: rgba(255, 245, 170, 1);
+  }
+}
