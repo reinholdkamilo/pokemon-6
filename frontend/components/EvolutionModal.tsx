@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Pokemon } from "@/types/pokemon";
 
 type EvolutionModalProps = {
@@ -18,6 +18,11 @@ export function EvolutionModal({
 }: EvolutionModalProps) {
   const [stage, setStage] = useState<EvolutionStage>("intro");
   const completionStartedRef = useRef(false);
+
+  useLayoutEffect(() => {
+    setStage("intro");
+    completionStartedRef.current = false;
+  }, [fromPokemon.id, toPokemon.id]);
 
   useEffect(() => {
     if (stage !== "evolving") {
