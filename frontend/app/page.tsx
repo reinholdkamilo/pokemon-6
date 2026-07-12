@@ -281,12 +281,11 @@ export default function Home() {
 
     const currentTeam = activeTeam.length > 0 ? activeTeam : team;
 
-    for (let teamIndex = 0; teamIndex < currentTeam.length; teamIndex += 1) {
-      const fromPokemon = currentTeam[teamIndex];
+    const eligibleEvolutions = currentTeam.flatMap((fromPokemon, teamIndex) => {
       const nextEvolutionName = getNextEvolutionName(fromPokemon.name);
 
       if (!nextEvolutionName) {
-        continue;
+        return [];
       }
 
       const toPokemon = pokemonCatalog.find(
@@ -294,16 +293,26 @@ export default function Home() {
       );
 
       if (!toPokemon) {
-        continue;
+        return [];
       }
 
-      setPendingEvolution({
-        fromPokemon,
-        toPokemon,
-        teamIndex,
-      });
+      return [
+        {
+          fromPokemon,
+          toPokemon,
+          teamIndex,
+        },
+      ];
+    });
+
+    if (eligibleEvolutions.length === 0) {
       return;
     }
+
+    const randomEvolution =
+      eligibleEvolutions[Math.floor(Math.random() * eligibleEvolutions.length)];
+
+    setPendingEvolution(randomEvolution);
   }
 
   function completeEvolution() {
