@@ -22,7 +22,14 @@ const TEAM_SIZE = 6;
 const REVEAL_TICK_MS = 85;
 const REVEAL_DURATION_MS = 1400;
 const LEGENDARY_HOLD_MS = 1300;
-const LEGENDARY_NAMES = new Set(["Articuno", "Zapdos", "Moltres", "Mewtwo", "Mew"]);
+
+const LEGENDARY_NAMES = new Set([
+  "Articuno",
+  "Zapdos",
+  "Moltres",
+  "Mewtwo",
+  "Mew",
+]);
 
 export function BattleSelectionScreen({
   revealedCards,
@@ -35,21 +42,30 @@ export function BattleSelectionScreen({
   onSubmitTeam,
 }: BattleSelectionScreenProps) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
-  const [previewBySlot, setPreviewBySlot] = useState<(Pokemon | null)[]>(
-    createEmptySlots,
-  );
-  const [revealingSlot, setRevealingSlot] = useState<number | null>(null);
-  const [chargingCardIndex, setChargingCardIndex] = useState<number | null>(null);
+  const [previewBySlot, setPreviewBySlot] =
+    useState<(Pokemon | null)[]>(createEmptySlots);
+
+  const [revealingSlots, setRevealingSlots] =
+    useState<Set<number>>(() => new Set());
+
+  const [chargingCardIndex, setChargingCardIndex] =
+    useState<number | null>(null);
+
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const intervalRef = useRef<number | null>(null);
-  const timeoutRef = useRef<number | null>(null);
+
+  const intervalRefs = useRef<Map<number, number>>(new Map());
+  const timeoutRefs = useRef<Map<number, number>>(new Map());
+
+  const pendingPokemonBySlotRef =
+    useRef<Map<number, Pokemon>>(new Map());
+
   const holdTimeoutRef = useRef<number | null>(null);
   const activeHoldSlotRef = useRef<number | null>(null);
   const completedHoldSlotRef = useRef<number | null>(null);
 
   const teamIsComplete = selectedPokemon.length === TEAM_SIZE;
-  const isRevealing = revealingSlot !== null;
+  const anyCardRevealing = revealingSlots.size > 0;
 
   useEffect(() => {
     let ignoreResult = false;
@@ -80,27 +96,41 @@ export function BattleSelectionScreen({
 
     return () => {
       ignoreResult = true;
-      clearRevealTimers();
+      clearAllRevealTimers();
       clearHoldTimer();
     };
   }, []);
 
   function revealCard(slotIndex: number, isLegendarySpin = false) {
-    if (isLoading || isRevealing) {
+    if (
+      isLoading ||
+      revealingSlots.has(slotIndex) ||
+      pokemon.length === 0
+    ) {
       return;
     }
+
+    const reservedIds = new Set(
+      Array.from(pendingPokemonBySlotRef.current.entries())
+        .filter(([pendingSlot]) => pendingSlot !== slotIndex)
+        .map(([, pendingPokemon]) => pendingPokemon.id),
+    );
 
     const selectedIdsInOtherSlots = new Set(
       revealedCards
         .filter(
-          (selectedPokemon, index): selectedPokemon is Pokemon =>
-            index !== slotIndex && Boolean(selectedPokemon),
+          (selected, index): selected is Pokemon =>
+            index !== slotIndex && Boolean(selected),
         )
-        .map((selectedPokemon) => selectedPokemon.id),
+        .map((selected) => selected.id),
     );
+
     const currentPokemon = revealedCards[slotIndex];
+
     const availablePokemon = pokemon.filter(
-      (candidate) => !selectedIdsInOtherSlots.has(candidate.id),
+      (candidate) =>
+        !selectedIdsInOtherSlots.has(candidate.id) &&
+        !reservedIds.has(candidate.id),
     );
 
     if (availablePokemon.length === 0) {
@@ -109,63 +139,121 @@ export function BattleSelectionScreen({
     }
 
     const preferredPokemon = currentPokemon
-      ? availablePokemon.filter((candidate) => candidate.id !== currentPokemon.id)
+      ? availablePokemon.filter(
+          (candidate) => candidate.id !== currentPokemon.id,
+        )
       : availablePokemon;
-    const normalSpinPool =
-      preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
-    const legendaryPokemon = preferredPokemon.filter(isLegendaryPokemon);
-    const hasLegendaryPool = isLegendarySpin && legendaryPokemon.length > 0;
-    const finalPokemon = pickRandomPokemon(
-      hasLegendaryPool ? legendaryPokemon : normalSpinPool,
-    );
-    const previewPokemon = hasLegendaryPool ? legendaryPokemon : availablePokemon;
-    setLoadError("");
-    setRevealingSlot(slotIndex);
 
-    intervalRef.current = window.setInterval(() => {
+    const normalSpinPool =
+      preferredPokemon.length > 0
+        ? preferredPokemon
+        : availablePokemon;
+
+    const legendaryPokemon =
+      preferredPokemon.filter(isLegendaryPokemon);
+
+    const hasLegendaryPool =
+      isLegendarySpin && legendaryPokemon.length > 0;
+
+    const finalPokemon = pickRandomPokemon(
+      hasLegendaryPool
+        ? legendaryPokemon
+        : normalSpinPool,
+    );
+
+    const previewPokemon = hasLegendaryPool
+      ? legendaryPokemon
+      : availablePokemon;
+
+    pendingPokemonBySlotRef.current.set(
+      slotIndex,
+      finalPokemon,
+    );
+
+    setLoadError("");
+
+    setRevealingSlots((currentSlots) => {
+      const nextSlots = new Set(currentSlots);
+      nextSlots.add(slotIndex);
+      return nextSlots;
+    });
+
+    const intervalId = window.setInterval(() => {
       setPreviewBySlot((currentSlots) => {
         const nextSlots = [...currentSlots];
-        nextSlots[slotIndex] = pickRandomPokemon(previewPokemon);
+        nextSlots[slotIndex] =
+          pickRandomPokemon(previewPokemon);
         return nextSlots;
       });
     }, REVEAL_TICK_MS);
 
-    timeoutRef.current = window.setTimeout(() => {
-      clearRevealTimers();
+    intervalRefs.current.set(slotIndex, intervalId);
+
+    const timeoutId = window.setTimeout(() => {
+      clearRevealTimer(slotIndex);
+
       setPreviewBySlot((currentSlots) => {
         const nextSlots = [...currentSlots];
         nextSlots[slotIndex] = null;
         return nextSlots;
       });
-      setRevealingSlot(null);
+
+      setRevealingSlots((currentSlots) => {
+        const nextSlots = new Set(currentSlots);
+        nextSlots.delete(slotIndex);
+        return nextSlots;
+      });
+
+      pendingPokemonBySlotRef.current.delete(slotIndex);
       onRevealCard(slotIndex, finalPokemon);
     }, REVEAL_DURATION_MS);
+
+    timeoutRefs.current.set(slotIndex, timeoutId);
   }
 
   function autoPickTeam() {
-    if (isLoading || isRevealing || teamIsComplete || pokemon.length === 0) {
+    if (
+      isLoading ||
+      teamIsComplete ||
+      pokemon.length === 0
+    ) {
       return;
     }
 
+    clearAllRevealTimers();
+
+    setRevealingSlots(new Set());
+    pendingPokemonBySlotRef.current.clear();
+    setPreviewBySlot(createEmptySlots());
+
     const usedIds = new Set(
       revealedCards
-        .filter((selected): selected is Pokemon => Boolean(selected))
+        .filter(
+          (selected): selected is Pokemon =>
+            Boolean(selected),
+        )
         .map((selected) => selected.id),
     );
 
     const availablePokemon = shufflePokemon(
-      pokemon.filter((candidate) => !usedIds.has(candidate.id)),
+      pokemon.filter(
+        (candidate) => !usedIds.has(candidate.id),
+      ),
     );
 
     const emptySlotIndexes = revealedCards
-      .map((selected, index) => (selected ? null : index))
-      .filter((index): index is number => index !== null);
+      .map((selected, index) =>
+        selected ? null : index,
+      )
+      .filter(
+        (index): index is number => index !== null,
+      );
 
     emptySlotIndexes.forEach((slotIndex, pickIndex) => {
-      const selectedPokemon = availablePokemon[pickIndex];
+      const selected = availablePokemon[pickIndex];
 
-      if (selectedPokemon) {
-        onRevealCard(slotIndex, selectedPokemon);
+      if (selected) {
+        onRevealCard(slotIndex, selected);
       }
     });
 
@@ -173,11 +261,15 @@ export function BattleSelectionScreen({
   }
 
   function startHold(slotIndex: number) {
-    if (isLoading || isRevealing) {
+    if (
+      isLoading ||
+      revealingSlots.has(slotIndex)
+    ) {
       return;
     }
 
     clearHoldTimer();
+
     activeHoldSlotRef.current = slotIndex;
     completedHoldSlotRef.current = null;
     setChargingCardIndex(slotIndex);
@@ -195,7 +287,9 @@ export function BattleSelectionScreen({
       return;
     }
 
-    const completedHoldSlot = completedHoldSlotRef.current;
+    const completedHoldSlot =
+      completedHoldSlotRef.current;
+
     clearHoldTimer();
     setChargingCardIndex(null);
     activeHoldSlotRef.current = null;
@@ -219,16 +313,35 @@ export function BattleSelectionScreen({
     completedHoldSlotRef.current = null;
   }
 
-  function clearRevealTimers() {
-    if (intervalRef.current !== null) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
+  function clearRevealTimer(slotIndex: number) {
+    const intervalId =
+      intervalRefs.current.get(slotIndex);
+
+    if (intervalId !== undefined) {
+      window.clearInterval(intervalId);
+      intervalRefs.current.delete(slotIndex);
     }
 
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+    const timeoutId =
+      timeoutRefs.current.get(slotIndex);
+
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+      timeoutRefs.current.delete(slotIndex);
     }
+  }
+
+  function clearAllRevealTimers() {
+    for (const intervalId of intervalRefs.current.values()) {
+      window.clearInterval(intervalId);
+    }
+
+    for (const timeoutId of timeoutRefs.current.values()) {
+      window.clearTimeout(timeoutId);
+    }
+
+    intervalRefs.current.clear();
+    timeoutRefs.current.clear();
   }
 
   function clearHoldTimer() {
@@ -239,49 +352,79 @@ export function BattleSelectionScreen({
   }
 
   return (
-    <section className="selection-screen" aria-label="Battle Mode team selection">
-      <GameTopBar modeLabel="Battle Mode" onMainMenu={onMainMenu} />
+    <section
+      className="selection-screen"
+      aria-label="Battle Mode team selection"
+    >
+      <GameTopBar
+        modeLabel="Battle Mode"
+        onMainMenu={onMainMenu}
+      />
+
       <div className="selection-header">
         <h1>Choose your Pokemon</h1>
-        <p>Tap each card to reveal your Pokemon team</p>
+        <p>
+          Tap multiple cards to reveal your Pokemon
+          at the same time
+        </p>
       </div>
 
-      <PokeballProgress count={selectedPokemon.length} label="Revealed Pokemon" />
+      <PokeballProgress
+        count={selectedPokemon.length}
+        label="Revealed Pokemon"
+      />
 
       <div className="selection-card-toolbar">
         <button
           className="secondary-action auto-pick-action"
           type="button"
-          disabled={isLoading || isRevealing || teamIsComplete}
+          disabled={
+            isLoading ||
+            teamIsComplete
+          }
           onClick={autoPickTeam}
         >
           AUTO PICK
         </button>
 
         <span className="selection-card-toolbar__hint">
-          Fill all remaining cards at once
+          Instantly reveal every remaining card
         </span>
       </div>
 
       <div className="reveal-grid">
-        {revealedCards.map((slotPokemon, index) => (
-          <RevealCard
-            canReveal={!isLoading && !isRevealing}
-            index={index}
-            isCharging={chargingCardIndex === index}
-            isRevealing={revealingSlot === index}
-            key={slotPokemon?.id ?? `slot-${index}`}
-            onCancelHold={cancelHold}
-            onFinishHold={finishHold}
-            onReveal={revealCard}
-            onStartHold={startHold}
-            pokemon={slotPokemon}
-            previewPokemon={previewBySlot[index]}
-          />
-        ))}
+        {revealedCards.map((slotPokemon, index) => {
+          const slotIsRevealing =
+            revealingSlots.has(index);
+
+          return (
+            <RevealCard
+              canReveal={
+                !isLoading &&
+                !slotIsRevealing
+              }
+              index={index}
+              isCharging={
+                chargingCardIndex === index
+              }
+              isRevealing={slotIsRevealing}
+              key={slotPokemon?.id ?? `slot-${index}`}
+              onCancelHold={cancelHold}
+              onFinishHold={finishHold}
+              onReveal={revealCard}
+              onStartHold={startHold}
+              pokemon={slotPokemon}
+              previewPokemon={previewBySlot[index]}
+            />
+          );
+        })}
       </div>
 
-      {(loadError || error) && <p className="error-message">{loadError || error}</p>}
+      {(loadError || error) && (
+        <p className="error-message">
+          {loadError || error}
+        </p>
+      )}
 
       <div className="selection-actions">
         {teamIsComplete ? (
@@ -291,13 +434,19 @@ export function BattleSelectionScreen({
             disabled={isSubmitting}
             onClick={onSubmitTeam}
           >
-            {isSubmitting ? "SCORING..." : "I CHOOSE YOU"}
+            {isSubmitting
+              ? "SCORING..."
+              : "I CHOOSE YOU"}
           </button>
         ) : null}
+
         <button
           className="secondary-action"
           type="button"
-          disabled={isRevealing || (selectedPokemon.length === 0 && !error)}
+          disabled={
+            anyCardRevealing ||
+            (selectedPokemon.length === 0 && !error)
+          }
           onClick={onResetRun}
         >
           RESET RUN
@@ -308,19 +457,34 @@ export function BattleSelectionScreen({
 }
 
 function createEmptySlots() {
-  return Array.from({ length: TEAM_SIZE }, () => null);
+  return Array.from(
+    { length: TEAM_SIZE },
+    () => null,
+  );
 }
 
 function pickRandomPokemon(pokemon: Pokemon[]) {
-  return pokemon[Math.floor(Math.random() * pokemon.length)];
+  return pokemon[
+    Math.floor(Math.random() * pokemon.length)
+  ];
 }
 
 function shufflePokemon(pokemon: Pokemon[]) {
   const shuffled = [...pokemon];
 
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
-    [shuffled[index], shuffled[randomIndex]] = [
+  for (
+    let index = shuffled.length - 1;
+    index > 0;
+    index -= 1
+  ) {
+    const randomIndex = Math.floor(
+      Math.random() * (index + 1),
+    );
+
+    [
+      shuffled[index],
+      shuffled[randomIndex],
+    ] = [
       shuffled[randomIndex],
       shuffled[index],
     ];
@@ -330,5 +494,8 @@ function shufflePokemon(pokemon: Pokemon[]) {
 }
 
 function isLegendaryPokemon(pokemon: Pokemon) {
-  return Boolean(pokemon.isLegendary) || LEGENDARY_NAMES.has(pokemon.name);
+  return (
+    Boolean(pokemon.isLegendary) ||
+    LEGENDARY_NAMES.has(pokemon.name)
+  );
 }

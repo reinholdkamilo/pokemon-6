@@ -79,27 +79,34 @@ export default function Home() {
     setError("");
     setResult(null);
 
-    const nextCards = [...revealedCards];
-
     if (slotIndex < 0 || slotIndex >= TEAM_SIZE) {
       setError("Choose a valid team card.");
       return;
     }
 
-    const duplicateInAnotherSlot = nextCards.some(
-      (selected, index) => index !== slotIndex && selected?.id === pokemon.id,
-    );
+    setRevealedCards((currentCards) => {
+      const duplicateInAnotherSlot = currentCards.some(
+        (selected, index) =>
+          index !== slotIndex && selected?.id === pokemon.id,
+      );
 
-    if (duplicateInAnotherSlot) {
-      setError(`${pokemon.name} is already on your team.`);
-      return;
-    }
+      if (duplicateInAnotherSlot) {
+        setError(`${pokemon.name} is already on your team.`);
+        return currentCards;
+      }
 
-    nextCards[slotIndex] = pokemon;
-    const nextTeam = nextCards.filter((card): card is Pokemon => Boolean(card));
-    setRevealedCards(nextCards);
-    teamRef.current = nextTeam;
-    setTeam(nextTeam);
+      const nextCards = [...currentCards];
+      nextCards[slotIndex] = pokemon;
+
+      const nextTeam = nextCards.filter(
+        (card): card is Pokemon => Boolean(card),
+      );
+
+      teamRef.current = nextTeam;
+      setTeam(nextTeam);
+
+      return nextCards;
+    });
   }
 
   async function submitTeam() {
