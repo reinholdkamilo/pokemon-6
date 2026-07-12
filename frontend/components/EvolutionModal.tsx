@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Pokemon } from "@/types/pokemon";
 
 type EvolutionModalProps = {
@@ -17,6 +17,7 @@ export function EvolutionModal({
   onComplete,
 }: EvolutionModalProps) {
   const [stage, setStage] = useState<EvolutionStage>("intro");
+  const completionStartedRef = useRef(false);
 
   useEffect(() => {
     if (stage !== "evolving") {
@@ -29,6 +30,15 @@ export function EvolutionModal({
 
     return () => window.clearTimeout(timer);
   }, [stage]);
+
+  function completeEvolution() {
+    if (completionStartedRef.current) {
+      return;
+    }
+
+    completionStartedRef.current = true;
+    onComplete();
+  }
 
   return (
     <div className="evolution-modal-backdrop" role="dialog" aria-modal="true">
@@ -73,7 +83,7 @@ export function EvolutionModal({
             <button
               className="primary-action evolution-action"
               type="button"
-              onClick={onComplete}
+              onClick={completeEvolution}
             >
               CONTINUE
             </button>
