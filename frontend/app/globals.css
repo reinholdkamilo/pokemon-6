@@ -5647,3 +5647,196 @@ p {
 .evolution-card-final .evolution-pokemon-card__sprite {
   filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22)) !important;
 }
+
+
+/* Evolution animation speed ramp and sprite-only stage */
+/*
+  Updated evolution animation:
+  - Animation duration doubled from 1.9s to 3.8s.
+  - Cycle starts slow, then speeds up.
+  - During animation, card colours stay normal.
+  - During animation, Pokémon details are hidden.
+  - During animation, only the white Pokémon sprites are shown on the cards.
+  - Final reveal returns to normal card, normal details and normal sprite colour.
+*/
+.evolution-stage-evolving .evolution-pokemon-card {
+  grid-template-rows: minmax(0, 1fr) !important;
+}
+
+.evolution-stage-evolving .evolution-pokemon-card__name,
+.evolution-stage-evolving .evolution-pokemon-card__type,
+.evolution-stage-evolving .evolution-pokemon-card__stat {
+  display: none !important;
+}
+
+.evolution-stage-evolving .evolution-pokemon-card__sprite-wrap {
+  width: 100% !important;
+  height: 100% !important;
+  place-items: center !important;
+}
+
+.evolution-stage-evolving .evolution-pokemon-card__sprite {
+  max-width: 92% !important;
+  max-height: 190px !important;
+}
+
+.evolution-card-from {
+  animation: evolutionFlashFromSpeedRamp 3.8s steps(1, end) forwards !important;
+}
+
+.evolution-card-to {
+  animation: evolutionFlashToSpeedRamp 3.8s steps(1, end) forwards !important;
+}
+
+/* Keep cards normal, make only sprites white during the cycle */
+.evolution-card-flash {
+  filter: none !important;
+}
+
+.evolution-card-flash .evolution-pokemon-card__sprite {
+  filter:
+    brightness(0)
+    invert(1)
+    drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22)) !important;
+}
+
+.evolution-card-final,
+.evolution-card-final .evolution-pokemon-card__sprite {
+  filter: none !important;
+}
+
+.evolution-card-final .evolution-pokemon-card__sprite {
+  filter: drop-shadow(0 3px 0 rgba(52, 42, 32, 0.22)) !important;
+}
+
+/* Current Pokémon: long flashes first, then faster flashes */
+@keyframes evolutionFlashFromSpeedRamp {
+  0%, 22% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  22.01%, 40% {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  40.01%, 54% {
+    opacity: 1;
+    transform: scale(1.01);
+  }
+
+  54.01%, 65% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  65.01%, 74% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+
+  74.01%, 81% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+
+  81.01%, 86% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  86.01%, 90% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+
+  90.01%, 94% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  94.01%, 97% {
+    opacity: 0;
+    transform: scale(1.07);
+  }
+
+  97.01%, 99% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  99.01%, 100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+/* Evolution Pokémon: opposite timing so it cycles back and forth */
+@keyframes evolutionFlashToSpeedRamp {
+  0%, 22% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  22.01%, 40% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  40.01%, 54% {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+
+  54.01%, 65% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  65.01%, 74% {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  74.01%, 81% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  81.01%, 86% {
+    opacity: 0;
+    transform: scale(1.01);
+  }
+
+  86.01%, 90% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  90.01%, 94% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+
+  94.01%, 97% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+
+  97.01%, 99% {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  99.01%, 100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 560px) {
+  .evolution-stage-evolving .evolution-pokemon-card__sprite {
+    max-height: 160px !important;
+  }
+}

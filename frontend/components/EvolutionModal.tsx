@@ -25,7 +25,7 @@ export function EvolutionModal({
 
     const timer = window.setTimeout(() => {
       setStage("complete");
-    }, 1900);
+    }, 3800);
 
     return () => window.clearTimeout(timer);
   }, [stage]);
