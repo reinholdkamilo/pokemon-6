@@ -23,6 +23,35 @@ const CHARACTERS: CharacterOption[] = [
   { sprite: "gj", label: "GJ", fallback: "GJ" },
 ];
 
+const portraitFrameStyle = {
+  width: "min(210px, 58vw)",
+  height: "300px",
+  maxWidth: "100%",
+  display: "grid",
+  placeItems: "center",
+  overflow: "hidden",
+  border: "3px solid rgba(52, 42, 32, 0.52)",
+  borderRadius: "8px",
+  background: "rgba(255, 255, 255, 0.76)",
+} as const;
+
+const portraitStyle = {
+  display: "block",
+  width: "100%",
+  height: "100%",
+  minHeight: 0,
+  maxWidth: "100%",
+  maxHeight: "100%",
+  border: 0,
+  borderRadius: 0,
+  background: "transparent",
+  padding: "8px 10px 4px",
+  objectFit: "contain",
+  objectPosition: "center bottom",
+  transform: "none",
+  imageRendering: "pixelated",
+} as const;
+
 export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScreenProps) {
   const [characterIndex, setCharacterIndex] = useState(0);
   const selectedCharacter = CHARACTERS[characterIndex];
@@ -85,34 +114,14 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
                 gap: "12px",
               }}
             >
-              <div
-                style={{
-                  width: "min(210px, 58vw)",
-                  height: "300px",
-                  maxWidth: "100%",
-                  overflow: "hidden",
-                  border: "3px solid rgba(52, 42, 32, 0.52)",
-                  borderRadius: "8px",
-                  background: "rgba(255,255,255,0.76)",
-                }}
-              >
+              <div style={portraitFrameStyle}>
                 <LocalSprite
+                  key={selectedCharacter.sprite}
                   alt={selectedCharacter.label}
                   className="player-trainer-sprite"
                   fallback={selectedCharacter.fallback}
                   src={getPlayerTrainerSprite(selectedCharacter.sprite)}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    minHeight: 0,
-                    maxWidth: "none",
-                    border: 0,
-                    borderRadius: 0,
-                    background: "transparent",
-                    padding: 0,
-                    objectFit: "contain",
-                    transform: "translateY(-24px)",
-                  }}
+                  style={portraitStyle}
                 />
               </div>
               <strong style={{ fontSize: "1.4rem" }}>{selectedCharacter.label}</strong>
