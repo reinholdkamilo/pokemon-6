@@ -1,47 +1,28 @@
 # Pokémon 6 Roadmap
 
-## Stage 1 — Project Setup
+## Current stage
+MVP polish and gameplay refinement.
 
-- Create GitHub repo
-- Add documentation
-- Add Codex instructions
-- Add clean folder structure
+## Completed
+- Repository and documentation setup
+- FastAPI backend foundation
+- Next.js frontend foundation
+- Local Generation 1 Pokémon data and sprites
+- Trainer Card creation
+- Six-card Pokémon selection
+- Gym Leader, Elite Four, Champion, and end-results flow
+- Backend tests and frontend build workflow
 
-## Stage 2 — Backend Foundation
+## Next milestone
+Define and execute the next approved gameplay or interface improvement.
 
-- FastAPI backend
-- Health check endpoint
-- Local Pokémon data
-- Pokémon search endpoint
-- Team validation endpoint
+## Future
+- Improve balancing and scoring explanations
+- Expand automated tests
+- Improve accessibility and responsive behaviour
+- Add optional challenge modes
+- Add local team history or leaderboards when approved
+- Consider deeper battle simulation only after the core game is stable
 
-## Stage 3 — Frontend Foundation
-
-- Next.js frontend
-- Homepage layout
-- Search component
-- Team slots
-- Result panel
-
-## Stage 4 — Game Logic
-
-- Team scoring system
-- Gym leader coverage logic
-- Elite Four coverage logic
-- Champion challenge logic
-
-## Stage 5 — Polish
-
-- Better UI
-- Better Pokémon cards
-- More detailed scoring
-- Better explanations
-- Error handling
-
-## Stage 6 — Future Features
-
-- Daily challenge
-- Different challenge modes
-- Leaderboards
-- Save team history
-- Battle simulation
+## Blockers
+None recorded.
