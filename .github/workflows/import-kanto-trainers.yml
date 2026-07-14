@@ -1,0 +1,83 @@
+name: Import Kanto Trainer Sprites
+
+on:
+  push:
+    branches:
+      - feature/import-kanto-trainers
+    paths:
+      - .github/workflows/import-kanto-trainers.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: feature/import-kanto-trainers
+      - name: Download and validate trainer sprites
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="frontend/public/images/trainers/adventure"
+          mkdir -p "$target"
+          base="https://play.pokemonshowdown.com/sprites/trainers"
+
+          sprites=(
+            "ace-trainer|acetrainer-gen1.png"
+            "beauty|beauty-gen1.png"
+            "biker|biker-gen1.png"
+            "bird-keeper|birdkeeper-gen1.png"
+            "black-belt|blackbelt-gen1.png"
+            "bug-catcher|bugcatcher-gen1.png"
+            "camper|camper.png"
+            "channeler|channeler-gen1.png"
+            "fisherman|fisherman-gen1.png"
+            "hiker|hiker-gen1.png"
+            "juggler|juggler-gen1.png"
+            "lass|lass-gen1.png"
+            "picnicker|picnicker.png"
+            "sailor|sailor-gen1.png"
+            "scientist|scientist-gen1.png"
+            "swimmer|swimmerm-gen2.png"
+            "tamer|tamer-gen1.png"
+            "youngster|youngster-gen1.png"
+          )
+
+          printf '[\n' > "$target/manifest.json"
+          first=true
+          for entry in "${sprites[@]}"; do
+            class="${entry%%|*}"
+            source="${entry##*|}"
+            destination="$target/$class.png"
+            curl --fail --location --retry 3 --silent --show-error "$base/$source" --output "$destination"
+            file "$destination" | grep -q 'PNG image data'
+            if [ "$first" = false ]; then printf ',\n' >> "$target/manifest.json"; fi
+            first=false
+            printf '  {"trainer_class":"%s","file":"%s.png","source_file":"%s"}' "$class" "$class" "$source" >> "$target/manifest.json"
+          done
+          printf '\n]\n' >> "$target/manifest.json"
+
+          cat > "$target/ATTRIBUTION.md" <<'EOF'
+          # Adventure Trainer Sprite Attribution
+
+          These unmodified trainer sprites were downloaded from the Pokémon Showdown trainer sprite directory:
+
+          https://play.pokemonshowdown.com/sprites/trainers/
+
+          Pokémon Showdown states that many trainer sprites have individual artists and requires appropriate artist credit. The original source filename for every imported sprite is retained in `manifest.json`. These files must not be edited unless the applicable artist grants permission.
+
+          Imported for the fan-made Pokémon 6 project. Pokémon and related characters are trademarks of their respective owners.
+          EOF
+
+          test "$(find "$target" -maxdepth 1 -name '*.png' | wc -l)" -eq 18
+      - name: Commit imported assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/public/images/trainers/adventure
+          git commit -m "Import Kanto adventure trainer sprites [skip ci]"
+          git push origin HEAD:feature/import-kanto-trainers
