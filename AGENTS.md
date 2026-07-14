@@ -1,32 +1,49 @@
-# Codex Instructions for Pokémon 6
+# Pokémon 6 — Agent Instructions
 
-## Project Summary
+## Purpose
+Build and maintain Pokémon 6, a Generation 1 team-building strategy game where a player selects six Pokémon and attempts an undefeated run through the Gym Leaders, Elite Four, and Champion.
 
-Pokémon 6 is a fan-made team-building strategy game. Players build a team of six Generation 1 Pokémon to defeat the 8 gym leaders, Elite Four, and Champion without losing.
+## Source of truth
+- Repository: `reinholdkamilo/pokemon-6`
+- Default working branch: `dev`
+- Frontend: `frontend/` (Next.js, Node 20+)
+- Backend: `backend/` (FastAPI, Python)
+- Roadmap: `docs/ROADMAP.md`
+- Current state: `docs/PROJECT_STATE.md`
 
-## Development Rules
+## Working rules
+1. Inspect existing code before creating or replacing files.
+2. Make the smallest complete change that satisfies the task.
+3. Reuse existing patterns, components, data, and styles.
+4. Keep frontend and backend responsibilities separated.
+5. Do not expose private trainer data, credentials, or secrets.
+6. Avoid official Pokémon images, logos, or copyrighted assets.
+7. Do not commit broken code.
+8. Use feature branches for normal product work and target `dev`.
+9. Keep commits focused and messages clear.
+10. Update roadmap or project state only when the task materially changes them.
+11. Keep documentation and responses concise; avoid repeated context.
 
-- Make small, focused changes.
-- Do not rewrite the entire project unless asked.
-- Keep backend and frontend separated.
-- Backend should use FastAPI.
-- Frontend should use Next.js and React.
-- Use simple local data first.
-- Avoid official Pokémon images, logos, or copyrighted assets.
-- Prefer clean, readable code over clever code.
-- Add or update documentation when game rules change.
-- Add tests when adding scoring or validation logic.
+## Validation
+Run only checks relevant to the change, then expand if failures suggest broader impact.
 
-## Current MVP
+Backend:
+```bash
+backend/.venv/bin/python -m pytest
+```
 
-The MVP should allow the player to:
+Frontend:
+```bash
+cd frontend
+npm run build
+```
 
-1. Search Pokémon.
-2. Select six Pokémon.
-3. Submit the team.
-4. Receive a Win/Lose result.
-5. See details and explanation for each selected Pokémon.
+## Definition of done
+- Acceptance criteria are met.
+- Relevant tests/build checks pass, or unrun checks are explicitly reported.
+- No unrelated files are changed.
+- Privacy and existing gameplay behaviour are preserved.
+- The change is committed and ready for review.
 
-## Important
-
-Do not build a full battle simulator yet. Use a scoring system first.
+## Execution preference
+Use the shortest reliable route. Prefer direct GitHub edits for small, clear changes. Use a runnable environment only when execution, broad refactoring, package installation, browser verification, or repeated edit-test cycles materially improve reliability. Ask before paid, destructive, production, deployment, merge, or data-migration actions unless explicitly authorised.
