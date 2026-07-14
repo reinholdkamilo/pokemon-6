@@ -17,6 +17,12 @@ type ProgressionCardProps = {
   showBadge?: boolean;
   isSelectable?: boolean;
   isLocked?: boolean;
+  isSelected?: boolean;
+  interactionRole?: "button" | "radio";
+  className?: string;
+  detailItems?: string[];
+  selectActionLabel?: string;
+  spriteSrc?: string;
   onSelect?: () => void;
 };
 
@@ -27,12 +33,19 @@ export function ProgressionCard({
   showBadge = false,
   isSelectable = false,
   isLocked = false,
+  isSelected = false,
+  interactionRole = "button",
+  className = "",
+  detailItems,
+  selectActionLabel = "Battle",
+  spriteSrc,
   onSelect,
 }: ProgressionCardProps) {
   const outcome = formatBattleOutcome(status, breakdown);
   const displayName = meta.name === "Gary" ? "Champion" : meta.name;
+  const cardDetails = detailItems ?? meta.pokemonTeam;
   const teamLayoutClass =
-    meta.pokemonTeam.length <= 3 ? "team-count-small" : "team-count-large";
+    cardDetails.length <= 3 ? "team-count-small" : "team-count-large";
   const championClass =
     meta.name === "Gary" ? "champion-progression-card" : "";
 
@@ -41,6 +54,7 @@ export function ProgressionCard({
     : isSelectable
       ? "trainer-card-selectable"
       : "";
+  const selectedClass = isSelected ? "trainer-card-selected" : "";
 
   function selectTrainer() {
     if (!isSelectable || isLocked || !onSelect) {
@@ -64,17 +78,23 @@ export function ProgressionCard({
   return (
     <article
       aria-disabled={isLocked}
+      aria-checked={
+        interactionRole === "radio" && isSelectable && !isLocked ? isSelected : undefined
+      }
+      aria-pressed={
+        interactionRole === "button" && isSelectable && !isLocked ? isSelected : undefined
+      }
       aria-label={
         isLocked
           ? `${displayName} locked`
           : isSelectable
-            ? `Battle ${displayName}`
+            ? `${selectActionLabel} ${displayName}`
             : displayName
       }
-      className={`progression-card ${status} ${teamLayoutClass} ${championClass} ${interactionClass}`}
+      className={`progression-card ${status} ${teamLayoutClass} ${championClass} ${interactionClass} ${selectedClass} ${className}`.trim()}
       onClick={selectTrainer}
       onKeyDown={handleKeyDown}
-      role={isSelectable && !isLocked ? "button" : undefined}
+      role={isSelectable && !isLocked ? interactionRole : undefined}
       tabIndex={isSelectable && !isLocked ? 0 : undefined}
     >
       <div className="progression-card-top">
@@ -97,15 +117,15 @@ export function ProgressionCard({
           alt={`${meta.name} sprite`}
           className="trainer-sprite stage-trainer-sprite"
           fallback={meta.fallback}
-          src={getTrainerSprite(meta.name)}
+          src={spriteSrc ?? getTrainerSprite(meta.name)}
         />
       </div>
 
       <ul className="trainer-team-list" aria-label={`${meta.name} Pokemon team`}>
-        {meta.pokemonTeam.map((pokemonName, index) => (
-          <li key={`${pokemonName}-${index}`}>
+        {cardDetails.map((detail, index) => (
+          <li key={`${detail}-${index}`}>
             <span className="trainer-team-pokeball" aria-hidden="true" />
-            <span>{pokemonName}</span>
+            <span>{detail}</span>
           </li>
         ))}
       </ul>

@@ -5883,6 +5883,45 @@ p {
   opacity: 0.6;
 }
 
+.stage-screen.trainer-card-screen {
+  justify-items: stretch;
+}
+
+.player-character-grid {
+  width: 100%;
+}
+
+.progression-card.player-character-card.trainer-card-selectable {
+  animation: none;
+  outline: 0;
+}
+
+.progression-card.player-character-card.trainer-card-selected {
+  outline: 4px solid rgba(255, 213, 55, 0.92);
+  outline-offset: 4px;
+}
+
+.progression-card.player-character-card .progression-sprite-area {
+  overflow: visible !important;
+}
+
+.progression-card.player-character-card .trainer-sprite,
+.progression-card.player-character-card .stage-trainer-sprite {
+  max-width: 122px !important;
+  max-height: 122px !important;
+  transform: scale(3.05);
+  transform-origin: center center;
+}
+
+@media (max-width: 560px) {
+  .progression-card.player-character-card .trainer-sprite,
+  .progression-card.player-character-card .stage-trainer-sprite {
+    max-width: 94px !important;
+    max-height: 96px !important;
+    transform: scale(2.9);
+  }
+}
+
 @keyframes selectableTrainerPulse {
   0%,
   100% {
