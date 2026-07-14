@@ -9,6 +9,7 @@ const TRAINER_PARTS: Record<string, string[]> = {
 };
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _request: Request,
@@ -27,12 +28,16 @@ export async function GET(
       parts.map((part) => readFile(path.join(assetRoot, part), "utf8")),
     );
     const image = Buffer.from(base64Parts.join("").replace(/\s+/g, ""), "base64");
+    const body = new Uint8Array(image.buffer, image.byteOffset, image.byteLength);
 
-    return new Response(image, {
+    return new Response(body, {
       headers: {
         "Content-Type": "image/jpeg",
-        "Content-Length": String(image.byteLength),
-        "Cache-Control": "no-store, max-age=0",
+        "Content-Length": String(body.byteLength),
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        Pragma: "no-cache",
+        Expires: "0",
+        "X-Content-Type-Options": "nosniff",
       },
     });
   } catch {
