@@ -25,9 +25,11 @@ const HOMETOWNS = [
   "Cinnabar Island",
 ];
 
-const SPRITES: Array<Pick<TrainerProfile, "sprite"> & { label: string }> = [
-  { sprite: "player-male", label: "Male trainer" },
-  { sprite: "player-female", label: "Female trainer" },
+const SPRITES: Array<Pick<TrainerProfile, "sprite"> & { label: string; fallback: string }> = [
+  { sprite: "chaz", label: "Chaz", fallback: "C" },
+  { sprite: "laga", label: "Laga", fallback: "L" },
+  { sprite: "kevin", label: "Kevin", fallback: "K" },
+  { sprite: "gj", label: "GJ", fallback: "GJ" },
 ];
 
 export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScreenProps) {
@@ -129,7 +131,7 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
             <button
               className="sprite-nav-button"
               type="button"
-              aria-label="Previous trainer sprite"
+              aria-label="Previous trainer character"
               onClick={showPreviousSprite}
             >
               {"<"}
@@ -137,13 +139,13 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
             <LocalSprite
               alt={selectedSprite.label}
               className="player-trainer-sprite"
-              fallback={selectedSprite.sprite === "player-male" ? "M" : "F"}
+              fallback={selectedSprite.fallback}
               src={getPlayerTrainerSprite(selectedSprite.sprite)}
             />
             <button
               className="sprite-nav-button"
               type="button"
-              aria-label="Next trainer sprite"
+              aria-label="Next trainer character"
               onClick={showNextSprite}
             >
               {">"}
