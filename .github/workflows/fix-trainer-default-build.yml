@@ -1,0 +1,48 @@
+name: Fix Trainer Default And Verify Build
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - .github/workflows/fix-trainer-default-build.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+
+      - name: Replace legacy player trainer default
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("frontend/app/page.tsx")
+          content = path.read_text(encoding="utf-8")
+          old = 'sprite: "player-male",'
+          new = 'sprite: "chaz",'
+          if old not in content:
+              raise SystemExit("Legacy player-male default was not found")
+          path.write_text(content.replace(old, new), encoding="utf-8")
+          PY
+
+      - name: Verify frontend production build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Remove one-time workflow and commit verified fix
+        run: |
+          rm .github/workflows/fix-trainer-default-build.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frontend/app/page.tsx .github/workflows/fix-trainer-default-build.yml
+          git commit -m "Replace legacy trainer default and verify build"
+          git push origin HEAD:dev
