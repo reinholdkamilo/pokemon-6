@@ -9,11 +9,23 @@ export const BADGE_IMAGE_PATHS: Record<string, string> = {
   "Earth Badge": "/images/badges/earth.svg",
 };
 
-export type PlayerTrainerGender = "male" | "female" | "player-male" | "player-female";
+export type PlayerTrainerGender =
+  | "male"
+  | "female"
+  | "player-male"
+  | "player-female"
+  | "chaz"
+  | "laga"
+  | "kevin"
+  | "gj";
 
-const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female", string> = {
+const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female" | "chaz" | "laga" | "kevin" | "gj", string> = {
   male: "/images/trainers/player/male.png",
   female: "/images/trainers/player/female.png",
+  chaz: "/images/trainers/player/chaz.png",
+  laga: "/images/trainers/player/laga.png",
+  kevin: "/images/trainers/player/kevin.png",
+  gj: "/images/trainers/player/gj.png",
 };
 
 const GYM_LEADER_IMAGE_PATHS: Record<string, string> = {
@@ -44,6 +56,10 @@ export const TRAINER_IMAGE_PATHS: Record<string, string> = {
   ...CHAMPION_IMAGE_PATHS,
   "player-male": PLAYER_TRAINER_IMAGE_PATHS.male,
   "player-female": PLAYER_TRAINER_IMAGE_PATHS.female,
+  chaz: PLAYER_TRAINER_IMAGE_PATHS.chaz,
+  laga: PLAYER_TRAINER_IMAGE_PATHS.laga,
+  kevin: PLAYER_TRAINER_IMAGE_PATHS.kevin,
+  gj: PLAYER_TRAINER_IMAGE_PATHS.gj,
 };
 
 const CARD_FILENAME_OVERRIDES: Record<number, string> = {
@@ -74,7 +90,14 @@ export function getTrainerSprite(name: string | null | undefined) {
     return getPlayerTrainerSprite("male");
   }
 
-  if (name === "player-male" || name === "player-female") {
+  if (
+    name === "player-male" ||
+    name === "player-female" ||
+    name === "chaz" ||
+    name === "laga" ||
+    name === "kevin" ||
+    name === "gj"
+  ) {
     return getPlayerTrainerSprite(name);
   }
 
@@ -114,8 +137,16 @@ function normalizeTrainerName(name: string) {
     .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-function toPlayerTrainerKey(gender: PlayerTrainerGender | null | undefined) {
-  return gender === "female" || gender === "player-female" ? "female" : "male";
+function toPlayerTrainerKey(
+  trainer: PlayerTrainerGender | null | undefined,
+): "male" | "female" | "chaz" | "laga" | "kevin" | "gj" {
+  if (trainer === "female" || trainer === "player-female") {
+    return "female";
+  }
+  if (trainer === "chaz" || trainer === "laga" || trainer === "kevin" || trainer === "gj") {
+    return trainer;
+  }
+  return "male";
 }
 
 function slugifyPokemonName(name: string) {
