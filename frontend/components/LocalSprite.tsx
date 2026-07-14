@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 
 type LocalSpriteProps = {
@@ -7,9 +8,10 @@ type LocalSpriteProps = {
   alt: string;
   className: string;
   fallback: string;
+  style?: CSSProperties;
 };
 
-export function LocalSprite({ src, alt, className, fallback }: LocalSpriteProps) {
+export function LocalSprite({ src, alt, className, fallback, style }: LocalSpriteProps) {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export function LocalSprite({ src, alt, className, fallback }: LocalSpriteProps)
 
   if (!src || hasError) {
     return (
-      <span className={`${className} sprite-fallback`} aria-label={alt}>
+      <span className={`${className} sprite-fallback`} aria-label={alt} style={style}>
         {fallback}
       </span>
     );
@@ -28,8 +30,9 @@ export function LocalSprite({ src, alt, className, fallback }: LocalSpriteProps)
     <img
       alt={alt}
       className={className}
-      loading="lazy"
+      loading="eager"
       src={src}
+      style={style}
       onError={() => setHasError(true)}
     />
   );
