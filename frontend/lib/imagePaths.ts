@@ -22,10 +22,10 @@ export type PlayerTrainerGender =
 const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female" | "chaz" | "laga" | "kevin" | "gj", string> = {
   male: "/images/trainers/player/male.png",
   female: "/images/trainers/player/female.png",
-  chaz: "/api/trainer-sprite/chaz?v=3",
-  laga: "/api/trainer-sprite/laga?v=3",
-  kevin: "/api/trainer-sprite/kevin?v=3",
-  gj: "/api/trainer-sprite/gj?v=3",
+  chaz: "/api/trainer-sprite/chaz?v=4",
+  laga: "/api/trainer-sprite/laga?v=4",
+  kevin: "/api/trainer-sprite/kevin?v=4",
+  gj: "/api/trainer-sprite/gj?v=4",
 };
 
 const GYM_LEADER_IMAGE_PATHS: Record<string, string> = {
