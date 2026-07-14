@@ -31,7 +31,8 @@ export async function GET(
     return new Response(image, {
       headers: {
         "Content-Type": "image/jpeg",
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Length": String(image.byteLength),
+        "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch {
