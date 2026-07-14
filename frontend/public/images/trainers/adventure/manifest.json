@@ -1,0 +1,20 @@
+[
+  {"trainer_class":"ace-trainer","file":"ace-trainer.png","source_file":"acetrainer-gen1.png"},
+  {"trainer_class":"beauty","file":"beauty.png","source_file":"beauty-gen1.png"},
+  {"trainer_class":"biker","file":"biker.png","source_file":"biker-gen1.png"},
+  {"trainer_class":"bird-keeper","file":"bird-keeper.png","source_file":"birdkeeper-gen1.png"},
+  {"trainer_class":"black-belt","file":"black-belt.png","source_file":"blackbelt-gen1.png"},
+  {"trainer_class":"bug-catcher","file":"bug-catcher.png","source_file":"bugcatcher-gen1.png"},
+  {"trainer_class":"camper","file":"camper.png","source_file":"camper.png"},
+  {"trainer_class":"channeler","file":"channeler.png","source_file":"channeler-gen1.png"},
+  {"trainer_class":"fisherman","file":"fisherman.png","source_file":"fisherman-gen1.png"},
+  {"trainer_class":"hiker","file":"hiker.png","source_file":"hiker-gen1.png"},
+  {"trainer_class":"juggler","file":"juggler.png","source_file":"juggler-gen1.png"},
+  {"trainer_class":"lass","file":"lass.png","source_file":"lass-gen1.png"},
+  {"trainer_class":"picnicker","file":"picnicker.png","source_file":"picnicker.png"},
+  {"trainer_class":"sailor","file":"sailor.png","source_file":"sailor-gen1.png"},
+  {"trainer_class":"scientist","file":"scientist.png","source_file":"scientist-gen1.png"},
+  {"trainer_class":"swimmer","file":"swimmer.png","source_file":"swimmerm-gen2.png"},
+  {"trainer_class":"tamer","file":"tamer.png","source_file":"tamer-gen1.png"},
+  {"trainer_class":"youngster","file":"youngster.png","source_file":"youngster-gen1.png"}
+]
