@@ -68,6 +68,6 @@ export type TrainerProfile = {
   dob: string;
   email: string;
   hometown: string;
-  sprite: "player-male" | "player-female";
+  sprite: "chaz" | "laga" | "kevin" | "gj";
   created_at: string;
 };
