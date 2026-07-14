@@ -24,22 +24,28 @@ const CHARACTERS: CharacterOption[] = [
 ];
 
 export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScreenProps) {
-  const [selectedSprite, setSelectedSprite] = useState<TrainerProfile["sprite"]>("chaz");
+  const [characterIndex, setCharacterIndex] = useState(0);
+  const selectedCharacter = CHARACTERS[characterIndex];
 
-  const selectedCharacter =
-    CHARACTERS.find((character) => character.sprite === selectedSprite) ?? CHARACTERS[0];
+  function showPreviousCharacter() {
+    setCharacterIndex((current) =>
+      current === 0 ? CHARACTERS.length - 1 : current - 1,
+    );
+  }
+
+  function showNextCharacter() {
+    setCharacterIndex((current) => (current + 1) % CHARACTERS.length);
+  }
 
   function choosePokemon() {
-    const trainerProfile: TrainerProfile = {
+    onTrainerSaved({
       name: selectedCharacter.label,
       dob: "",
       email: "",
       hometown: "Pallet Town",
       sprite: selectedCharacter.sprite,
       created_at: new Date().toISOString(),
-    };
-
-    onTrainerSaved(trainerProfile);
+    });
   }
 
   return (
@@ -58,49 +64,45 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
             <span className="trainer-card-id">BADGES 0</span>
           </div>
 
-          <div
-            role="radiogroup"
-            aria-label="Adventure character"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "16px",
-              margin: "28px 0",
-            }}
-          >
-            {CHARACTERS.map((character) => {
-              const isSelected = character.sprite === selectedSprite;
+          <div className="trainer-sprite-picker" role="radiogroup" aria-label="Adventure character">
+            <button
+              className="sprite-nav-button"
+              type="button"
+              aria-label="Previous character"
+              onClick={showPreviousCharacter}
+            >
+              {"<"}
+            </button>
 
-              return (
-                <button
-                  key={character.sprite}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  onClick={() => setSelectedSprite(character.sprite)}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "18px",
-                    borderRadius: "18px",
-                    border: isSelected ? "3px solid #ffd43b" : "2px solid rgba(255,255,255,0.2)",
-                    background: isSelected ? "rgba(255,212,59,0.14)" : "rgba(255,255,255,0.06)",
-                    color: "inherit",
-                    cursor: "pointer",
-                  }}
-                >
-                  <LocalSprite
-                    alt={character.label}
-                    className="player-trainer-sprite"
-                    fallback={character.fallback}
-                    src={getPlayerTrainerSprite(character.sprite)}
-                  />
-                  <strong>{character.label}</strong>
-                </button>
-              );
-            })}
+            <div
+              role="radio"
+              aria-checked="true"
+              style={{
+                display: "flex",
+                minWidth: "240px",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "12px",
+              }}
+            >
+              <LocalSprite
+                alt={selectedCharacter.label}
+                className="player-trainer-sprite"
+                fallback={selectedCharacter.fallback}
+                src={getPlayerTrainerSprite(selectedCharacter.sprite)}
+              />
+              <strong style={{ fontSize: "1.4rem" }}>{selectedCharacter.label}</strong>
+              <span>{characterIndex + 1} / {CHARACTERS.length}</span>
+            </div>
+
+            <button
+              className="sprite-nav-button"
+              type="button"
+              aria-label="Next character"
+              onClick={showNextCharacter}
+            >
+              {">"}
+            </button>
           </div>
 
           <div className="trainer-card-actions">
