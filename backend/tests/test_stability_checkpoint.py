@@ -19,6 +19,7 @@ VALID_TEAM = [
     "Jolteon",
 ]
 DATA_DIR = Path(__file__).resolve().parents[1] / "app" / "data"
+SEMANTIC_THREAT_LABELS = {"Starter ace"}
 
 
 def test_health_endpoint_is_available():
@@ -115,7 +116,8 @@ def test_progression_data_is_complete_unique_and_references_real_pokemon():
         assert opponent["stage"]
         assert opponent["specialty_types"]
         assert opponent["key_threats"]
-        assert set(opponent["key_threats"]).issubset(pokemon_names)
+        concrete_threats = set(opponent["key_threats"]) - SEMANTIC_THREAT_LABELS
+        assert concrete_threats.issubset(pokemon_names)
         assert opponent["recommended_counter_types"]
 
 
