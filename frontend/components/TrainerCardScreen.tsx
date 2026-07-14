@@ -85,12 +85,36 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
                 gap: "12px",
               }}
             >
-              <LocalSprite
-                alt={selectedCharacter.label}
-                className="player-trainer-sprite"
-                fallback={selectedCharacter.fallback}
-                src={getPlayerTrainerSprite(selectedCharacter.sprite)}
-              />
+              <div
+                style={{
+                  width: "min(210px, 58vw)",
+                  height: "300px",
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  border: "3px solid rgba(52, 42, 32, 0.52)",
+                  borderRadius: "8px",
+                  background: "rgba(255,255,255,0.76)",
+                }}
+              >
+                <LocalSprite
+                  alt={selectedCharacter.label}
+                  className="player-trainer-sprite"
+                  fallback={selectedCharacter.fallback}
+                  src={getPlayerTrainerSprite(selectedCharacter.sprite)}
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    minHeight: 0,
+                    maxWidth: "none",
+                    border: 0,
+                    borderRadius: 0,
+                    background: "transparent",
+                    padding: 0,
+                    objectFit: "contain",
+                    transform: "translateY(-24px)",
+                  }}
+                />
+              </div>
               <strong style={{ fontSize: "1.4rem" }}>{selectedCharacter.label}</strong>
               <span>{characterIndex + 1} / {CHARACTERS.length}</span>
             </div>
