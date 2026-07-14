@@ -9,6 +9,7 @@ const CARD_ROTATIONS = [-18, -10, -3, 5, 12, 20];
 
 export function TitleScreen({
   onSelectBattleMode,
+  onSelectAdventureMode,
 }: TitleScreenProps) {
   return (
     <main className="title-screen">
@@ -35,9 +36,7 @@ export function TitleScreen({
           <button
             className="catch-button adventure-mode-button"
             type="button"
-            onClick={() => {
-              window.location.href = "/adventure";
-            }}
+            onClick={onSelectAdventureMode}
           >
             Adventure Mode
           </button>
