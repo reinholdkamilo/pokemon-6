@@ -1,0 +1,284 @@
+/* Marathon v2 presentation: stage-first battle hierarchy and grouped results */
+
+.marathon-battle-header {
+  width: min(100%, 880px);
+  margin: 0 auto 12px;
+  text-align: center;
+}
+
+.marathon-battle-header .eyebrow {
+  margin-bottom: 3px;
+}
+
+.marathon-battle-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 0.95;
+}
+
+.marathon-battle-header__round {
+  margin: 5px 0 0;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.marathon-badge-strip {
+  width: min(100%, 760px);
+  margin: 0 auto 12px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(5px, 1.5vw, 12px);
+}
+
+.marathon-badge-strip__slot {
+  aspect-ratio: 1;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(51, 65, 85, 0.24);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.marathon-badge-strip__sprite {
+  display: block;
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+}
+
+.marathon-badge-strip__slot--locked .marathon-badge-strip__sprite {
+  filter: grayscale(1);
+  opacity: 0.24;
+}
+
+.marathon-battle-actions {
+  order: 0;
+  width: min(100%, 880px);
+  margin: 0 auto 12px;
+}
+
+.marathon-matchup-grid {
+  order: 1;
+}
+
+.marathon-progress-panel {
+  order: 2;
+  width: min(100%, 880px);
+  margin: 14px auto 0;
+  padding: 12px 14px;
+  border: 2px solid rgba(30, 64, 175, 0.3);
+  border-radius: 16px;
+  background: rgba(239, 246, 255, 0.92);
+}
+
+.marathon-progress-panel__dots {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(18px, 1fr)) minmax(48px, 1.3fr);
+  gap: clamp(5px, 1.5vw, 10px);
+  align-items: center;
+}
+
+.marathon-progress-panel__dot {
+  height: 14px;
+  border: 2px solid #475569;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.marathon-progress-panel__dot--complete {
+  border-color: #166534;
+  background: #22c55e;
+}
+
+.marathon-progress-panel__gym {
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #9a3412;
+  border-radius: 999px;
+  color: #9a3412;
+  font-weight: 1000;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.marathon-progress-panel__gym--active {
+  background: #f97316;
+  color: #fff;
+}
+
+.marathon-progress-panel__copy {
+  margin: 8px 0 0;
+  text-align: center;
+  font-weight: 900;
+}
+
+.marathon-opponent-battle-card.progression-card--sprite-pixel-trainer .progression-sprite-area,
+.marathon-results-opponent-card.progression-card--sprite-pixel-trainer .progression-sprite-area {
+  min-height: clamp(220px, 30vw, 300px) !important;
+  height: clamp(220px, 30vw, 300px) !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: 4px !important;
+}
+
+.marathon-opponent-battle-card.progression-card--sprite-pixel-trainer .trainer-sprite,
+.marathon-opponent-battle-card.progression-card--sprite-pixel-trainer .stage-trainer-sprite,
+.marathon-results-opponent-card.progression-card--sprite-pixel-trainer .trainer-sprite,
+.marathon-results-opponent-card.progression-card--sprite-pixel-trainer .stage-trainer-sprite {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  image-rendering: pixelated;
+  transform: none !important;
+}
+
+.marathon-results-badges {
+  width: min(100%, 760px);
+  margin: 0 auto 20px;
+}
+
+.marathon-results-stage {
+  width: 100%;
+  margin: 0 auto 24px;
+  padding: clamp(12px, 2vw, 18px);
+  border: 3px solid rgba(30, 64, 175, 0.24);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.marathon-results-stage__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.marathon-results-stage__heading h2 {
+  margin: 0;
+}
+
+.marathon-results-stage__heading span {
+  font-weight: 900;
+  opacity: 0.68;
+}
+
+.marathon-results-stage__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.marathon-results-stage__grid > .progression-card {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.marathon-results-opponent-card--current {
+  border-color: #d4a017 !important;
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3), 0 0 22px rgba(234, 179, 8, 0.35) !important;
+}
+
+.marathon-results-opponent-card--locked {
+  filter: grayscale(1);
+  opacity: 0.46;
+}
+
+.marathon-results-placeholder {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  border: 3px dashed rgba(71, 85, 105, 0.38);
+  border-radius: 16px;
+  background: rgba(226, 232, 240, 0.62);
+  color: #64748b;
+  text-align: center;
+  font-weight: 1000;
+}
+
+.marathon-results-placeholder span {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.marathon-results-placeholder strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 700px) {
+  .marathon-battle-header h1 {
+    font-size: clamp(1.8rem, 9vw, 2.7rem);
+  }
+
+  .marathon-badge-strip {
+    width: 100%;
+    gap: 4px;
+  }
+
+  .marathon-battle-actions {
+    margin-bottom: 10px;
+  }
+
+  .marathon-opponent-battle-card.progression-card--sprite-pixel-trainer .progression-sprite-area {
+    min-height: clamp(145px, 34vw, 190px) !important;
+    height: clamp(145px, 34vw, 190px) !important;
+    padding: 2px !important;
+  }
+
+  .marathon-results-stage {
+    padding: 10px 7px;
+  }
+
+  .marathon-results-stage__heading {
+    display: block;
+    text-align: center;
+  }
+
+  .marathon-results-stage__heading span {
+    display: block;
+    margin-top: 3px;
+  }
+
+  .marathon-results-stage__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .marathon-results-stage__grid .progression-card,
+  .marathon-results-placeholder {
+    min-height: clamp(250px, 72vw, 330px);
+  }
+
+  .marathon-results-stage__grid .progression-card--sprite-pixel-trainer .progression-sprite-area {
+    min-height: clamp(105px, 28vw, 140px) !important;
+    height: clamp(105px, 28vw, 140px) !important;
+  }
+
+  .marathon-results-stage__grid .trainer-card-name-label {
+    font-size: clamp(0.62rem, 2.7vw, 0.78rem);
+  }
+
+  .marathon-results-stage__grid .trainer-team-list {
+    font-size: clamp(0.52rem, 2.2vw, 0.66rem);
+  }
+
+  .marathon-results-placeholder span {
+    font-size: 0.58rem;
+  }
+
+  .marathon-results-placeholder strong {
+    font-size: 0.78rem;
+  }
+}
