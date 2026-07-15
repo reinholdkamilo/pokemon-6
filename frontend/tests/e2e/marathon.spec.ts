@@ -126,8 +126,27 @@ for (const viewport of [
 
 async function openMarathonRoundOne(page: Page, viewportName: string) {
   await page.goto("/marathon");
-  await expect(page.locator(".marathon-character-card")).toHaveCount(4);
-  await expect(page.locator(".marathon-character-card.progression-card--sprite-full-body")).toHaveCount(4);
+  const characterCard = page.locator(".marathon-character-card");
+  const previousButton = page.getByRole("button", { name: "Previous player character" });
+  const nextButton = page.getByRole("button", { name: "Next player character" });
+
+  await expect(characterCard).toHaveCount(1);
+  await expect(previousButton).toBeVisible();
+  await expect(nextButton).toBeVisible();
+  await expect(page.locator(".player-character-selector__position")).toHaveText("1 / 4");
+
+  await nextButton.click();
+  await expect(page.locator(".player-character-selector__position")).toHaveText("2 / 4");
+
+  await nextButton.click();
+  await expect(page.locator(".player-character-selector__position")).toHaveText("3 / 4");
+
+  await nextButton.click();
+  await expect(page.locator(".player-character-selector__position")).toHaveText("4 / 4");
+
+  await nextButton.click();
+  await expect(page.locator(".player-character-selector__position")).toHaveText("1 / 4");
+
   await assertNoHorizontalOverflow(page);
   await assertCardsFitViewport(page, ".marathon-character-card");
   await assertFullBodySpritesInsideContainers(page);

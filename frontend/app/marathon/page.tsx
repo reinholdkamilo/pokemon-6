@@ -8,6 +8,7 @@ import { EvolutionModal } from "@/components/EvolutionModal";
 import { GameTopBar } from "@/components/GameTopBar";
 import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
+import { PlayerCharacterSelector } from "@/components/PlayerCharacterSelector";
 import {
   EVOLUTION_WIN_INTERVAL,
   REGULAR_WINS_PER_GYM,
@@ -24,7 +25,7 @@ import {
 import { getPokemon, scoreTeam } from "@/lib/api";
 import { getNextEvolutionName } from "@/lib/evolutions";
 import { BADGE_IMAGE_PATHS, getPlayerTrainerSprite, getTrainerSprite } from "@/lib/imagePaths";
-import { PLAYER_CHARACTERS, getPlayerCharacter, toPlayerCharacterMeta, type PlayerCharacterId } from "@/lib/playerCharacters";
+import { getPlayerCharacter, toPlayerCharacterMeta, type PlayerCharacterId } from "@/lib/playerCharacters";
 import { CHAMPION, ELITE_FOUR, GYM_LEADERS } from "@/lib/progression";
 import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
@@ -261,16 +262,32 @@ export default function MarathonPage() {
 
   if (phase === "character") {
     return (
-      <main className="game-shell stage-shell">
-        <section className="stage-screen">
-          <GameTopBar modeLabel="Marathon Mode" onMainMenu={() => router.push("/")} />
-          <div className="stage-hero marathon-character-hero"><p className="eyebrow">Marathon Mode</p><h1>Choose Your Character</h1></div>
-          <div className="marathon-character-grid">
-            {PLAYER_CHARACTERS.map((option, index) => (
-              <ProgressionCard key={option.id} className="player-character-card marathon-character-card" detailItems={["Marathon Player"]} interactionRole="radio" isSelectable isSelected={characterId === option.id} meta={toPlayerCharacterMeta(option, index)} onSelect={() => setCharacterId(option.id)} selectActionLabel="Select" spritePresentation="full-body" spriteSrc={getPlayerTrainerSprite(option.id)} status="pending" />
-            ))}
+      <main className="game-shell stage-shell marathon-shell">
+        <section className="stage-screen marathon-stage-screen marathon-character-screen">
+          <GameTopBar
+            modeLabel="Marathon Mode"
+            onMainMenu={() => router.push("/")}
+          />
+
+          <div className="stage-hero marathon-character-hero">
+            <p className="eyebrow">Marathon Mode</p>
+            <h1>Choose Your Character</h1>
           </div>
-          <button className="primary-action stage-action" type="button" onClick={() => setPhase("pokemon")}>CONTINUE</button>
+
+          <PlayerCharacterSelector
+            ariaLabel="Marathon Mode player character"
+            className="marathon-character-selector"
+            selectedCharacterId={characterId}
+            onChange={setCharacterId}
+          />
+
+          <button
+            className="primary-action stage-action marathon-continue-button"
+            type="button"
+            onClick={() => setPhase("pokemon")}
+          >
+            CONTINUE
+          </button>
         </section>
       </main>
     );
@@ -309,8 +326,8 @@ export default function MarathonPage() {
         : null;
     const breakdown = currentOutcome ? createArcadeBreakdown(currentOpponent, currentOutcome, playerPower) : undefined;
     return (
-      <main className="game-shell stage-shell">
-        <section className="stage-screen">
+      <main className="game-shell stage-shell marathon-shell">
+        <section className="stage-screen marathon-stage-screen marathon-battle-screen">
           <GameTopBar modeLabel="Marathon Mode" onMainMenu={() => router.push("/")} />
           <div className="stage-hero marathon-round-hero"><h1>Round {displayedRound}</h1></div>
           <div className="marathon-matchup-grid">
