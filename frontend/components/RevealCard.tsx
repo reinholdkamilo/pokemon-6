@@ -64,26 +64,24 @@ export function RevealCard({
           : undefined
       }
       onPointerDown={() => {
-        if (!canSelectLocked) {
-          onStartHold(index);
-        }
+        if (isDisabled) return;
+        if (!canSelectLocked) onStartHold(index);
       }}
       onPointerUp={() => {
-        if (canSelectLocked) {
-          onReveal(index);
-        } else {
-          onFinishHold(index);
-        }
+        if (isDisabled) return;
+        if (canSelectLocked) onReveal(index);
+        else onFinishHold(index);
       }}
-      onPointerLeave={() => onCancelHold(index)}
-      onPointerCancel={() => onCancelHold(index)}
+      onPointerLeave={() => {
+        if (!isDisabled) onCancelHold(index);
+      }}
+      onPointerCancel={() => {
+        if (!isDisabled) onCancelHold(index);
+      }}
       onClick={(event) => event.preventDefault()}
       onContextMenu={(event) => event.preventDefault()}
       onKeyDown={(event) => {
-        if (event.repeat || (event.key !== "Enter" && event.key !== " ")) {
-          return;
-        }
-
+        if (isDisabled || event.repeat || (event.key !== "Enter" && event.key !== " ")) return;
         event.preventDefault();
         onReveal(index);
       }}
@@ -92,7 +90,7 @@ export function RevealCard({
         canSelectLocked && displayPokemon
           ? `${isSelected ? "Deselect" : "Select"} ${displayPokemon.name} for re-spin`
           : displayPokemon
-            ? `Card ${index + 1}: ${displayPokemon.name}`
+            ? `Card ${index + 1}: ${displayPokemon.name}, locked`
             : `Reveal team card ${index + 1}`
       }
     >
