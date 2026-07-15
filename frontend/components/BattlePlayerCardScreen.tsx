@@ -19,20 +19,14 @@ export function BattlePlayerCardScreen({
   onMainMenu,
   onPlayerReady,
 }: BattlePlayerCardScreenProps) {
-  const [name, setName] = useState("");
   const [selectedCharacterId, setSelectedCharacterId] = useState<PlayerCharacterId>(
     DEFAULT_PLAYER_CHARACTER_ID,
   );
   const selectedCharacter = getPlayerCharacter(selectedCharacterId);
-  const trimmedName = name.trim();
 
   function continueToSelection() {
-    if (!trimmedName) {
-      return;
-    }
-
     onPlayerReady({
-      name: trimmedName,
+      name: selectedCharacter.label,
       dob: "",
       email: "",
       hometown: "Pallet Town",
@@ -49,7 +43,7 @@ export function BattlePlayerCardScreen({
           <div className="trainer-card-header">
             <div>
               <p className="eyebrow">Trainer Card</p>
-              <h1>{trimmedName || "Battle Trainer"}</h1>
+              <h1>{selectedCharacter.label}</h1>
             </div>
             <span className="trainer-card-id">BATTLE</span>
           </div>
@@ -61,24 +55,11 @@ export function BattlePlayerCardScreen({
             onChange={setSelectedCharacterId}
           />
 
-          <div className="trainer-form-grid">
-            <label>
-              <span>Name</span>
-              <input
-                type="text"
-                value={name}
-                maxLength={24}
-                placeholder="Trainer"
-                onChange={(event) => setName(event.target.value)}
-              />
-            </label>
-          </div>
 
           <div className="trainer-card-actions">
             <button
               className="primary-action"
               type="button"
-              disabled={!trimmedName}
               onClick={continueToSelection}
             >
               CONTINUE

@@ -1465,12 +1465,11 @@ p {
 
 .results-trainer-card__sprite {
   display: block;
-  justify-self: center;
-  align-self: center;
-  width: clamp(540px, 58vw, 740px);
-  height: clamp(540px, 58vw, 740px);
-  max-width: none;
-  max-height: none;
+  width: auto;
+  height: auto;
+  max-width: 82%;
+  max-height: 88%;
+  margin: auto;
   object-fit: contain;
   object-position: center;
   image-rendering: pixelated;
@@ -3646,14 +3645,14 @@ p {
 
 .results-pokemon-summary-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
 }
 
 /* Keep selection cards the same visual size/format as result cards */
 .reveal-card.mystery-reveal-card,
 .adventure-card-slot.mystery-reveal-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   justify-self: center !important;
 }
 
@@ -3816,7 +3815,7 @@ p {
 /* Make Gym Leader, Elite Four and Champion cards use one consistent card format */
 .progression-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   aspect-ratio: 0.72 !important;
   min-width: 0 !important;
   min-height: 0 !important;
@@ -3989,7 +3988,7 @@ p {
 
 .champion-final-grid .progression-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   min-width: 0 !important;
   margin: 0 auto !important;
   aspect-ratio: 0.72 !important;
@@ -4066,7 +4065,7 @@ p {
 .final-stage-grid.champion-final-grid .progression-card,
 .stage-card-grid.final-stage-grid.champion-final-grid .progression-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   min-width: 150px !important;
   aspect-ratio: 0.72 !important;
   margin: 0 auto !important;
@@ -4175,7 +4174,7 @@ p {
 .progression-card {
   position: relative !important;
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   aspect-ratio: 0.72 !important;
   min-width: 0 !important;
   min-height: 0 !important;
@@ -4368,7 +4367,7 @@ p {
 
 .champion-final-grid .progression-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
   min-width: 150px !important;
   margin: 0 auto !important;
 }
@@ -5897,7 +5896,7 @@ p {
 
 .player-character-selector {
   display: grid;
-  grid-template-columns: 46px minmax(150px, 190px) 46px;
+  grid-template-columns: 46px minmax(260px, 360px) 46px;
   gap: 14px;
   align-items: center;
   justify-content: center;
@@ -5911,13 +5910,13 @@ p {
   gap: 10px;
   justify-items: center;
   width: 100%;
-  max-width: 190px;
+  max-width: 360px;
   min-width: 0;
 }
 
 .player-character-selector__viewport .progression-card {
   width: 100% !important;
-  max-width: 190px !important;
+  max-width: 360px !important;
 }
 
 .player-character-selector__control {
@@ -5948,16 +5947,22 @@ p {
 
 .progression-card.player-character-card .trainer-sprite,
 .progression-card.player-character-card .stage-trainer-sprite {
-  width: clamp(340px, 38vw, 390px) !important;
-  height: clamp(340px, 38vw, 390px) !important;
-  max-width: none !important;
-  max-height: none !important;
+  display: block;
+  width: auto !important;
+  height: auto !important;
+  max-width: 86% !important;
+  max-height: 88% !important;
+  margin: auto !important;
+  object-fit: contain !important;
   object-position: center !important;
+  transform: none !important;
+  transform-origin: center !important;
+  image-rendering: pixelated;
 }
 
 @media (max-width: 560px) {
   .player-character-selector {
-    grid-template-columns: 42px minmax(150px, 190px) 42px;
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
     gap: 8px;
   }
 
@@ -6047,5 +6052,118 @@ p {
 
   .selection-card-toolbar__hint {
     text-align: center;
+  }
+}
+
+
+/* Player character presentation fix */
+.results-trainer-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.results-trainer-card__player-name {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px 14px;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 1000;
+  line-height: 1;
+}
+
+.results-trainer-card__artwork {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  min-height: clamp(260px, 38vw, 430px);
+  padding: clamp(14px, 2vw, 24px);
+  overflow: hidden;
+}
+
+.results-trainer-card__sprite {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 82% !important;
+  max-height: clamp(230px, 34vw, 390px) !important;
+  margin: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
+  image-rendering: pixelated;
+}
+
+.progression-card.player-character-card .progression-sprite-area {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: clamp(320px, 42vw, 440px);
+  padding: clamp(12px, 2vw, 22px);
+  overflow: hidden !important;
+}
+
+.progression-card.player-character-card .trainer-sprite,
+.progression-card.player-character-card .stage-trainer-sprite {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 88% !important;
+  max-height: clamp(280px, 38vw, 400px) !important;
+  margin: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
+  image-rendering: pixelated;
+}
+
+.player-character-selector__viewport {
+  width: min(100%, 360px);
+  max-width: 360px;
+}
+
+.player-character-selector__viewport .progression-card {
+  width: 100% !important;
+  max-width: 360px !important;
+}
+
+@media (max-width: 560px) {
+  .player-character-selector {
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    gap: 6px;
+  }
+
+  .player-character-selector__viewport {
+    width: 100%;
+    max-width: 290px;
+  }
+
+  .player-character-selector__viewport .progression-card {
+    max-width: 290px !important;
+  }
+
+  .progression-card.player-character-card .progression-sprite-area {
+    min-height: 300px;
+  }
+
+  .progression-card.player-character-card .trainer-sprite,
+  .progression-card.player-character-card .stage-trainer-sprite {
+    max-width: 90% !important;
+    max-height: 270px !important;
+  }
+
+  .results-trainer-card__artwork {
+    min-height: 280px;
+  }
+
+  .results-trainer-card__sprite {
+    max-width: 88% !important;
+    max-height: 250px !important;
   }
 }
