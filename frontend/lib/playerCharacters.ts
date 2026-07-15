@@ -18,25 +18,25 @@ export const PLAYER_CHARACTERS: PlayerCharacterOption[] = [
     id: "chaz",
     label: "Chaz",
     fallback: "C",
-    detailItems: ["Pallet Town", "Badges 0"],
+    detailItems: ["Pallet Town"],
   },
   {
     id: "laga",
     label: "Laga",
     fallback: "L",
-    detailItems: ["Pallet Town", "Badges 0"],
+    detailItems: ["Pallet Town"],
   },
   {
     id: "kevin",
     label: "Kevin",
     fallback: "K",
-    detailItems: ["Pallet Town", "Badges 0"],
+    detailItems: ["Pallet Town"],
   },
   {
     id: "gj",
     label: "GJ",
     fallback: "GJ",
-    detailItems: ["Pallet Town", "Badges 0"],
+    detailItems: ["Pallet Town"],
   },
 ];
 

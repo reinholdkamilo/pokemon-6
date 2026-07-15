@@ -158,6 +158,7 @@ function ResultsTrainerCard({
     <article className="results-trainer-card">
       <div className="results-trainer-card__top">
         <span className="results-trainer-card__logo">POKEMON 6</span>
+        <strong className="results-trainer-card__player-name">{playerName}</strong>
       </div>
 
       <div className="results-trainer-card__artwork" aria-label={`${playerName} trainer artwork`}>
