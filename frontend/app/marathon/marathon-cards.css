@@ -1,0 +1,75 @@
+.progression-card-role {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  font-size: clamp(0.66rem, 1.7vw, 0.82rem);
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.progression-card-name {
+  display: block;
+  width: 100%;
+  margin: 6px 0 4px;
+  text-align: center;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  line-height: 1;
+}
+
+.progression-card-summary {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding-inline: 4px;
+  text-align: center;
+  font-size: clamp(0.66rem, 1.8vw, 0.82rem);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+}
+
+.progression-card-location {
+  display: block;
+  width: 100%;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(51, 65, 85, 0.16);
+  text-align: center;
+  font-size: clamp(0.68rem, 1.8vw, 0.84rem);
+  font-weight: 900;
+}
+
+.marathon-results-stage__grid .progression-card-top,
+.marathon-matchup-grid .progression-card-top {
+  min-height: 34px;
+  align-items: center;
+}
+
+.marathon-results-stage__grid .trainer-card-badge-sprite,
+.marathon-matchup-grid .trainer-card-badge-sprite {
+  width: clamp(28px, 6vw, 42px);
+  height: clamp(28px, 6vw, 42px);
+  object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .progression-card-role {
+    font-size: clamp(0.52rem, 2.1vw, 0.68rem);
+  }
+
+  .progression-card-name {
+    margin-top: 3px;
+    font-size: clamp(0.66rem, 2.8vw, 0.82rem);
+  }
+
+  .progression-card-summary,
+  .progression-card-location {
+    font-size: clamp(0.5rem, 2vw, 0.64rem);
+  }
+
+  .marathon-results-stage__grid .trainer-card-badge-sprite,
+  .marathon-matchup-grid .trainer-card-badge-sprite {
+    width: clamp(20px, 6vw, 30px);
+    height: clamp(20px, 6vw, 30px);
+  }
+}
