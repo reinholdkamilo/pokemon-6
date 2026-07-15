@@ -467,20 +467,6 @@ export default function MarathonPage() {
                 </div>
 
                 <div className="marathon-stage-hud__progress">
-                  <div className="marathon-stage-hud__progress-copy">
-                    <span>
-                      {isGymLeaderBattle
-                        ? "Gym Leader Battle"
-                        : `Trainer ${Math.min(
-                            trainerProgress + 1,
-                            REGULAR_WINS_PER_GYM,
-                          )} of ${REGULAR_WINS_PER_GYM}`}
-                    </span>
-                    <strong>
-                      {trainerProgress}/{REGULAR_WINS_PER_GYM} trainers defeated
-                    </strong>
-                  </div>
-
                   <div
                     className="marathon-stage-hud__dots"
                     aria-label={`${trainerProgress} of ${REGULAR_WINS_PER_GYM} trainers defeated`}

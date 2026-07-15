@@ -947,3 +947,52 @@
     font-size: clamp(0.66rem, 3vw, 0.78rem);
   }
 }
+
+/* Keep the Marathon battle player portrait fully visible on phone cards. */
+.marathon-matchup-grid
+  .marathon-player-battle-card.progression-card--sprite-full-body
+  .progression-sprite-area {
+  align-items: flex-end !important;
+  justify-content: center !important;
+  min-height: clamp(230px, 34vw, 320px) !important;
+  height: clamp(230px, 34vw, 320px) !important;
+  padding: clamp(8px, 1.5vw, 14px) 4px 0 !important;
+  overflow: hidden !important;
+}
+
+.marathon-matchup-grid
+  .marathon-player-battle-card.progression-card--sprite-full-body
+  .trainer-sprite,
+.marathon-matchup-grid
+  .marathon-player-battle-card.progression-card--sprite-full-body
+  .stage-trainer-sprite {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  transform: none !important;
+  clip-path: none !important;
+  margin: 0 auto !important;
+}
+
+@media (max-width: 700px) {
+  .marathon-matchup-grid
+    .marathon-player-battle-card.progression-card--sprite-full-body
+    .progression-sprite-area {
+    min-height: clamp(190px, 52vw, 250px) !important;
+    height: clamp(190px, 52vw, 250px) !important;
+    padding-top: 8px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .marathon-matchup-grid
+    .marathon-player-battle-card.progression-card--sprite-full-body
+    .progression-sprite-area {
+    min-height: clamp(178px, 50vw, 220px) !important;
+    height: clamp(178px, 50vw, 220px) !important;
+  }
+}
