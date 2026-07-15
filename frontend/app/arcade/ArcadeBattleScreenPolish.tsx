@@ -6,56 +6,57 @@ const MATCHUP_TITLE = "Player Card VS Opponent Card";
 
 export function ArcadeBattleScreenPolish() {
   useEffect(() => {
+    let scheduled = false;
+
     function polishArcadeScreen() {
-      const heroes = Array.from(document.querySelectorAll<HTMLElement>(".stage-hero"));
+      scheduled = false;
 
-      for (const hero of heroes) {
-        const title = hero.querySelector("h1");
-        if (title?.textContent?.trim() !== MATCHUP_TITLE) continue;
+      const hero = Array.from(document.querySelectorAll<HTMLElement>(".stage-hero")).find(
+        (candidate) => candidate.querySelector("h1")?.textContent?.trim() === MATCHUP_TITLE,
+      );
 
-        const eyebrow = hero.querySelector(".eyebrow");
-        const roundMatch = eyebrow?.textContent?.match(/Arcade Battle\s+(\d+)/i);
-        const roundNumber = roundMatch?.[1] ?? "1";
+      if (!hero) return;
 
-        hero.classList.add("arcade-round-heading");
-        hero.replaceChildren();
+      const eyebrow = hero.querySelector(".eyebrow");
+      const roundMatch = eyebrow?.textContent?.match(/Arcade Battle\s+(\d+)/i);
+      hero.dataset.round = roundMatch?.[1] ?? "1";
+      hero.classList.add("arcade-round-heading");
 
-        const roundTitle = document.createElement("h1");
-        roundTitle.textContent = `Round ${roundNumber}`;
-        hero.appendChild(roundTitle);
+      const matchupGrid = hero.nextElementSibling;
+      if (!(matchupGrid instanceof HTMLElement)) return;
 
-        const matchupGrid = hero.nextElementSibling;
-        if (!(matchupGrid instanceof HTMLElement)) continue;
+      matchupGrid.classList.add("arcade-matchup-grid");
+      matchupGrid.removeAttribute("style");
 
-        matchupGrid.classList.add("arcade-matchup-grid");
-        matchupGrid.removeAttribute("style");
+      const cards = matchupGrid.querySelectorAll<HTMLElement>(".progression-card");
+      const playerCard = cards[0];
+      const opponentCard = cards[1];
+      if (!playerCard || !opponentCard) return;
 
-        const cards = matchupGrid.querySelectorAll<HTMLElement>(".progression-card");
-        const playerCard = cards[0];
-        const opponentCard = cards[1];
-        if (!playerCard || !opponentCard) continue;
+      playerCard.classList.add("arcade-player-battle-card");
+      opponentCard.classList.add("arcade-opponent-battle-card");
 
-        playerCard.classList.add("arcade-player-battle-card");
-        opponentCard.classList.add("arcade-opponent-battle-card");
-
-        const playerStamp = playerCard.querySelector<HTMLElement>(".result-stamp");
-        const opponentStamp = opponentCard.querySelector<HTMLElement>(".result-stamp");
-
-        if (playerStamp?.textContent?.trim().toUpperCase() === "WIPED OUT") {
-          playerStamp.remove();
-          if (opponentStamp) opponentStamp.textContent = "WIPED OUT";
-          opponentCard.classList.remove("cleared");
-          opponentCard.classList.add("failed");
-        } else if (playerStamp) {
-          playerStamp.remove();
-        }
-      }
+      const opponentStamp = opponentCard.querySelector<HTMLElement>(".result-stamp");
+      opponentCard.classList.toggle(
+        "arcade-opponent-wiped-out",
+        opponentStamp?.textContent?.trim().toUpperCase() === "WIPED OUT",
+      );
     }
 
-    polishArcadeScreen();
-    const observer = new MutationObserver(polishArcadeScreen);
+    function schedulePolish() {
+      if (scheduled || document.querySelector(".battle-sim-screen")) return;
+      scheduled = true;
+      window.requestAnimationFrame(polishArcadeScreen);
+    }
+
+    schedulePolish();
+    const observer = new MutationObserver(schedulePolish);
     observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+
+    return () => {
+      observer.disconnect();
+      scheduled = false;
+    };
   }, []);
 
   return null;
