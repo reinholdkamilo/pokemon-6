@@ -175,7 +175,7 @@ export function BattleSimulationScreen({
               className="battle-sim-skip-required"
               aria-live="polite"
             >
-              GYM LEADER BATTLE — ANIMATION REQUIRED
+              MAJOR BATTLE — ANIMATION REQUIRED
             </p>
           )}
         </div>

@@ -413,7 +413,7 @@ export default function MarathonPage() {
         opponent={currentOpponent}
         opponentTeam={currentOpponentTeam}
         outcome={currentOutcome}
-        canSkipAnimation={currentOpponent.type !== "gym-leader"}
+        canSkipAnimation={currentOpponent.type === "regular"}
         onComplete={() => finishBattle(currentOutcome)}
         onMainMenu={() => router.push("/")}
       />
