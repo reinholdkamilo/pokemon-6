@@ -28,6 +28,27 @@ const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female" | "chaz" | "laga" | "
   gj: "/images/trainers/player/GJ.PNG",
 };
 
+const REGULAR_TRAINER_IMAGE_PATHS: Record<string, string> = {
+  "Ace Trainer": "/images/trainers/adventure/ace-trainer.png",
+  Beauty: "/images/trainers/adventure/beauty.png",
+  Biker: "/images/trainers/adventure/biker.png",
+  "Bird Keeper": "/images/trainers/adventure/bird-keeper.png",
+  "Black Belt": "/images/trainers/adventure/black-belt.png",
+  "Bug Catcher": "/images/trainers/adventure/bug-catcher.png",
+  Camper: "/images/trainers/adventure/camper.png",
+  Channeler: "/images/trainers/adventure/channeler.png",
+  Fisherman: "/images/trainers/adventure/fisherman.png",
+  Hiker: "/images/trainers/adventure/hiker.png",
+  Juggler: "/images/trainers/adventure/juggler.png",
+  Lass: "/images/trainers/adventure/lass.png",
+  Picnicker: "/images/trainers/adventure/picnicker.png",
+  Sailor: "/images/trainers/adventure/sailor.png",
+  Scientist: "/images/trainers/adventure/scientist.png",
+  Swimmer: "/images/trainers/adventure/swimmer.png",
+  Tamer: "/images/trainers/adventure/tamer.png",
+  Youngster: "/images/trainers/adventure/youngster.png",
+};
+
 const GYM_LEADER_IMAGE_PATHS: Record<string, string> = {
   Brock: "/images/trainers/gym-leaders/brock.png",
   Misty: "/images/trainers/gym-leaders/misty.png",
@@ -51,6 +72,7 @@ const CHAMPION_IMAGE_PATHS: Record<string, string> = {
 };
 
 export const TRAINER_IMAGE_PATHS: Record<string, string> = {
+  ...REGULAR_TRAINER_IMAGE_PATHS,
   ...GYM_LEADER_IMAGE_PATHS,
   ...ELITE_FOUR_IMAGE_PATHS,
   ...CHAMPION_IMAGE_PATHS,
@@ -102,6 +124,7 @@ export function getTrainerSprite(name: string | null | undefined) {
   }
 
   return (
+    getTrainerSpriteFromMap(REGULAR_TRAINER_IMAGE_PATHS, name) ??
     getGymLeaderSprite(name) ??
     getEliteFourSprite(name) ??
     getTrainerSpriteFromMap(CHAMPION_IMAGE_PATHS, name) ??
