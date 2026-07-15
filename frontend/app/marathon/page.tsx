@@ -536,9 +536,7 @@ export default function MarathonPage() {
                 pokemonCount: 6,
                 pokemonTeam: team.map((pokemon) => pokemon.name),
               }}
-              roleLabel="Player"
-              summaryLabel="6 POKÉMON • PLAYER"
-              locationLabel="Pallet Town"
+              roleLabel={null}
               spritePresentation="full-body"
               spriteSrc={getPlayerTrainerSprite(character.id)}
               status={playerStatus}
@@ -549,19 +547,28 @@ export default function MarathonPage() {
               breakdown={breakdown}
               className="marathon-opponent-battle-card"
               detailItems={
-                phase === "matchup"
+                currentOpponent.type === "gym-leader"
+                  ? currentOpponent.pokemonTeam
+                  : phase === "matchup"
                   ? [`${currentOpponent.pokemonCount} hidden Pokemon`]
                   : currentOpponentTeam.map((pokemon) => pokemon.name)
               }
               explicitResultStamp={opponentResultStamp}
-              locationLabel={location}
+              locationLabel={
+                currentOpponent.type === "gym-leader"
+                  ? currentOpponent.badge
+                  : location
+              }
               meta={currentOpponent}
               roleLabel={opponentRole(currentOpponent.type)}
-              showBadge={currentOpponent.type === "gym-leader"}
               spritePresentation="pixel-trainer"
               spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)}
               status={opponentStatus}
-              summaryLabel={opponentSummary(currentOpponent)}
+              summaryLabel={
+                currentOpponent.type === "gym-leader"
+                  ? undefined
+                  : opponentSummary(currentOpponent)
+              }
               suppressAutomaticStamp={Boolean(opponentResultStamp)}
             />
           </div>
@@ -759,10 +766,10 @@ function MarathonResults({
                           : ""
                     }`}
                     isLocked={!gymEncounter}
-                    locationLabel={stage.city}
+                    detailItems={gymResult.opponent.pokemonTeam}
+                    locationLabel={gymResult.opponent.badge}
                     meta={gymResult.opponent}
                     roleLabel="Gym Leader"
-                    showBadge
                     spritePresentation="pixel-trainer"
                     status={
                       gymEncounter
@@ -771,7 +778,6 @@ function MarathonResults({
                           : "failed"
                         : "not-reached"
                     }
-                    summaryLabel={opponentSummary(gymResult.opponent)}
                   />
                 ) : null}
               </div>

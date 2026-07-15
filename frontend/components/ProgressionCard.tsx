@@ -35,7 +35,7 @@ type ProgressionCardProps = {
   explicitResultStamp?: ExplicitResultStamp;
   suppressAutomaticStamp?: boolean;
   spritePresentation?: SpritePresentation;
-  roleLabel?: string;
+  roleLabel?: string | null;
   summaryLabel?: string;
   locationLabel?: string;
   onSelect?: () => void;
@@ -75,6 +75,7 @@ export function ProgressionCard({
       : null;
   const displayName = meta.name === "Gary" ? "Champion" : meta.name;
   const cardDetails = detailItems ?? meta.pokemonTeam;
+  const roleText = roleLabel === undefined ? displayName : roleLabel;
   const teamLayoutClass =
     cardDetails.length <= 3 ? "team-count-small" : "team-count-large";
   const championClass =
@@ -128,18 +129,22 @@ export function ProgressionCard({
       role={isSelectable && !isLocked ? interactionRole : undefined}
       tabIndex={isSelectable && !isLocked ? 0 : undefined}
     >
-      <div className="progression-card-top">
-        <span className="progression-card-role">{roleLabel ?? displayName}</span>
+      {roleText || (showBadge && meta.badge) ? (
+        <div className="progression-card-top">
+          {roleText ? (
+            <span className="progression-card-role">{roleText}</span>
+          ) : null}
 
-        {showBadge && meta.badge ? (
-          <LocalSprite
-            alt={`${meta.badge} sprite`}
-            className="trainer-card-badge-sprite"
-            fallback={String(meta.number ?? "BD")}
-            src={BADGE_IMAGE_PATHS[meta.badge]}
-          />
-        ) : null}
-      </div>
+          {showBadge && meta.badge ? (
+            <LocalSprite
+              alt={`${meta.badge} sprite`}
+              className="trainer-card-badge-sprite"
+              fallback={String(meta.number ?? "BD")}
+              src={BADGE_IMAGE_PATHS[meta.badge]}
+            />
+          ) : null}
+        </div>
+      ) : null}
 
       <strong className="trainer-card-name-label progression-card-name">{displayName}</strong>
 
