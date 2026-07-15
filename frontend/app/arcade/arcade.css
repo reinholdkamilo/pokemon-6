@@ -1,5 +1,12 @@
-/* Arcade regular trainers use the same card proportions and visual weight as
-   Gym Leaders, Elite Four members and the Champion. */
+/* Arcade-only presentation rules. Keep the React-owned DOM intact: classes are
+   additive only so Safari and Android browsers do not crash after a battle. */
+
+.progression-card:has(img[src*="/images/trainers/adventure/"]) {
+  grid-template-rows: auto minmax(150px, 1fr) auto !important;
+  min-height: 330px !important;
+  height: 330px !important;
+  overflow: hidden !important;
+}
 
 .progression-card:has(img[src*="/images/trainers/adventure/"]) .progression-sprite-area {
   min-height: 150px !important;
@@ -27,27 +34,32 @@
   transform-origin: center center !important;
 }
 
-.progression-card:has(img[src*="/images/trainers/adventure/"]) {
-  grid-template-rows: auto minmax(150px, 1fr) auto !important;
-  min-height: 330px !important;
-  height: 330px !important;
-  overflow: hidden !important;
-}
-
 .arcade-round-heading {
-  justify-items: center;
+  position: relative;
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
   text-align: center;
 }
 
-.arcade-round-heading h1 {
-  margin: 0;
+.arcade-round-heading > * {
+  display: none !important;
+}
+
+.arcade-round-heading::after {
+  content: "Round " attr(data-round);
+  display: block;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1;
 }
 
 .arcade-matchup-grid {
   width: min(100%, 840px);
   margin-inline: auto;
-  display: grid;
-  grid-template-columns: minmax(240px, 320px) auto minmax(240px, 320px);
+  display: grid !important;
+  grid-template-columns: minmax(240px, 320px) auto minmax(240px, 320px) !important;
   justify-content: center;
   justify-items: center;
   align-items: center;
@@ -66,107 +78,137 @@
   text-align: center;
 }
 
-.arcade-player-battle-card .progression-sprite-area {
-  min-height: 190px !important;
-  height: 190px !important;
-  padding: 6px !important;
-  overflow: visible !important;
-  display: grid !important;
-  place-items: end center !important;
+/* The player PNGs are tall full-body assets. Use intrinsic proportions rather
+   than forcing both width and height, which was clipping the lower body. */
+.arcade-player-battle-card {
+  overflow: hidden !important;
+}
+
+.arcade-player-battle-card .progression-sprite-area,
+.player-character-card .progression-sprite-area {
+  min-height: 210px !important;
+  height: 210px !important;
+  padding: 4px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
 }
 
 .arcade-player-battle-card .trainer-sprite,
-.arcade-player-battle-card .stage-trainer-sprite {
-  width: 100% !important;
+.arcade-player-battle-card .stage-trainer-sprite,
+.player-character-card .trainer-sprite,
+.player-character-card .stage-trainer-sprite {
+  display: block !important;
+  width: auto !important;
   height: 100% !important;
-  max-width: 168px !important;
-  max-height: 184px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
   object-fit: contain !important;
   object-position: center bottom !important;
   transform: none !important;
+  transform-origin: center bottom !important;
   margin: 0 auto !important;
+  clip-path: none !important;
 }
 
-.arcade-opponent-battle-card.failed .result-stamp {
+.arcade-opponent-battle-card.arcade-opponent-wiped-out .result-stamp {
   color: #b00020 !important;
   border-color: #b00020 !important;
 }
 
 @media (max-width: 700px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   .game-shell.stage-shell,
   .game-shell {
     width: 100%;
     min-height: 100dvh;
-    padding: max(8px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom));
+    padding: max(8px, env(safe-area-inset-top)) 6px max(12px, env(safe-area-inset-bottom));
   }
 
   .stage-screen,
-  .selection-screen {
+  .selection-screen,
+  .battle-sim-screen {
     width: 100%;
     max-width: 100%;
-    padding: 12px 8px 18px;
+    padding: 10px 6px 14px;
     overflow-x: hidden;
   }
 
-  .stage-hero,
-  .selection-header {
-    margin-bottom: 10px;
+  .game-top-bar {
+    gap: 8px;
   }
 
-  .stage-hero h1,
-  .selection-header h1 {
-    font-size: clamp(1.35rem, 7vw, 1.9rem);
+  .game-top-bar .eyebrow,
+  .main-menu-button {
+    font-size: clamp(0.75rem, 3.5vw, 1rem);
   }
 
-  .progression-card:has(img[src*="/images/trainers/adventure/"]) {
-    min-height: 286px !important;
-    height: 286px !important;
+  .arcade-round-heading {
+    min-height: 58px;
+    margin-bottom: 8px;
   }
 
-  .progression-card:has(img[src*="/images/trainers/adventure/"]) .progression-sprite-area {
-    min-height: 126px !important;
-    height: 126px !important;
-  }
-
-  .progression-card:has(img[src*="/images/trainers/adventure/"]) .trainer-sprite,
-  .progression-card:has(img[src*="/images/trainers/adventure/"]) .stage-trainer-sprite {
-    width: 120px !important;
-    height: 120px !important;
-    transform: scale(1.28) !important;
+  .arcade-round-heading::after {
+    font-size: clamp(1.75rem, 9vw, 2.5rem);
   }
 
   .arcade-matchup-grid {
     width: 100%;
-    grid-template-columns: minmax(0, 1fr) 30px minmax(0, 1fr);
-    gap: 6px;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr) !important;
+    gap: 5px;
+    align-items: stretch;
   }
 
   .arcade-matchup-grid > .progression-card {
     width: 100%;
     min-width: 0;
     max-width: none;
-    min-height: 270px !important;
-    height: 270px !important;
+    min-height: 292px !important;
+    height: 292px !important;
   }
 
   .arcade-matchup-grid > strong {
-    font-size: 1.15rem;
+    align-self: center;
+    font-size: 1.1rem;
   }
 
-  .arcade-player-battle-card .progression-sprite-area {
-    min-height: 132px !important;
-    height: 132px !important;
-    overflow: visible !important;
+  .arcade-player-battle-card .progression-sprite-area,
+  .player-character-card .progression-sprite-area {
+    min-height: 150px !important;
+    height: 150px !important;
+    padding: 2px !important;
   }
 
   .arcade-player-battle-card .trainer-sprite,
-  .arcade-player-battle-card .stage-trainer-sprite {
-    max-width: 116px !important;
-    max-height: 128px !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
-    transform: none !important;
+  .arcade-player-battle-card .stage-trainer-sprite,
+  .player-character-card .trainer-sprite,
+  .player-character-card .stage-trainer-sprite {
+    width: auto !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) {
+    min-height: 292px !important;
+    height: 292px !important;
+  }
+
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .progression-sprite-area {
+    min-height: 132px !important;
+    height: 132px !important;
+  }
+
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .trainer-sprite,
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .stage-trainer-sprite {
+    width: 124px !important;
+    height: 124px !important;
+    transform: scale(1.25) !important;
   }
 
   .arcade-matchup-grid .trainer-card-name-label {
@@ -175,20 +217,15 @@
 
   .arcade-matchup-grid .trainer-team-list {
     font-size: 0.68rem;
-    line-height: 1.15;
-  }
-
-  .arcade-matchup-grid .progression-card-top {
+    line-height: 1.1;
     padding-inline: 6px;
   }
 
-  .reveal-grid {
+  .reveal-grid,
+  .progression-card-grid,
+  .results-team-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 8px !important;
-  }
-
-  .reveal-card {
-    min-width: 0;
   }
 
   .selection-card-toolbar,
@@ -204,33 +241,26 @@
   .stage-action {
     min-height: 44px;
   }
-
-  .progression-card-grid,
-  .results-team-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 8px !important;
-  }
 }
 
 @media (max-width: 390px) {
   .arcade-matchup-grid {
-    grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
-    gap: 4px;
+    grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) !important;
+    gap: 3px;
   }
 
   .arcade-matchup-grid > .progression-card {
-    min-height: 252px !important;
-    height: 252px !important;
+    min-height: 276px !important;
+    height: 276px !important;
   }
 
-  .arcade-player-battle-card .progression-sprite-area {
-    min-height: 120px !important;
-    height: 120px !important;
+  .arcade-player-battle-card .progression-sprite-area,
+  .player-character-card .progression-sprite-area {
+    min-height: 140px !important;
+    height: 140px !important;
   }
 
-  .arcade-player-battle-card .trainer-sprite,
-  .arcade-player-battle-card .stage-trainer-sprite {
-    max-width: 104px !important;
-    max-height: 116px !important;
+  .arcade-matchup-grid .trainer-team-list {
+    font-size: 0.62rem;
   }
 }
