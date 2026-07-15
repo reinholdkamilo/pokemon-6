@@ -320,8 +320,8 @@ export function BattleSelectionScreen({
   }
 
   return (
-    <section className="selection-screen" aria-label="Battle Mode team selection">
-      <GameTopBar modeLabel="Battle Mode" onMainMenu={onMainMenu} />
+    <section className="selection-screen" aria-label="Arcade Mode team selection">
+      <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
 
       <div className="selection-header">
         <h1>Choose your Pokemon</h1>

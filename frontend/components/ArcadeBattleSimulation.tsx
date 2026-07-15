@@ -41,7 +41,7 @@ export function ArcadeBattleSimulation({
           outcome,
           win_type: outcome === "Beat" ? "normal" : "loss",
         }}
-        modeLabel={"Arcade Mode" as "Adventure Mode"}
+        modeLabel="Marathon Mode"
         onComplete={onComplete}
         onMainMenu={onMainMenu}
       />

@@ -1,15 +1,15 @@
 "use client";
 
 type TitleScreenProps = {
-  onSelectBattleMode: () => void;
-  onSelectAdventureMode: () => void;
+  onSelectArcadeMode: () => void;
+  onSelectMarathonMode: () => void;
 };
 
 const CARD_ROTATIONS = [-18, -10, -3, 5, 12, 20];
 
 export function TitleScreen({
-  onSelectBattleMode,
-  onSelectAdventureMode,
+  onSelectArcadeMode,
+  onSelectMarathonMode,
 }: TitleScreenProps) {
   return (
     <main className="title-screen">
@@ -30,22 +30,19 @@ export function TitleScreen({
           ))}
         </div>
         <div className="mode-actions" aria-label="Choose game mode">
-          <button className="catch-button" type="button" onClick={onSelectBattleMode}>
-            Battle Mode
-          </button>
           <button
-            className="catch-button adventure-mode-button"
+            className="catch-button"
             type="button"
-            onClick={onSelectAdventureMode}
-          >
-            Adventure Mode
-          </button>
-          <button
-            className="catch-button arcade-mode-button"
-            type="button"
-            onClick={() => window.location.assign("/arcade")}
+            onClick={onSelectArcadeMode}
           >
             Arcade Mode
+          </button>
+          <button
+            className="catch-button marathon-mode-button"
+            type="button"
+            onClick={onSelectMarathonMode}
+          >
+            Marathon Mode
           </button>
         </div>
       </section>

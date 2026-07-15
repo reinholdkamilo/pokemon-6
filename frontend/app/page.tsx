@@ -2,16 +2,15 @@
 
 import { useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { BattleSimulationScreen } from "@/components/BattleSimulationScreen";
-import { CardSelectionScreen } from "@/components/CardSelectionScreen";
 import { ChampionScreen } from "@/components/ChampionScreen";
 import { EliteFourScreen } from "@/components/EliteFourScreen";
 import { EndResultsScreen } from "@/components/EndResultsScreen";
 import { EvolutionModal } from "@/components/EvolutionModal";
 import { GymLeadersScreen } from "@/components/GymLeadersScreen";
 import { BattlePlayerCardScreen } from "@/components/BattlePlayerCardScreen";
-import { TrainerCardScreen } from "@/components/TrainerCardScreen";
 import { TitleScreen } from "@/components/TitleScreen";
 import { getPokemon, scoreTeam } from "@/lib/api";
 import { EVOLUTION_TRIGGER_WINS, getNextEvolutionName } from "@/lib/evolutions";
@@ -27,11 +26,9 @@ import {
 import type { OpponentBreakdown, Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 const TEAM_SIZE = 6;
-type GameMode = "battle" | "adventure";
 type GameScreen =
   | "title"
   | "battle-player-card"
-  | "trainer-card"
   | "select-team"
   | "gym-leaders"
   | "elite-four"
@@ -61,8 +58,8 @@ type SkipContinuation = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [screen, setScreen] = useState<GameScreen>("title");
-  const [gameMode, setGameMode] = useState<GameMode | null>(null);
   const [revealedCards, setRevealedCards] = useState<(Pokemon | null)[]>(
     createEmptyCards,
   );
@@ -178,41 +175,25 @@ export default function Home() {
   function returnToMainMenu() {
     clearRunState();
     setTrainerProfile(null);
-    setGameMode(null);
     setScreen("title");
   }
 
   function resetCurrentRun() {
     clearRunState();
-    if (gameMode === "battle") {
-      setTrainerProfile(createBattleTrainerProfile());
-    }
+    setTrainerProfile(createBattleTrainerProfile());
     setScreen("select-team");
   }
 
   function tryAgain() {
     clearRunState();
-    if (gameMode === "battle") {
-      setTrainerProfile(createBattleTrainerProfile());
-      setScreen("select-team");
-      return;
-    }
-
+    setTrainerProfile(createBattleTrainerProfile());
     setScreen("select-team");
   }
 
-  function startBattleMode() {
-    setGameMode("battle");
+  function startArcadeMode() {
     clearRunState();
     setTrainerProfile(null);
     setScreen("battle-player-card");
-  }
-
-  function startAdventureMode() {
-    setGameMode("adventure");
-    clearRunState();
-    setTrainerProfile(null);
-    setScreen("trainer-card");
   }
 
   function startGymBattle(index: number) {
@@ -517,21 +498,8 @@ export default function Home() {
   if (screen === "title") {
     return (
       <TitleScreen
-        onSelectAdventureMode={startAdventureMode}
-        onSelectBattleMode={startBattleMode}
-      />
-    );
-  }
-
-  if (screen === "trainer-card") {
-    return (
-      <TrainerCardScreen
-        onMainMenu={returnToMainMenu}
-        onTrainerSaved={(savedTrainerProfile) => {
-          setTrainerProfile(savedTrainerProfile);
-          setGameMode("adventure");
-          setScreen("select-team");
-        }}
+        onSelectArcadeMode={startArcadeMode}
+        onSelectMarathonMode={() => router.push("/marathon")}
       />
     );
   }
@@ -542,7 +510,6 @@ export default function Home() {
         onMainMenu={returnToMainMenu}
         onPlayerReady={(savedTrainerProfile) => {
           setTrainerProfile(savedTrainerProfile);
-          setGameMode("battle");
           setScreen("select-team");
         }}
       />
@@ -554,7 +521,7 @@ export default function Home() {
       <GymLeadersScreen
         result={result}
         revealedCount={gymRevealedCount}
-        modeLabel={getModeLabel(gameMode)}
+        modeLabel="Arcade Mode"
         onBattleLeader={startGymBattle}
         onChallengeEliteFour={() => setScreen("elite-four")}
         onMainMenu={returnToMainMenu}
@@ -570,7 +537,7 @@ export default function Home() {
       <EliteFourScreen
         result={result}
         revealedCount={eliteRevealedCount}
-        modeLabel={getModeLabel(gameMode)}
+        modeLabel="Arcade Mode"
         onBattleEliteMember={startEliteFourBattle}
         onChallengeChampion={() => setScreen("champion")}
         onMainMenu={returnToMainMenu}
@@ -587,7 +554,7 @@ export default function Home() {
         result={result}
         selectedPokemon={getRunTeam()}
         revealed={championRevealed}
-        modeLabel={getModeLabel(gameMode)}
+        modeLabel="Arcade Mode"
         onBattleChampion={startChampionBattle}
         onMainMenu={returnToMainMenu}
         onSkipBattle={() => setChampionRevealed(true)}
@@ -603,7 +570,7 @@ export default function Home() {
         selectedPokemon={getRunTeam()}
         opponent={battleSimulationConfig.opponent}
         breakdown={battleSimulationConfig.breakdown}
-        modeLabel={getModeLabel(gameMode)}
+        modeLabel="Arcade Mode"
         onComplete={completeBattleSimulation}
         onMainMenu={returnToMainMenu}
       />
@@ -616,7 +583,7 @@ export default function Home() {
         trainerProfile={trainerProfile ?? createFallbackTrainerProfile()}
         result={result}
         selectedPokemon={getRunTeam()}
-        modeLabel={getModeLabel(gameMode)}
+        modeLabel="Arcade Mode"
         onMainMenu={returnToMainMenu}
         onTryAgain={tryAgain}
       />
@@ -625,31 +592,17 @@ export default function Home() {
 
   return (
     <main className="game-shell">
-      {gameMode === "battle" ? (
-        <BattleSelectionScreen
-          key={`battle-${runKey}`}
-          error={error}
-          revealedCards={revealedCards}
-          isSubmitting={isSubmitting}
-          selectedPokemon={getRunTeam()}
-          onMainMenu={returnToMainMenu}
-          onRevealCard={revealCard}
-          onResetRun={resetCurrentRun}
-          onSubmitTeam={submitTeam}
-        />
-      ) : (
-        <CardSelectionScreen
-          key={`adventure-${runKey}`}
-          error={error}
-          revealedCards={revealedCards}
-          isSubmitting={isSubmitting}
-          selectedPokemon={getRunTeam()}
-          onMainMenu={returnToMainMenu}
-          onRevealCard={revealCard}
-          onResetRun={resetCurrentRun}
-          onSubmitTeam={submitTeam}
-        />
-      )}
+      <BattleSelectionScreen
+        key={`arcade-${runKey}`}
+        error={error}
+        revealedCards={revealedCards}
+        isSubmitting={isSubmitting}
+        selectedPokemon={getRunTeam()}
+        onMainMenu={returnToMainMenu}
+        onRevealCard={revealCard}
+        onResetRun={resetCurrentRun}
+        onSubmitTeam={submitTeam}
+      />
     </main>
   );
 }
@@ -691,8 +644,4 @@ function createBattleTrainerProfile(): TrainerProfile {
     sprite: DEFAULT_PLAYER_CHARACTER_ID,
     created_at: "",
   };
-}
-
-function getModeLabel(gameMode: GameMode | null) {
-  return gameMode === "adventure" ? "Adventure Mode" : "Battle Mode";
 }

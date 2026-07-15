@@ -39,14 +39,14 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
         aria-label="Choose your Adventure character"
       >
         {onMainMenu ? (
-          <GameTopBar modeLabel="Adventure Mode" onMainMenu={onMainMenu} />
+          <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
         ) : null}
 
         <div className="stage-hero">
           <p className="eyebrow">Player Details</p>
           <h1>Choose Your Character</h1>
           <p className="trainer-card-instruction">
-            Select a trainer card to begin your Adventure Mode run.
+            Select a trainer card to begin your Arcade Mode run.
           </p>
         </div>
 

@@ -19,7 +19,7 @@ type ChampionScreenProps = {
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
   revealed: boolean;
-  modeLabel: "Battle Mode" | "Adventure Mode";
+  modeLabel: "Arcade Mode" | "Marathon Mode";
   onBattleChampion: () => void;
   onMainMenu: () => void;
   onSkipBattle: () => void;

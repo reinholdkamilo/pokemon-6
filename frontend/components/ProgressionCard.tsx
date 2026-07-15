@@ -10,6 +10,15 @@ import {
 } from "@/lib/progression";
 import type { OpponentBreakdown } from "@/types/pokemon";
 
+export type ExplicitResultStamp =
+  | {
+      text: "DEFEATED" | "WIPED OUT";
+      tone: "success" | "danger";
+    }
+  | null;
+
+export type SpritePresentation = "standard" | "full-body" | "pixel-trainer";
+
 type ProgressionCardProps = {
   meta: OpponentMeta;
   status: BattleStatus;
@@ -23,6 +32,9 @@ type ProgressionCardProps = {
   detailItems?: string[];
   selectActionLabel?: string;
   spriteSrc?: string;
+  explicitResultStamp?: ExplicitResultStamp;
+  suppressAutomaticStamp?: boolean;
+  spritePresentation?: SpritePresentation;
   onSelect?: () => void;
 };
 
@@ -39,9 +51,22 @@ export function ProgressionCard({
   detailItems,
   selectActionLabel = "Battle",
   spriteSrc,
+  explicitResultStamp,
+  suppressAutomaticStamp = false,
+  spritePresentation = "standard",
   onSelect,
 }: ProgressionCardProps) {
-  const outcome = formatBattleOutcome(status, breakdown);
+  const automaticOutcome = suppressAutomaticStamp
+    ? undefined
+    : formatBattleOutcome(status, breakdown);
+  const resultStamp = explicitResultStamp
+    ? explicitResultStamp
+    : automaticOutcome
+      ? {
+          text: automaticOutcome,
+          tone: status === "failed" ? "danger" : "success",
+        }
+      : null;
   const displayName = meta.name === "Gary" ? "Champion" : meta.name;
   const cardDetails = detailItems ?? meta.pokemonTeam;
   const teamLayoutClass =
@@ -91,7 +116,7 @@ export function ProgressionCard({
             ? `${selectActionLabel} ${displayName}`
             : displayName
       }
-      className={`progression-card ${status} ${teamLayoutClass} ${championClass} ${interactionClass} ${selectedClass} ${className}`.trim()}
+      className={`progression-card ${status} progression-card--sprite-${spritePresentation} ${teamLayoutClass} ${championClass} ${interactionClass} ${selectedClass} ${className}`.trim()}
       onClick={selectTrainer}
       onKeyDown={handleKeyDown}
       role={isSelectable && !isLocked ? interactionRole : undefined}
@@ -110,7 +135,11 @@ export function ProgressionCard({
         ) : null}
       </div>
 
-      {outcome ? <strong className="result-stamp">{outcome}</strong> : null}
+      {resultStamp ? (
+        <strong className={`result-stamp result-stamp--${resultStamp.tone}`}>
+          {resultStamp.text}
+        </strong>
+      ) : null}
 
       <div className="progression-sprite-area">
         <LocalSprite
