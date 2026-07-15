@@ -12,6 +12,7 @@ type ArcadeBattleSimulationProps = {
   outcome: "Beat" | "Lost";
   onComplete: () => void;
   onMainMenu: () => void;
+  canSkipAnimation?: boolean;
 };
 
 export function ArcadeBattleSimulation({
@@ -22,6 +23,7 @@ export function ArcadeBattleSimulation({
   outcome,
   onComplete,
   onMainMenu,
+  canSkipAnimation = true,
 }: ArcadeBattleSimulationProps) {
   const animationOpponent = {
     ...opponent,
@@ -44,12 +46,8 @@ export function ArcadeBattleSimulation({
         modeLabel="Marathon Mode"
         onComplete={onComplete}
         onMainMenu={onMainMenu}
+        canSkipAnimation={canSkipAnimation}
       />
-      <style jsx global>{`
-        .arcade-battle-animation .battle-sim-actions .secondary-action {
-          display: none !important;
-        }
-      `}</style>
     </div>
   );
 }

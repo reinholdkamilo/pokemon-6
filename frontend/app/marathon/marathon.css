@@ -890,3 +890,60 @@
     min-height: 36px;
   }
 }
+
+/* Marathon battle skip controls */
+
+.marathon-battle-actions {
+  width: min(100%, 880px);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.marathon-battle-actions .stage-action {
+  width: 100%;
+  margin: 0;
+}
+
+.marathon-skip-trainer {
+  min-width: 150px;
+  min-height: 52px;
+  padding-inline: 18px;
+  white-space: nowrap;
+}
+
+.battle-sim-skip-required {
+  width: 100%;
+  margin: 0;
+  padding: 12px 16px;
+  border: 2px solid rgba(127, 29, 29, 0.28);
+  border-radius: 12px;
+  background: rgba(254, 226, 226, 0.94);
+  color: #7f1d1d;
+  font-size: clamp(0.72rem, 2vw, 0.9rem);
+  font-weight: 1000;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .marathon-battle-actions {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .marathon-skip-trainer {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+  }
+
+  .battle-sim-skip-required {
+    padding: 10px 8px;
+    font-size: clamp(0.66rem, 3vw, 0.78rem);
+  }
+}
