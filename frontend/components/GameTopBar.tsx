@@ -1,7 +1,7 @@
 "use client";
 
 type GameTopBarProps = {
-  modeLabel: "Battle Mode" | "Adventure Mode";
+  modeLabel: "Battle Mode" | "Adventure Mode" | "Arcade Mode";
   onMainMenu: () => void;
 };
 
