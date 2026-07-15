@@ -1,0 +1,55 @@
+/* Arcade regular trainers use the same card proportions and visual weight as
+   Gym Leaders, Elite Four members and the Champion. The source sprites are
+   smaller pixel-art canvases, so they need a route-scoped presentation boost. */
+
+.progression-card:has(img[src*="/images/trainers/adventure/"]) .progression-sprite-area {
+  min-height: 150px !important;
+  height: 150px !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  padding: 4px !important;
+}
+
+.progression-card:has(img[src*="/images/trainers/adventure/"]) .trainer-sprite,
+.progression-card:has(img[src*="/images/trainers/adventure/"]) .stage-trainer-sprite {
+  width: 142px !important;
+  height: 142px !important;
+  max-width: 92% !important;
+  max-height: 92% !important;
+  margin: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  image-rendering: pixelated !important;
+  transform: scale(1.42) !important;
+  transform-origin: center center !important;
+}
+
+.progression-card:has(img[src*="/images/trainers/adventure/"]) {
+  grid-template-rows: auto minmax(150px, 1fr) auto !important;
+  min-height: 330px !important;
+  height: 330px !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 700px) {
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) {
+    min-height: 318px !important;
+    height: 318px !important;
+  }
+
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .progression-sprite-area {
+    min-height: 138px !important;
+    height: 138px !important;
+  }
+
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .trainer-sprite,
+  .progression-card:has(img[src*="/images/trainers/adventure/"]) .stage-trainer-sprite {
+    width: 132px !important;
+    height: 132px !important;
+    transform: scale(1.38) !important;
+  }
+}
