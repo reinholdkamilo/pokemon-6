@@ -37,8 +37,8 @@ export function BattlePlayerCardScreen({
 
   return (
     <main className="game-shell">
-      <section className="trainer-card-screen" aria-label="Battle Mode player card">
-        <GameTopBar modeLabel="Battle Mode" onMainMenu={onMainMenu} />
+      <section className="trainer-card-screen" aria-label="Arcade Mode player card">
+        <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
         <article className="trainer-profile-card battle-player-card">
           <div className="trainer-card-header">
             <div>
@@ -49,7 +49,7 @@ export function BattlePlayerCardScreen({
           </div>
 
           <PlayerCharacterSelector
-            ariaLabel="Battle Mode player character"
+            ariaLabel="Arcade Mode player character"
             className="battle-player-character-selector"
             selectedCharacterId={selectedCharacterId}
             onChange={setSelectedCharacterId}

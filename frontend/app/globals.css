@@ -5940,13 +5940,13 @@ p {
   margin: 2px 0 4px;
 }
 
-.progression-card.player-character-card .progression-sprite-area {
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .progression-sprite-area {
   place-items: center !important;
   overflow: hidden !important;
 }
 
-.progression-card.player-character-card .trainer-sprite,
-.progression-card.player-character-card .stage-trainer-sprite {
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .trainer-sprite,
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .stage-trainer-sprite {
   display: block;
   width: auto !important;
   height: auto !important;
@@ -5971,8 +5971,8 @@ p {
     height: 42px;
   }
 
-  .progression-card.player-character-card .trainer-sprite,
-  .progression-card.player-character-card .stage-trainer-sprite {
+  .progression-card.player-character-card:not(.progression-card--sprite-full-body) .trainer-sprite,
+  .progression-card.player-character-card:not(.progression-card--sprite-full-body) .stage-trainer-sprite {
     width: 350px !important;
     height: 350px !important;
   }
@@ -6039,6 +6039,12 @@ p {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .auto-pick-action:not(:disabled) {
+    animation: none;
+  }
+}
+
 @media (max-width: 560px) {
   .selection-card-toolbar {
     flex-direction: column;
@@ -6100,7 +6106,7 @@ p {
   image-rendering: pixelated;
 }
 
-.progression-card.player-character-card .progression-sprite-area {
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .progression-sprite-area {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -6109,8 +6115,8 @@ p {
   overflow: hidden !important;
 }
 
-.progression-card.player-character-card .trainer-sprite,
-.progression-card.player-character-card .stage-trainer-sprite {
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .trainer-sprite,
+.progression-card.player-character-card:not(.progression-card--sprite-full-body) .stage-trainer-sprite {
   display: block !important;
   width: auto !important;
   height: auto !important;
@@ -6148,12 +6154,12 @@ p {
     max-width: 290px !important;
   }
 
-  .progression-card.player-character-card .progression-sprite-area {
+  .progression-card.player-character-card:not(.progression-card--sprite-full-body) .progression-sprite-area {
     min-height: 300px;
   }
 
-  .progression-card.player-character-card .trainer-sprite,
-  .progression-card.player-character-card .stage-trainer-sprite {
+  .progression-card.player-character-card:not(.progression-card--sprite-full-body) .trainer-sprite,
+  .progression-card.player-character-card:not(.progression-card--sprite-full-body) .stage-trainer-sprite {
     max-width: 90% !important;
     max-height: 270px !important;
   }

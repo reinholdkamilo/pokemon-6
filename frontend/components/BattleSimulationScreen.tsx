@@ -14,7 +14,7 @@ type BattleSimulationScreenProps = {
   selectedPokemon: Pokemon[];
   opponent: OpponentMeta;
   breakdown?: OpponentBreakdown;
-  modeLabel: "Battle Mode" | "Adventure Mode";
+  modeLabel: "Arcade Mode" | "Marathon Mode";
   onComplete: () => void;
   onMainMenu: () => void;
 };

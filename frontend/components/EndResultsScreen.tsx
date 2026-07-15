@@ -20,7 +20,7 @@ type EndResultsScreenProps = {
   trainerProfile: TrainerProfile;
   result: TeamScoreResult;
   selectedPokemon: Pokemon[];
-  modeLabel: "Battle Mode" | "Adventure Mode";
+  modeLabel: "Arcade Mode" | "Marathon Mode";
   onMainMenu: () => void;
   onTryAgain: () => void;
 };

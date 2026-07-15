@@ -13,7 +13,7 @@ import type { TeamScoreResult } from "@/types/pokemon";
 type GymLeadersScreenProps = {
   result: TeamScoreResult;
   revealedCount: number;
-  modeLabel: "Battle Mode" | "Adventure Mode";
+  modeLabel: "Arcade Mode" | "Marathon Mode";
   onBattleLeader: (index: number) => void;
   onChallengeEliteFour: () => void;
   onMainMenu: () => void;

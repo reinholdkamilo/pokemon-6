@@ -330,7 +330,7 @@ export function CardSelectionScreen({
 
   return (
     <section className="selection-screen catch-selection" aria-label="Kanto catch selection">
-      <GameTopBar modeLabel="Adventure Mode" onMainMenu={onMainMenu} />
+      <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
       <div className="selection-header">
         <h1>Choose your Pokemon</h1>
         <p>Tap each card to reveal your Pokemon team</p>
