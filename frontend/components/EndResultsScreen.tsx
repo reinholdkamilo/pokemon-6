@@ -2,8 +2,10 @@
 
 import type { ReactNode } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
+import { LocalSprite } from "@/components/LocalSprite";
 import { ProgressionCard } from "@/components/ProgressionCard";
-import { BADGE_IMAGE_PATHS } from "@/lib/imagePaths";
+import { BADGE_IMAGE_PATHS, getPlayerTrainerSprite } from "@/lib/imagePaths";
+import { getPlayerCharacterFallback } from "@/lib/playerCharacters";
 import {
   CHAMPION,
   didBeatOpponent,
@@ -40,7 +42,6 @@ export function EndResultsScreen({
   const eliteFourBreakdowns = result.opponent_breakdown?.elite_four ?? [];
   const playerName = trainerProfile.name || "Trainer";
   const earnedBadgeNames = getEarnedBadgeNames(result);
-  const badgesEarned = earnedBadgeNames.length;
   const teamPower = getFinalTeamPower(result);
   const resultRank = getResultRank(result);
   const scoreBreakdownRows = getScoreBreakdownRows(result);
@@ -63,9 +64,8 @@ export function EndResultsScreen({
           <h2>Trainer Card</h2>
           <ResultsTrainerCard
             badges={earnedBadgeNames}
-            badgeCount={badgesEarned}
-            power={teamPower}
             rank={resultRank}
+            trainerProfile={trainerProfile}
           />
         </section>
 
@@ -143,44 +143,57 @@ export function EndResultsScreen({
 
 type ResultsTrainerCardProps = {
   badges: string[];
-  badgeCount: number;
-  power: number;
   rank: string;
+  trainerProfile: TrainerProfile;
 };
 
 function ResultsTrainerCard({
   badges,
-  badgeCount,
-  power,
   rank,
+  trainerProfile,
 }: ResultsTrainerCardProps) {
+  const playerName = trainerProfile.name || "Trainer";
+
   return (
     <article className="results-trainer-card">
       <div className="results-trainer-card__top">
         <span className="results-trainer-card__logo">POKEMON 6</span>
-</div>
+      </div>
+
+      <div className="results-trainer-card__artwork" aria-label={`${playerName} trainer artwork`}>
+        <LocalSprite
+          alt={`${playerName} trainer sprite`}
+          className="results-trainer-card__sprite"
+          fallback={getPlayerCharacterFallback(trainerProfile.sprite)}
+          src={getPlayerTrainerSprite(trainerProfile.sprite)}
+        />
+      </div>
 
       <div className="results-trainer-card__stats">
         <div>
           <span>Level</span>
           <strong>{rank}</strong>
         </div>
-</div>
+      </div>
 
       <section className="results-trainer-card__badges" aria-label="Earned badges">
-        <strong className="results-trainer-card__badge-count">Badges: {badgeCount}/8</strong>
+        <strong className="results-trainer-card__badge-count">Badges</strong>
         {badges.length > 0 ? (
-          badges.map((badge) => (
-            <img
-              alt={badge}
-              className="results-trainer-card__badge"
-              key={badge}
-              src={BADGE_IMAGE_PATHS[badge]}
-            />
-          ))
-        ) : (
-          <strong className="results-trainer-card__no-badges">NO BADGES</strong>
-        )}
+          <div className="results-trainer-card__badge-grid">
+            {badges.map((badge) => (
+              <LocalSprite
+                alt={`${badge} badge earned`}
+                className="results-trainer-card__badge"
+                fallback={badge.slice(0, 2).toUpperCase()}
+                key={badge}
+                src={BADGE_IMAGE_PATHS[badge]}
+              />
+            ))}
+          </div>
+        ) : null}
+        {badges.length === 0 ? (
+          <span className="results-trainer-card__empty-badge-space" aria-hidden="true" />
+        ) : null}
       </section>
     </article>
   );

@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
-import { LocalSprite } from "@/components/LocalSprite";
-import { getPlayerTrainerSprite } from "@/lib/imagePaths";
+import { PlayerCharacterSelector } from "@/components/PlayerCharacterSelector";
+import {
+  DEFAULT_PLAYER_CHARACTER_ID,
+  getPlayerCharacter,
+  type PlayerCharacterId,
+} from "@/lib/playerCharacters";
 import type { TrainerProfile } from "@/types/pokemon";
 
 type BattlePlayerCardScreenProps = {
@@ -11,18 +15,15 @@ type BattlePlayerCardScreenProps = {
   onPlayerReady: (trainerProfile: TrainerProfile) => void;
 };
 
-const SPRITES: Array<Pick<TrainerProfile, "sprite"> & { label: string }> = [
-  { sprite: "player-male", label: "Male trainer" },
-  { sprite: "player-female", label: "Female trainer" },
-];
-
 export function BattlePlayerCardScreen({
   onMainMenu,
   onPlayerReady,
 }: BattlePlayerCardScreenProps) {
   const [name, setName] = useState("");
-  const [spriteIndex, setSpriteIndex] = useState(0);
-  const selectedSprite = SPRITES[spriteIndex];
+  const [selectedCharacterId, setSelectedCharacterId] = useState<PlayerCharacterId>(
+    DEFAULT_PLAYER_CHARACTER_ID,
+  );
+  const selectedCharacter = getPlayerCharacter(selectedCharacterId);
   const trimmedName = name.trim();
 
   function continueToSelection() {
@@ -35,19 +36,9 @@ export function BattlePlayerCardScreen({
       dob: "",
       email: "",
       hometown: "Pallet Town",
-      sprite: selectedSprite.sprite,
+      sprite: selectedCharacter.id,
       created_at: new Date().toISOString(),
     });
-  }
-
-  function showPreviousSprite() {
-    setSpriteIndex((currentIndex) =>
-      currentIndex === 0 ? SPRITES.length - 1 : currentIndex - 1,
-    );
-  }
-
-  function showNextSprite() {
-    setSpriteIndex((currentIndex) => (currentIndex + 1) % SPRITES.length);
   }
 
   return (
@@ -63,31 +54,12 @@ export function BattlePlayerCardScreen({
             <span className="trainer-card-id">BATTLE</span>
           </div>
 
-          <div className="trainer-sprite-picker">
-            <button
-              className="sprite-nav-button"
-              type="button"
-              aria-label="Previous trainer sprite"
-              onClick={showPreviousSprite}
-            >
-              {"<"}
-            </button>
-            <LocalSprite
-              alt={selectedSprite.label}
-              className="player-trainer-sprite"
-              fallback={selectedSprite.sprite === "player-male" ? "M" : "F"}
-              src={getPlayerTrainerSprite(selectedSprite.sprite)}
-            />
-            <button
-              className="sprite-nav-button"
-              type="button"
-              aria-label="Next trainer sprite"
-              onClick={showNextSprite}
-            >
-              {">"}
-            </button>
-            <strong>{selectedSprite.label}</strong>
-          </div>
+          <PlayerCharacterSelector
+            ariaLabel="Battle Mode player character"
+            className="battle-player-character-selector"
+            selectedCharacterId={selectedCharacterId}
+            onChange={setSelectedCharacterId}
+          />
 
           <div className="trainer-form-grid">
             <label>

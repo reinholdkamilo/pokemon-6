@@ -10,10 +10,12 @@ import { EliteFourScreen } from "@/components/EliteFourScreen";
 import { EndResultsScreen } from "@/components/EndResultsScreen";
 import { EvolutionModal } from "@/components/EvolutionModal";
 import { GymLeadersScreen } from "@/components/GymLeadersScreen";
+import { BattlePlayerCardScreen } from "@/components/BattlePlayerCardScreen";
 import { TrainerCardScreen } from "@/components/TrainerCardScreen";
 import { TitleScreen } from "@/components/TitleScreen";
 import { getPokemon, scoreTeam } from "@/lib/api";
 import { EVOLUTION_TRIGGER_WINS, getNextEvolutionName } from "@/lib/evolutions";
+import { DEFAULT_PLAYER_CHARACTER_ID } from "@/lib/playerCharacters";
 import {
   CHAMPION,
   ELITE_FOUR,
@@ -28,6 +30,7 @@ const TEAM_SIZE = 6;
 type GameMode = "battle" | "adventure";
 type GameScreen =
   | "title"
+  | "battle-player-card"
   | "trainer-card"
   | "select-team"
   | "gym-leaders"
@@ -201,8 +204,8 @@ export default function Home() {
   function startBattleMode() {
     setGameMode("battle");
     clearRunState();
-    setTrainerProfile(createBattleTrainerProfile());
-    setScreen("select-team");
+    setTrainerProfile(null);
+    setScreen("battle-player-card");
   }
 
   function startAdventureMode() {
@@ -533,6 +536,19 @@ export default function Home() {
     );
   }
 
+  if (screen === "battle-player-card") {
+    return (
+      <BattlePlayerCardScreen
+        onMainMenu={returnToMainMenu}
+        onPlayerReady={(savedTrainerProfile) => {
+          setTrainerProfile(savedTrainerProfile);
+          setGameMode("battle");
+          setScreen("select-team");
+        }}
+      />
+    );
+  }
+
   if (screen === "gym-leaders" && result) {
     return withEvolutionModal(
       <GymLeadersScreen
@@ -672,7 +688,7 @@ function createBattleTrainerProfile(): TrainerProfile {
     dob: "",
     email: "",
     hometown: "Pallet Town",
-    sprite: "player-male",
+    sprite: DEFAULT_PLAYER_CHARACTER_ID,
     created_at: "",
   };
 }

@@ -20,8 +20,8 @@ export type PlayerTrainerGender =
   | "gj";
 
 const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female" | "chaz" | "laga" | "kevin" | "gj", string> = {
-  male: "/images/trainers/player/male.png",
-  female: "/images/trainers/player/female.png",
+  male: "/images/trainers/player/Chaz.PNG",
+  female: "/images/trainers/player/Laga.PNG",
   chaz: "/images/trainers/player/Chaz.PNG",
   laga: "/images/trainers/player/Laga.PNG",
   kevin: "/images/trainers/player/Kevin.PNG",
@@ -141,12 +141,12 @@ function toPlayerTrainerKey(
   trainer: PlayerTrainerGender | null | undefined,
 ): "male" | "female" | "chaz" | "laga" | "kevin" | "gj" {
   if (trainer === "female" || trainer === "player-female") {
-    return "female";
+    return "laga";
   }
   if (trainer === "chaz" || trainer === "laga" || trainer === "kevin" || trainer === "gj") {
     return trainer;
   }
-  return "male";
+  return "chaz";
 }
 
 function slugifyPokemonName(name: string) {

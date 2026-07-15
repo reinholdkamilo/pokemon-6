@@ -813,18 +813,6 @@ p {
   font-weight: 1000;
 }
 
-.trainer-sprite-picker {
-  display: grid;
-  grid-template-columns: 46px minmax(0, 1fr) 46px;
-  gap: 10px;
-  align-items: center;
-  justify-items: center;
-}
-
-.trainer-sprite-picker strong {
-  grid-column: 1 / -1;
-}
-
 .sprite-nav-button {
   width: 46px;
   height: 46px;
@@ -833,27 +821,6 @@ p {
   background: #ffffff;
   font-size: 1.3rem;
   font-weight: 1000;
-}
-
-.player-trainer-sprite {
-  display: grid;
-  width: min(210px, 58vw);
-  height: min(210px, 58vw);
-  max-width: 100%;
-  place-items: center;
-  border: 3px solid rgba(52, 42, 32, 0.52);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.58);
-  object-fit: contain;
-  object-position: center;
-  padding: 4px;
-  image-rendering: pixelated;
-}
-
-.player-trainer-sprite.compact {
-  justify-self: center;
-  width: 120px;
-  height: 120px;
 }
 
 .trainer-form-grid,
@@ -1483,10 +1450,36 @@ p {
   overflow-wrap: anywhere;
 }
 
+.results-trainer-card__artwork {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(170px, 32vw, 240px);
+  overflow: hidden;
+  border: 2px solid rgba(52, 42, 32, 0.22);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 64%, rgba(255, 255, 255, 0.88) 0 23%, transparent 24%),
+    rgba(255, 255, 255, 0.5);
+}
+
+.results-trainer-card__sprite {
+  display: block;
+  justify-self: center;
+  align-self: center;
+  width: clamp(540px, 58vw, 740px);
+  height: clamp(540px, 58vw, 740px);
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 0 rgba(52, 42, 32, 0.22));
+}
+
 .results-trainer-card__badges {
   align-self: end;
   display: grid;
-  grid-template-columns: repeat(4, minmax(32px, 1fr));
   gap: 8px;
   min-width: 0;
   border: 2px solid rgba(52, 42, 32, 0.22);
@@ -1501,6 +1494,13 @@ p {
   font-weight: 1000;
 }
 
+.results-trainer-card__badge-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(32px, 1fr));
+  gap: 8px;
+  min-height: 34px;
+}
+
 .results-trainer-card__badge {
   justify-self: center;
   width: 34px;
@@ -1510,11 +1510,9 @@ p {
   image-rendering: pixelated;
 }
 
-.results-trainer-card__no-badges {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-size: 0.82rem;
-  text-align: center;
+.results-trainer-card__empty-badge-space {
+  display: block;
+  min-height: 34px;
 }
 
 .champion-team-grid,
@@ -5887,10 +5885,6 @@ p {
   justify-items: stretch;
 }
 
-.player-character-grid {
-  width: 100%;
-}
-
 .progression-card.player-character-card.trainer-card-selectable {
   animation: none;
   outline: 0;
@@ -5901,25 +5895,95 @@ p {
   outline-offset: 4px;
 }
 
+.player-character-selector {
+  display: grid;
+  grid-template-columns: 46px minmax(150px, 190px) 46px;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.player-character-selector__viewport {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  width: 100%;
+  max-width: 190px;
+  min-width: 0;
+}
+
+.player-character-selector__viewport .progression-card {
+  width: 100% !important;
+  max-width: 190px !important;
+}
+
+.player-character-selector__control {
+  flex: 0 0 auto;
+}
+
+.player-character-selector__position {
+  display: inline-grid;
+  place-items: center;
+  min-width: 52px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-weight: 1000;
+  line-height: 1;
+}
+
+.battle-player-character-selector {
+  margin: 2px 0 4px;
+}
+
 .progression-card.player-character-card .progression-sprite-area {
-  overflow: visible !important;
+  place-items: center !important;
+  overflow: hidden !important;
 }
 
 .progression-card.player-character-card .trainer-sprite,
 .progression-card.player-character-card .stage-trainer-sprite {
-  max-width: 122px !important;
-  max-height: 122px !important;
-  transform: scale(3.05);
-  transform-origin: center center;
+  width: clamp(340px, 38vw, 390px) !important;
+  height: clamp(340px, 38vw, 390px) !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-position: center !important;
 }
 
 @media (max-width: 560px) {
+  .player-character-selector {
+    grid-template-columns: 42px minmax(150px, 190px) 42px;
+    gap: 8px;
+  }
+
+  .player-character-selector__control {
+    width: 42px;
+    height: 42px;
+  }
+
   .progression-card.player-character-card .trainer-sprite,
   .progression-card.player-character-card .stage-trainer-sprite {
-    max-width: 94px !important;
-    max-height: 96px !important;
-    transform: scale(2.9);
+    width: 350px !important;
+    height: 350px !important;
   }
+}
+
+.results-trainer-card__artwork {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.results-trainer-card__sprite {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
 }
 
 @keyframes selectableTrainerPulse {

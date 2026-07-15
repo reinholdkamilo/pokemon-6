@@ -2,6 +2,7 @@
 
 import { LocalSprite } from "@/components/LocalSprite";
 import { getPlayerTrainerSprite } from "@/lib/imagePaths";
+import { getPlayerCharacterFallback } from "@/lib/playerCharacters";
 import type { Pokemon, TrainerProfile } from "@/types/pokemon";
 
 type BattleTrainerCardProps = {
@@ -92,7 +93,7 @@ export function createPlayerBattleTrainerCardProps(
   const playerName = trainerProfile.name || "Trainer";
 
   return {
-    fallback: trainerProfile.sprite === "player-male" ? "M" : "F",
+    fallback: getPlayerCharacterFallback(trainerProfile.sprite),
     hometown: trainerProfile.hometown,
     name: playerName,
     role: "Challenger",

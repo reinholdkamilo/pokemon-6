@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { GameTopBar } from "@/components/GameTopBar";
-import { ProgressionCard } from "@/components/ProgressionCard";
-import { getPlayerTrainerSprite } from "@/lib/imagePaths";
-import type { OpponentMeta } from "@/lib/progression";
+import { PlayerCharacterSelector } from "@/components/PlayerCharacterSelector";
+import {
+  DEFAULT_PLAYER_CHARACTER_ID,
+  getPlayerCharacter,
+  type PlayerCharacterId,
+} from "@/lib/playerCharacters";
 import type { TrainerProfile } from "@/types/pokemon";
 
 type TrainerCardScreenProps = {
@@ -12,42 +15,11 @@ type TrainerCardScreenProps = {
   onTrainerSaved: (trainerProfile: TrainerProfile) => void;
 };
 
-type CharacterOption = Pick<TrainerProfile, "sprite"> & {
-  label: string;
-  fallback: string;
-  detailItems: string[];
-};
-
-const CHARACTERS: CharacterOption[] = [
-  {
-    sprite: "chaz",
-    label: "Chaz",
-    fallback: "C",
-    detailItems: ["Pallet Town", "Badges 0"],
-  },
-  {
-    sprite: "laga",
-    label: "Laga",
-    fallback: "L",
-    detailItems: ["Pallet Town", "Badges 0"],
-  },
-  {
-    sprite: "kevin",
-    label: "Kevin",
-    fallback: "K",
-    detailItems: ["Pallet Town", "Badges 0"],
-  },
-  {
-    sprite: "gj",
-    label: "GJ",
-    fallback: "GJ",
-    detailItems: ["Pallet Town", "Badges 0"],
-  },
-];
-
 export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScreenProps) {
-  const [characterIndex, setCharacterIndex] = useState(0);
-  const selectedCharacter = CHARACTERS[characterIndex];
+  const [selectedCharacterId, setSelectedCharacterId] = useState<PlayerCharacterId>(
+    DEFAULT_PLAYER_CHARACTER_ID,
+  );
+  const selectedCharacter = getPlayerCharacter(selectedCharacterId);
 
   function choosePokemon() {
     onTrainerSaved({
@@ -55,7 +27,7 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
       dob: "",
       email: "",
       hometown: "Pallet Town",
-      sprite: selectedCharacter.sprite,
+      sprite: selectedCharacter.id,
       created_at: new Date().toISOString(),
     });
   }
@@ -88,40 +60,13 @@ export function TrainerCardScreen({ onMainMenu, onTrainerSaved }: TrainerCardScr
           </button>
         </div>
 
-        <div
-          className="stage-card-grid gym-stage-grid player-character-grid"
-          role="radiogroup"
-          aria-label="Adventure character"
-        >
-          {CHARACTERS.map((character, index) => (
-            <ProgressionCard
-              className="player-character-card"
-              detailItems={character.detailItems}
-              interactionRole="radio"
-              isSelectable
-              isSelected={index === characterIndex}
-              key={character.sprite}
-              meta={toCharacterMeta(character, index)}
-              onSelect={() => setCharacterIndex(index)}
-              selectActionLabel="Select"
-              spriteSrc={getPlayerTrainerSprite(character.sprite)}
-              status="pending"
-            />
-          ))}
-        </div>
+        <PlayerCharacterSelector
+          ariaLabel="Adventure character"
+          className="adventure-player-character-selector"
+          selectedCharacterId={selectedCharacterId}
+          onChange={setSelectedCharacterId}
+        />
       </section>
     </main>
   );
-}
-
-function toCharacterMeta(character: CharacterOption, index: number): OpponentMeta {
-  return {
-    name: character.label,
-    stage: `Character ${index + 1}`,
-    number: index + 1,
-    specialty: "Adventure",
-    pokemonCount: 0,
-    pokemonTeam: character.detailItems,
-    fallback: character.fallback,
-  };
 }

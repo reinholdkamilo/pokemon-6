@@ -5,6 +5,7 @@ import { GameTopBar } from "@/components/GameTopBar";
 import { LocalSprite } from "@/components/LocalSprite";
 import { getPokemon } from "@/lib/api";
 import { getPlayerTrainerSprite, getTrainerSprite } from "@/lib/imagePaths";
+import { getPlayerCharacterFallback } from "@/lib/playerCharacters";
 import { formatBattleOutcome, type BattleStatus, type OpponentMeta } from "@/lib/progression";
 import type { OpponentBreakdown, Pokemon, TrainerProfile } from "@/types/pokemon";
 
@@ -203,7 +204,7 @@ function TrainerIntroScene({
       <LocalSprite
         alt={`${playerName} sprite`}
         className="battle-intro-trainer battle-intro-player"
-        fallback="P"
+        fallback={getPlayerCharacterFallback(trainerProfile.sprite)}
         src={getPlayerTrainerSprite(trainerProfile.sprite)}
       />
 
