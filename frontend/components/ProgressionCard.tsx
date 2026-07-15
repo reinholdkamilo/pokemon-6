@@ -35,6 +35,9 @@ type ProgressionCardProps = {
   explicitResultStamp?: ExplicitResultStamp;
   suppressAutomaticStamp?: boolean;
   spritePresentation?: SpritePresentation;
+  roleLabel?: string;
+  summaryLabel?: string;
+  locationLabel?: string;
   onSelect?: () => void;
 };
 
@@ -54,6 +57,9 @@ export function ProgressionCard({
   explicitResultStamp,
   suppressAutomaticStamp = false,
   spritePresentation = "standard",
+  roleLabel,
+  summaryLabel,
+  locationLabel,
   onSelect,
 }: ProgressionCardProps) {
   const automaticOutcome = suppressAutomaticStamp
@@ -123,7 +129,7 @@ export function ProgressionCard({
       tabIndex={isSelectable && !isLocked ? 0 : undefined}
     >
       <div className="progression-card-top">
-        <strong className="trainer-card-name-label">{displayName}</strong>
+        <span className="progression-card-role">{roleLabel ?? displayName}</span>
 
         {showBadge && meta.badge ? (
           <LocalSprite
@@ -134,6 +140,8 @@ export function ProgressionCard({
           />
         ) : null}
       </div>
+
+      <strong className="trainer-card-name-label progression-card-name">{displayName}</strong>
 
       {resultStamp ? (
         <strong className={`result-stamp result-stamp--${resultStamp.tone}`}>
@@ -150,14 +158,22 @@ export function ProgressionCard({
         />
       </div>
 
-      <ul className="trainer-team-list" aria-label={`${meta.name} Pokemon team`}>
-        {cardDetails.map((detail, index) => (
-          <li key={`${detail}-${index}`}>
-            <span className="trainer-team-pokeball" aria-hidden="true" />
-            <span>{detail}</span>
-          </li>
-        ))}
-      </ul>
+      {summaryLabel ? (
+        <strong className="progression-card-summary">{summaryLabel}</strong>
+      ) : (
+        <ul className="trainer-team-list" aria-label={`${meta.name} Pokemon team`}>
+          {cardDetails.map((detail, index) => (
+            <li key={`${detail}-${index}`}>
+              <span className="trainer-team-pokeball" aria-hidden="true" />
+              <span>{detail}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {locationLabel ? (
+        <span className="progression-card-location">{locationLabel}</span>
+      ) : null}
     </article>
   );
 }
