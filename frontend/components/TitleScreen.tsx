@@ -40,6 +40,13 @@ export function TitleScreen({
           >
             Adventure Mode
           </button>
+          <button
+            className="catch-button arcade-mode-button"
+            type="button"
+            onClick={() => window.location.assign("/arcade")}
+          >
+            Arcade Mode
+          </button>
         </div>
       </section>
     </main>
