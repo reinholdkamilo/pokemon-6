@@ -33,6 +33,57 @@ type Phase = "character" | "pokemon" | "matchup" | "animating" | "result" | "res
 type PendingEvolution = { fromPokemon: Pokemon; toPokemon: Pokemon; teamIndex: number };
 const TEAM_SIZE = 6;
 
+const MARATHON_STAGES = [
+  {
+    number: 1,
+    city: "Pewter City",
+    gymLeader: "Brock",
+    badge: "Boulder Badge",
+  },
+  {
+    number: 2,
+    city: "Cerulean City",
+    gymLeader: "Misty",
+    badge: "Cascade Badge",
+  },
+  {
+    number: 3,
+    city: "Vermilion City",
+    gymLeader: "Lt. Surge",
+    badge: "Thunder Badge",
+  },
+  {
+    number: 4,
+    city: "Celadon City",
+    gymLeader: "Erika",
+    badge: "Rainbow Badge",
+  },
+  {
+    number: 5,
+    city: "Fuchsia City",
+    gymLeader: "Koga",
+    badge: "Soul Badge",
+  },
+  {
+    number: 6,
+    city: "Saffron City",
+    gymLeader: "Sabrina",
+    badge: "Marsh Badge",
+  },
+  {
+    number: 7,
+    city: "Cinnabar Island",
+    gymLeader: "Blaine",
+    badge: "Volcano Badge",
+  },
+  {
+    number: 8,
+    city: "Viridian City",
+    gymLeader: "Giovanni",
+    badge: "Earth Badge",
+  },
+] as const;
+
 function createEmptyCards(): (Pokemon | null)[] {
   return Array.from({ length: TEAM_SIZE }, () => null);
 }
@@ -67,6 +118,31 @@ export default function MarathonPage() {
     phase === "matchup"
       ? totalBattles + 1
       : Math.max(totalBattles, 1);
+
+  const isPokemonLeague = gymIndex >= MARATHON_STAGES.length;
+  const currentStage = isPokemonLeague
+    ? null
+    : MARATHON_STAGES[Math.min(gymIndex, MARATHON_STAGES.length - 1)];
+
+  const isGymLeaderBattle = currentOpponent?.type === "gym-leader";
+  const isEliteFourBattle = currentOpponent?.type === "elite-four";
+  const isChampionBattle = currentOpponent?.type === "champion";
+
+  const trainerProgress = Math.min(
+    REGULAR_WINS_PER_GYM,
+    regularWins + (
+      phase === "result" &&
+      currentOutcome === "Beat" &&
+      currentOpponent?.type === "regular"
+        ? 1
+        : 0
+    ),
+  );
+
+  const leaguePosition = isChampionBattle
+    ? ELITE_FOUR.length + 1
+    : Math.min(eliteIndex + 1, ELITE_FOUR.length);
+
   const playerPower = Math.round(scoreResult?.total_score ?? scoreResult?.team_score ?? scoreResult?.score ?? averagePower(team));
   const trainerProfile: TrainerProfile = {
     name: character.label,
@@ -329,13 +405,208 @@ export default function MarathonPage() {
       <main className="game-shell stage-shell marathon-shell">
         <section className="stage-screen marathon-stage-screen marathon-battle-screen">
           <GameTopBar modeLabel="Marathon Mode" onMainMenu={() => router.push("/")} />
-          <div className="stage-hero marathon-round-hero"><h1>Round {displayedRound}</h1></div>
+          <div className="stage-hero marathon-round-hero">
+            <p className="eyebrow">
+              {isPokemonLeague
+                ? "Pokémon League"
+                : `Stage ${currentStage?.number} of ${MARATHON_STAGES.length}`}
+            </p>
+            <h1>Round {displayedRound}</h1>
+          </div>
+
+          <section
+            className={`marathon-stage-hud ${
+              isGymLeaderBattle ? "marathon-stage-hud--gym" : ""
+            } ${
+              isPokemonLeague ? "marathon-stage-hud--league" : ""
+            }`}
+            aria-label="Marathon stage progress"
+          >
+            {currentStage ? (
+              <>
+                <div className="marathon-stage-hud__heading">
+                  <div>
+                    <span>Stage {currentStage.number}</span>
+                    <strong>{currentStage.city}</strong>
+                  </div>
+
+                  <div className="marathon-stage-hud__target">
+                    <span>Gym Leader</span>
+                    <strong>{currentStage.gymLeader}</strong>
+                  </div>
+                </div>
+
+                <div className="marathon-stage-hud__progress">
+                  <div className="marathon-stage-hud__progress-copy">
+                    <span>
+                      {isGymLeaderBattle
+                        ? "Gym Leader Battle"
+                        : `Trainer ${Math.min(
+                            trainerProgress + 1,
+                            REGULAR_WINS_PER_GYM,
+                          )} of ${REGULAR_WINS_PER_GYM}`}
+                    </span>
+                    <strong>
+                      {trainerProgress}/{REGULAR_WINS_PER_GYM} trainers defeated
+                    </strong>
+                  </div>
+
+                  <div
+                    className="marathon-stage-hud__dots"
+                    aria-label={`${trainerProgress} of ${REGULAR_WINS_PER_GYM} trainers defeated`}
+                  >
+                    {Array.from(
+                      { length: REGULAR_WINS_PER_GYM },
+                      (_, index) => (
+                        <span
+                          className={
+                            index < trainerProgress
+                              ? "marathon-stage-hud__dot marathon-stage-hud__dot--complete"
+                              : "marathon-stage-hud__dot"
+                          }
+                          key={index}
+                        />
+                      ),
+                    )}
+                    <span
+                      className={`marathon-stage-hud__gym-marker ${
+                        isGymLeaderBattle
+                          ? "marathon-stage-hud__gym-marker--active"
+                          : ""
+                      }`}
+                    >
+                      GYM
+                    </span>
+                  </div>
+                </div>
+
+                <div className="marathon-stage-hud__badges">
+                  <span>Badges</span>
+                  <div className="marathon-stage-hud__badge-row">
+                    {MARATHON_STAGES.map((stage, index) => {
+                      const badgeEarned = index < earnedBadges.length;
+
+                      return (
+                        <span
+                          className={`marathon-stage-hud__badge ${
+                            badgeEarned
+                              ? "marathon-stage-hud__badge--earned"
+                              : ""
+                          }`}
+                          key={stage.badge}
+                          title={stage.badge}
+                        >
+                          {index + 1}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="marathon-stage-hud__heading">
+                  <div>
+                    <span>Final Stage</span>
+                    <strong>Pokémon League</strong>
+                  </div>
+
+                  <div className="marathon-stage-hud__target">
+                    <span>
+                      {isChampionBattle ? "Champion" : "Elite Four"}
+                    </span>
+                    <strong>{currentOpponent?.name}</strong>
+                  </div>
+                </div>
+
+                <div className="marathon-stage-hud__league-progress">
+                  {ELITE_FOUR.map((member, index) => (
+                    <span
+                      className={`marathon-stage-hud__league-step ${
+                        index < eliteIndex
+                          ? "marathon-stage-hud__league-step--complete"
+                          : index === eliteIndex && isEliteFourBattle
+                            ? "marathon-stage-hud__league-step--active"
+                            : ""
+                      }`}
+                      key={member.name}
+                    >
+                      {index + 1}
+                    </span>
+                  ))}
+
+                  <span
+                    className={`marathon-stage-hud__league-step marathon-stage-hud__league-step--champion ${
+                      isChampionBattle
+                        ? "marathon-stage-hud__league-step--active"
+                        : ""
+                    }`}
+                  >
+                    C
+                  </span>
+                </div>
+
+                <p className="marathon-stage-hud__league-copy">
+                  {isChampionBattle
+                    ? "Champion Battle"
+                    : `Elite Four battle ${leaguePosition} of ${ELITE_FOUR.length}`}
+                </p>
+              </>
+            )}
+          </section>
+
+          {phase === "result" &&
+          currentOutcome === "Beat" &&
+          currentOpponent.type === "gym-leader" ? (
+            <section className="marathon-stage-complete" role="status">
+              <span>Stage {currentStage?.number} Complete</span>
+              <strong>{currentOpponent.name} defeated</strong>
+              <p>{currentOpponent.badge} earned</p>
+            </section>
+          ) : null}
+
           <div className="marathon-matchup-grid">
             <ProgressionCard className="player-character-card marathon-player-battle-card" detailItems={team.map((pokemon) => pokemon.name)} explicitResultStamp={null} meta={{ ...toPlayerCharacterMeta(character, 0), pokemonCount: 6, pokemonTeam: team.map((pokemon) => pokemon.name) }} spritePresentation="full-body" spriteSrc={getPlayerTrainerSprite(character.id)} status={playerStatus} suppressAutomaticStamp />
             <strong className="marathon-versus">VS</strong>
             <ProgressionCard breakdown={breakdown} className="marathon-opponent-battle-card" detailItems={phase === "matchup" ? [`${currentOpponent.pokemonCount} hidden Pokemon`] : currentOpponentTeam.map((pokemon) => pokemon.name)} explicitResultStamp={opponentResultStamp} meta={currentOpponent} spritePresentation="pixel-trainer" spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)} status={opponentStatus} showBadge={currentOpponent.type === "gym-leader"} suppressAutomaticStamp={Boolean(opponentResultStamp)} />
           </div>
-          {phase === "matchup" ? <button className="primary-action stage-action" type="button" onClick={battle}>BATTLE</button> : currentOutcome === "Beat" ? <button className="primary-action stage-action" type="button" onClick={nextBattle}>NEXT BATTLE</button> : <button className="primary-action stage-action" type="button" onClick={() => setPhase("results")}>RESULTS</button>}
+          {phase === "matchup" ? (
+            <button
+              className="primary-action stage-action"
+              type="button"
+              onClick={battle}
+            >
+              {isGymLeaderBattle
+                ? `BATTLE ${currentOpponent.name.toUpperCase()}`
+                : isChampionBattle
+                  ? "CHAMPION BATTLE"
+                  : isEliteFourBattle
+                    ? "ELITE FOUR BATTLE"
+                    : "BATTLE"}
+            </button>
+          ) : currentOutcome === "Beat" ? (
+            <button
+              className="primary-action stage-action"
+              type="button"
+              onClick={nextBattle}
+            >
+              {currentOpponent.type === "gym-leader"
+                ? gymIndex === MARATHON_STAGES.length - 1
+                  ? "ENTER POKÉMON LEAGUE"
+                  : "NEXT STAGE"
+                : currentOpponent.type === "champion"
+                  ? "COMPLETE MARATHON"
+                  : "NEXT BATTLE"}
+            </button>
+          ) : (
+            <button
+              className="primary-action stage-action"
+              type="button"
+              onClick={() => setPhase("results")}
+            >
+              RESULTS
+            </button>
+          )}
         </section>
         {pendingEvolution ? <EvolutionModal fromPokemon={pendingEvolution.fromPokemon} toPokemon={pendingEvolution.toPokemon} onComplete={completeEvolution} /> : null}
       </main>
