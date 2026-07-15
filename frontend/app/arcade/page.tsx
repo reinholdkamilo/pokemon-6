@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArcadeBattleSimulation } from "@/components/ArcadeBattleSimulation";
+import { BattleSelectionScreen } from "@/components/BattleSelectionScreen";
 import { EvolutionModal } from "@/components/EvolutionModal";
 import { GameTopBar } from "@/components/GameTopBar";
 import { LocalSprite } from "@/components/LocalSprite";
@@ -31,11 +32,16 @@ type Phase = "character" | "pokemon" | "matchup" | "animating" | "result" | "res
 type PendingEvolution = { fromPokemon: Pokemon; toPokemon: Pokemon; teamIndex: number };
 const TEAM_SIZE = 6;
 
+function createEmptyCards(): (Pokemon | null)[] {
+  return Array.from({ length: TEAM_SIZE }, () => null);
+}
+
 export default function ArcadePage() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("character");
   const [characterId, setCharacterId] = useState<PlayerCharacterId>("chaz");
   const [catalogue, setCatalogue] = useState<Pokemon[]>([]);
+  const [revealedCards, setRevealedCards] = useState<(Pokemon | null)[]>(createEmptyCards);
   const [team, setTeam] = useState<Pokemon[]>([]);
   const [scoreResult, setScoreResult] = useState<TeamScoreResult | null>(null);
   const [endpointId, setEndpointId] = useState("");
@@ -57,17 +63,40 @@ export default function ArcadePage() {
 
   const character = getPlayerCharacter(characterId);
   const playerPower = Math.round(scoreResult?.total_score ?? scoreResult?.team_score ?? scoreResult?.score ?? averagePower(team));
-  const trainerProfile: TrainerProfile = { name: character.label, dob: "", email: "", hometown: "Pallet Town", sprite: character.id, created_at: "" };
+  const trainerProfile: TrainerProfile = {
+    name: character.label,
+    dob: "",
+    email: "",
+    hometown: "Pallet Town",
+    sprite: character.id,
+    created_at: "",
+  };
 
   useEffect(() => {
-    getPokemon().then(setCatalogue).catch((caught) => setError(caught instanceof Error ? caught.message : "Unable to load Pokemon."));
+    getPokemon()
+      .then(setCatalogue)
+      .catch((caught) => setError(caught instanceof Error ? caught.message : "Unable to load Pokemon."));
   }, []);
 
-  function spinPokemon() {
-    if (team.length >= TEAM_SIZE || catalogue.length === 0) return;
-    const available = catalogue.filter((pokemon) => !team.some((selected) => selected.id === pokemon.id));
-    const selected = available[Math.floor(Math.random() * available.length)];
-    if (selected) setTeam((current) => [...current, selected]);
+  function revealCard(slotIndex: number, pokemon: Pokemon) {
+    setError("");
+    setRevealedCards((current) => {
+      const duplicate = current.some((selected, index) => index !== slotIndex && selected?.id === pokemon.id);
+      if (duplicate) {
+        setError(`${pokemon.name} is already on your team.`);
+        return current;
+      }
+      const next = [...current];
+      next[slotIndex] = pokemon;
+      setTeam(next.filter((entry): entry is Pokemon => Boolean(entry)));
+      return next;
+    });
+  }
+
+  function resetPokemonSelection() {
+    setRevealedCards(createEmptyCards());
+    setTeam([]);
+    setError("");
   }
 
   async function confirmTeam() {
@@ -95,7 +124,13 @@ export default function ArcadePage() {
     }
   }
 
-  function prepareNextOpponent(result = scoreResult, nextGymIndex = gymIndex, nextRegularWins = regularWins, suppliedQueue = regularQueue, nextEliteIndex = eliteIndex) {
+  function prepareNextOpponent(
+    result = scoreResult,
+    nextGymIndex = gymIndex,
+    nextRegularWins = regularWins,
+    suppliedQueue = regularQueue,
+    nextEliteIndex = eliteIndex,
+  ) {
     if (!result) return;
     let opponent: ArcadeTrainer;
     let opponentTeam: Pokemon[];
@@ -143,9 +178,14 @@ export default function ArcadePage() {
     const nextWinCount = totalWins + (outcome === "Beat" ? 1 : 0);
     setTotalBattles(nextBattleCount);
     setTotalWins(nextWinCount);
-    setEncounters((current) => [...current, { id: `${currentOpponent.id}:${nextBattleCount}`, opponent: currentOpponent, opponentTeam: currentOpponentTeam, outcome }]);
+    setEncounters((current) => [
+      ...current,
+      { id: `${currentOpponent.id}:${nextBattleCount}`, opponent: currentOpponent, opponentTeam: currentOpponentTeam, outcome },
+    ]);
     if (outcome === "Beat") {
-      if (currentOpponent.type === "gym-leader" && currentOpponent.badge) setEarnedBadges((current) => [...current, currentOpponent.badge!]);
+      if (currentOpponent.type === "gym-leader" && currentOpponent.badge) {
+        setEarnedBadges((current) => [...current, currentOpponent.badge!]);
+      }
       queueEvolution(nextWinCount);
     }
     setPhase("result");
@@ -155,7 +195,9 @@ export default function ArcadePage() {
     if (nextWinCount % EVOLUTION_WIN_INTERVAL !== 0) return;
     const eligible = team.flatMap((fromPokemon, teamIndex) => {
       const nextName = getNextEvolutionName(fromPokemon.name);
-      const toPokemon = nextName ? catalogue.find((pokemon) => pokemon.name.toLowerCase() === nextName.toLowerCase()) : undefined;
+      const toPokemon = nextName
+        ? catalogue.find((pokemon) => pokemon.name.toLowerCase() === nextName.toLowerCase())
+        : undefined;
       return toPokemon ? [{ fromPokemon, toPokemon, teamIndex }] : [];
     });
     if (eligible.length > 0) setPendingEvolution(eligible[0]);
@@ -163,7 +205,8 @@ export default function ArcadePage() {
 
   function completeEvolution() {
     if (!pendingEvolution) return;
-    setTeam((current) => current.map((pokemon, index) => index === pendingEvolution.teamIndex ? pendingEvolution.toPokemon : pokemon));
+    setTeam((current) => current.map((pokemon, index) => (index === pendingEvolution.teamIndex ? pendingEvolution.toPokemon : pokemon)));
+    setRevealedCards((current) => current.map((pokemon, index) => (index === pendingEvolution.teamIndex ? pendingEvolution.toPokemon : pokemon)));
     setPendingEvolution(null);
   }
 
@@ -172,6 +215,7 @@ export default function ArcadePage() {
     let nextGymIndex = gymIndex;
     let nextRegularWins = regularWins;
     let nextEliteIndex = eliteIndex;
+
     if (currentOpponent.type === "regular") {
       nextRegularWins += 1;
       setRegularWins(nextRegularWins);
@@ -187,11 +231,12 @@ export default function ArcadePage() {
       setPhase("complete");
       return;
     }
+
     prepareNextOpponent(scoreResult, nextGymIndex, nextRegularWins, regularQueue, nextEliteIndex);
   }
 
   function tryAgain() {
-    setTeam([]);
+    resetPokemonSelection();
     setScoreResult(null);
     setEndpointId("");
     setRegularQueue([]);
@@ -210,17 +255,63 @@ export default function ArcadePage() {
     setPhase("pokemon");
   }
 
-  if (phase === "character") return <main className="game-shell stage-shell"><section className="stage-screen"><GameTopBar modeLabel="Arcade Mode" onMainMenu={() => router.push("/")} /><div className="stage-hero"><p className="eyebrow">Arcade Mode</p><h1>Choose Your Character</h1></div><div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(180px, 1fr))", gap: 16, width: "100%", overflowX: "auto", padding: 8 }}>{PLAYER_CHARACTERS.map((option, index) => <ProgressionCard key={option.id} className="player-character-card" detailItems={["Arcade Player"]} interactionRole="radio" isSelectable isSelected={characterId === option.id} meta={toPlayerCharacterMeta(option, index)} onSelect={() => setCharacterId(option.id)} selectActionLabel="Select" spriteSrc={getPlayerTrainerSprite(option.id)} status="pending" />)}</div><button className="primary-action stage-action" type="button" onClick={() => setPhase("pokemon")}>CONTINUE</button></section></main>;
+  if (phase === "character") {
+    return (
+      <main className="game-shell stage-shell">
+        <section className="stage-screen">
+          <GameTopBar modeLabel="Arcade Mode" onMainMenu={() => router.push("/")} />
+          <div className="stage-hero"><p className="eyebrow">Arcade Mode</p><h1>Choose Your Character</h1></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(180px, 1fr))", gap: 16, width: "100%", overflowX: "auto", padding: 8 }}>
+            {PLAYER_CHARACTERS.map((option, index) => (
+              <ProgressionCard key={option.id} className="player-character-card" detailItems={["Arcade Player"]} interactionRole="radio" isSelectable isSelected={characterId === option.id} meta={toPlayerCharacterMeta(option, index)} onSelect={() => setCharacterId(option.id)} selectActionLabel="Select" spriteSrc={getPlayerTrainerSprite(option.id)} status="pending" />
+            ))}
+          </div>
+          <button className="primary-action stage-action" type="button" onClick={() => setPhase("pokemon")}>CONTINUE</button>
+        </section>
+      </main>
+    );
+  }
 
-  if (phase === "pokemon") return <main className="game-shell stage-shell"><section className="stage-screen"><GameTopBar modeLabel="Arcade Mode" onMainMenu={() => router.push("/")} /><div className="stage-hero"><p className="eyebrow">Pokemon Select</p><h1>Build Your Team of Six</h1></div><div className="results-team-grid">{Array.from({ length: TEAM_SIZE }, (_, index) => { const pokemon = team[index]; return <article className="results-pokemon-summary-card" key={index}>{pokemon ? <><div className="results-pokemon-summary-card__sprite-wrap"><img alt={pokemon.name} className="results-pokemon-summary-card__sprite" src={pokemon.image} /></div><strong>{pokemon.name}</strong><span>BST {pokemon.base_stat_total}</span></> : <strong>?</strong>}</article>; })}</div>{error ? <p role="alert">{error}</p> : null}<div className="trainer-card-actions"><button className="secondary-action" type="button" disabled={team.length >= TEAM_SIZE} onClick={spinPokemon}>SPIN POKEMON</button><button className="secondary-action" type="button" disabled={team.length === 0} onClick={() => setTeam([])}>RESET TEAM</button><button className="primary-action" type="button" disabled={team.length !== TEAM_SIZE || isLoading} onClick={confirmTeam}>{isLoading ? "SCORING..." : "I CHOOSE YOU!"}</button></div></section></main>;
+  if (phase === "pokemon") {
+    return (
+      <main className="game-shell">
+        <BattleSelectionScreen
+          revealedCards={revealedCards}
+          selectedPokemon={team}
+          error={error}
+          isSubmitting={isLoading}
+          onMainMenu={() => router.push("/")}
+          onRevealCard={revealCard}
+          onResetRun={resetPokemonSelection}
+          onSubmitTeam={confirmTeam}
+        />
+      </main>
+    );
+  }
 
-  if (phase === "animating" && currentOpponent && currentOutcome) return <ArcadeBattleSimulation trainerProfile={trainerProfile} selectedPokemon={team} opponent={currentOpponent} opponentTeam={currentOpponentTeam} outcome={currentOutcome} onComplete={() => finishBattle(currentOutcome)} onMainMenu={() => router.push("/")} />;
+  if (phase === "animating" && currentOpponent && currentOutcome) {
+    return <ArcadeBattleSimulation trainerProfile={trainerProfile} selectedPokemon={team} opponent={currentOpponent} opponentTeam={currentOpponentTeam} outcome={currentOutcome} onComplete={() => finishBattle(currentOutcome)} onMainMenu={() => router.push("/")} />;
+  }
 
   if ((phase === "matchup" || phase === "result") && currentOpponent) {
     const playerStatus = phase === "result" ? (currentOutcome === "Beat" ? "cleared" : "failed") : "pending";
     const opponentStatus = phase === "result" ? (currentOutcome === "Beat" ? "failed" : "cleared") : "pending";
     const breakdown = currentOutcome ? createArcadeBreakdown(currentOpponent, currentOutcome, playerPower) : undefined;
-    return <main className="game-shell stage-shell"><section className="stage-screen"><GameTopBar modeLabel="Arcade Mode" onMainMenu={() => router.push("/")} /><div className="stage-hero"><p className="eyebrow">Arcade Battle {totalBattles + (phase === "matchup" ? 1 : 0)}</p><h1>Player Card VS Opponent Card</h1><p>{regularWins} / {REGULAR_WINS_PER_GYM} regular wins before the next Gym Leader</p></div><div style={{ display: "grid", gridTemplateColumns: "minmax(240px, 1fr) auto minmax(240px, 1fr)", gap: 20, alignItems: "center", width: "100%" }}><ProgressionCard className="player-character-card" detailItems={team.map((pokemon) => pokemon.name)} meta={{ ...toPlayerCharacterMeta(character, 0), pokemonCount: 6, pokemonTeam: team.map((pokemon) => pokemon.name) }} spriteSrc={getPlayerTrainerSprite(character.id)} status={playerStatus} /><strong style={{ fontSize: "2rem" }}>VS</strong><ProgressionCard breakdown={breakdown} detailItems={phase === "matchup" ? [`${currentOpponent.pokemonCount} hidden Pokemon`] : currentOpponentTeam.map((pokemon) => pokemon.name)} meta={currentOpponent} spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)} status={opponentStatus} showBadge={currentOpponent.type === "gym-leader"} /></div>{phase === "matchup" ? <button className="primary-action stage-action" type="button" onClick={battle}>BATTLE</button> : currentOutcome === "Beat" ? <button className="primary-action stage-action" type="button" onClick={nextBattle}>NEXT BATTLE</button> : <button className="primary-action stage-action" type="button" onClick={() => setPhase("results")}>RESULTS</button>}</section>{pendingEvolution ? <EvolutionModal fromPokemon={pendingEvolution.fromPokemon} toPokemon={pendingEvolution.toPokemon} onComplete={completeEvolution} /> : null}</main>;
+    return (
+      <main className="game-shell stage-shell">
+        <section className="stage-screen">
+          <GameTopBar modeLabel="Arcade Mode" onMainMenu={() => router.push("/")} />
+          <div className="stage-hero"><p className="eyebrow">Arcade Battle {totalBattles + (phase === "matchup" ? 1 : 0)}</p><h1>Player Card VS Opponent Card</h1><p>{regularWins} / {REGULAR_WINS_PER_GYM} regular wins before the next Gym Leader</p></div>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(240px, 1fr) auto minmax(240px, 1fr)", gap: 20, alignItems: "center", width: "100%" }}>
+            <ProgressionCard className="player-character-card" detailItems={team.map((pokemon) => pokemon.name)} meta={{ ...toPlayerCharacterMeta(character, 0), pokemonCount: 6, pokemonTeam: team.map((pokemon) => pokemon.name) }} spriteSrc={getPlayerTrainerSprite(character.id)} status={playerStatus} />
+            <strong style={{ fontSize: "2rem" }}>VS</strong>
+            <ProgressionCard breakdown={breakdown} detailItems={phase === "matchup" ? [`${currentOpponent.pokemonCount} hidden Pokemon`] : currentOpponentTeam.map((pokemon) => pokemon.name)} meta={currentOpponent} spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)} status={opponentStatus} showBadge={currentOpponent.type === "gym-leader"} />
+          </div>
+          {phase === "matchup" ? <button className="primary-action stage-action" type="button" onClick={battle}>BATTLE</button> : currentOutcome === "Beat" ? <button className="primary-action stage-action" type="button" onClick={nextBattle}>NEXT BATTLE</button> : <button className="primary-action stage-action" type="button" onClick={() => setPhase("results")}>RESULTS</button>}
+        </section>
+        {pendingEvolution ? <EvolutionModal fromPokemon={pendingEvolution.fromPokemon} toPokemon={pendingEvolution.toPokemon} onComplete={completeEvolution} /> : null}
+      </main>
+    );
   }
 
   return <ArcadeResults characterId={characterId} team={team} scoreResult={scoreResult} encounters={encounters} earnedBadges={earnedBadges} totalWins={totalWins} totalBattles={totalBattles} completed={phase === "complete"} onTryAgain={tryAgain} onMainMenu={() => router.push("/")} />;
@@ -230,8 +321,30 @@ function ArcadeResults({ characterId, team, scoreResult, encounters, earnedBadge
   const character = getPlayerCharacter(characterId);
   const power = Math.round(scoreResult?.total_score ?? scoreResult?.team_score ?? scoreResult?.score ?? averagePower(team));
   const majorResults = scoreResult ? getPredeterminedMajorResults(scoreResult) : [];
-  return <main className="game-shell stage-shell"><section className="stage-screen end-results-screen"><GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} /><div className="stage-hero"><p className="eyebrow">Arcade Results</p><h1>{completed ? "ARCADE CHAMPION" : "ARCADE RUN COMPLETE"}</h1><p>{totalWins} wins from {totalBattles} battles</p></div><article className="results-trainer-card"><div className="results-trainer-card__top"><span className="results-trainer-card__logo">POKEMON 6</span><strong className="results-trainer-card__player-name">{character.label}</strong></div><div className="results-trainer-card__artwork"><LocalSprite alt={character.label} className="results-trainer-card__sprite" fallback={character.fallback} src={getPlayerTrainerSprite(character.id)} /></div><div className="results-trainer-card__stats"><div><span>Player Power</span><strong>{power}</strong></div><div><span>Record</span><strong>{totalWins}/{totalBattles}</strong></div></div><section className="results-trainer-card__badges"><strong>Badges</strong><div className="results-trainer-card__badge-grid">{earnedBadges.map((badge) => <LocalSprite alt={badge} className="results-trainer-card__badge" fallback={badge.slice(0, 2)} key={badge} src={BADGE_IMAGE_PATHS[badge]} />)}</div></section></article><section className="results-team-section"><h2>Final Pokemon Team</h2><div className="results-team-grid">{team.map((pokemon) => <article className="results-pokemon-summary-card" key={pokemon.id}><div className="results-pokemon-summary-card__sprite-wrap"><img alt={pokemon.name} className="results-pokemon-summary-card__sprite" src={pokemon.image} /></div><strong>{pokemon.name}</strong><span>BST {pokemon.base_stat_total}</span></article>)}</div></section><section className="final-results-section"><h2>Completed Trainers</h2><div className="progression-card-grid">{encounters.filter((entry) => entry.opponent.type === "regular").map((entry) => <ProgressionCard key={entry.id} breakdown={createArcadeBreakdown(entry.opponent, entry.outcome, power)} detailItems={entry.opponentTeam.map((pokemon) => pokemon.name)} meta={entry.opponent} spriteSrc={entry.opponent.sprite} status={entry.outcome === "Beat" ? "cleared" : "failed"} />)}</div></section><section className="final-results-section"><h2>Gym Leaders, Elite Four and Champion</h2><div className="progression-card-grid">{majorResults.map(({ opponent }) => { const encounter = encounters.find((entry) => entry.opponent.id === opponent.id); return <ProgressionCard key={opponent.id} breakdown={encounter ? createArcadeBreakdown(opponent, encounter.outcome, power) : undefined} meta={opponent} status={encounter ? (encounter.outcome === "Beat" ? "cleared" : "failed") : "not-reached"} showBadge={opponent.type === "gym-leader"} isLocked={!encounter} />; })}</div></section><div className="trainer-card-actions"><button className="primary-action" type="button" onClick={onTryAgain}>TRY AGAIN</button><button className="secondary-action" type="button" onClick={onMainMenu}>MAIN MENU</button></div></section></main>;
+  return (
+    <main className="game-shell stage-shell">
+      <section className="stage-screen end-results-screen">
+        <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
+        <div className="stage-hero"><p className="eyebrow">Arcade Results</p><h1>{completed ? "ARCADE CHAMPION" : "ARCADE RUN COMPLETE"}</h1><p>{totalWins} wins from {totalBattles} battles</p></div>
+        <article className="results-trainer-card">
+          <div className="results-trainer-card__top"><span className="results-trainer-card__logo">POKEMON 6</span><strong className="results-trainer-card__player-name">{character.label}</strong></div>
+          <div className="results-trainer-card__artwork"><LocalSprite alt={character.label} className="results-trainer-card__sprite" fallback={character.fallback} src={getPlayerTrainerSprite(character.id)} /></div>
+          <div className="results-trainer-card__stats"><div><span>Player Power</span><strong>{power}</strong></div><div><span>Record</span><strong>{totalWins}/{totalBattles}</strong></div></div>
+          <section className="results-trainer-card__badges"><strong>Badges</strong><div className="results-trainer-card__badge-grid">{earnedBadges.map((badge) => <LocalSprite alt={badge} className="results-trainer-card__badge" fallback={badge.slice(0, 2)} key={badge} src={BADGE_IMAGE_PATHS[badge]} />)}</div></section>
+        </article>
+        <section className="results-team-section"><h2>Final Pokemon Team</h2><div className="results-team-grid">{team.map((pokemon) => <article className="results-pokemon-summary-card" key={pokemon.id}><div className="results-pokemon-summary-card__sprite-wrap"><img alt={pokemon.name} className="results-pokemon-summary-card__sprite" src={pokemon.image} /></div><strong>{pokemon.name}</strong><span>BST {pokemon.base_stat_total}</span></article>)}</div></section>
+        <section className="final-results-section"><h2>Completed Trainers</h2><div className="progression-card-grid">{encounters.filter((entry) => entry.opponent.type === "regular").map((entry) => <ProgressionCard key={entry.id} breakdown={createArcadeBreakdown(entry.opponent, entry.outcome, power)} detailItems={entry.opponentTeam.map((pokemon) => pokemon.name)} meta={entry.opponent} spriteSrc={entry.opponent.sprite} status={entry.outcome === "Beat" ? "cleared" : "failed"} />)}</div></section>
+        <section className="final-results-section"><h2>Gym Leaders, Elite Four and Champion</h2><div className="progression-card-grid">{majorResults.map(({ opponent }) => { const encounter = encounters.find((entry) => entry.opponent.id === opponent.id); return <ProgressionCard key={opponent.id} breakdown={encounter ? createArcadeBreakdown(opponent, encounter.outcome, power) : undefined} meta={opponent} status={encounter ? (encounter.outcome === "Beat" ? "cleared" : "failed") : "not-reached"} showBadge={opponent.type === "gym-leader"} isLocked={!encounter} />; })}</div></section>
+        <div className="trainer-card-actions"><button className="primary-action" type="button" onClick={onTryAgain}>TRY AGAIN</button><button className="secondary-action" type="button" onClick={onMainMenu}>MAIN MENU</button></div>
+      </section>
+    </main>
+  );
 }
 
-function namesToPokemon(names: string[], catalogue: Pokemon[]) { return names.map((name) => catalogue.find((pokemon) => pokemon.name.toLowerCase() === name.toLowerCase())).filter((pokemon): pokemon is Pokemon => Boolean(pokemon)); }
-function averagePower(team: Pokemon[]) { return team.length === 0 ? 0 : team.reduce((total, pokemon) => total + pokemon.base_stat_total, 0) / team.length; }
+function namesToPokemon(names: string[], catalogue: Pokemon[]) {
+  return names.map((name) => catalogue.find((pokemon) => pokemon.name.toLowerCase() === name.toLowerCase())).filter((pokemon): pokemon is Pokemon => Boolean(pokemon));
+}
+
+function averagePower(team: Pokemon[]) {
+  return team.length === 0 ? 0 : team.reduce((total, pokemon) => total + pokemon.base_stat_total, 0) / team.length;
+}
