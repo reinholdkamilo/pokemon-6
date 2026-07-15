@@ -585,9 +585,6 @@ export default function MarathonPage() {
                   GYM
                 </span>
               </div>
-              <p className="marathon-progress-panel__copy">
-                {trainerProgress} / {REGULAR_WINS_PER_GYM} Trainers Defeated
-              </p>
             </section>
           ) : null}
         </section>

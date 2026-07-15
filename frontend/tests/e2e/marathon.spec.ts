@@ -92,8 +92,10 @@ for (const viewport of [
     await openMarathonRoundOne(page, viewport.name);
 
     await expect(page.getByRole("heading", { name: "Round 1" })).toBeVisible();
+    await expect(page.getByText(/0\s*\/\s*5 Trainers Defeated/i)).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
+    await assertMarathonBattlePlayerSpriteVisible(page);
     await page.screenshot({ path: `test-results/screenshots/${viewport.name}-round-1-matchup.png`, fullPage: true });
 
     await page.getByRole("button", { name: "BATTLE" }).click();
@@ -111,6 +113,7 @@ for (const viewport of [
     await expect(page.getByRole("heading", { name: "Round 1" })).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
+    await assertMarathonBattlePlayerSpriteVisible(page);
     await page.screenshot({ path: `test-results/screenshots/${viewport.name}-round-2-matchup.png`, fullPage: true });
 
     await page.getByRole("button", { name: "BATTLE" }).click();
@@ -214,6 +217,54 @@ async function assertFullBodySpritesInsideContainers(page: Page) {
       .filter((result) => result?.clipped || result?.ratioChanged || result?.intersectsBottom),
     spriteAlphaBounds,
   );
+  expect(failures).toEqual([]);
+}
+
+async function assertMarathonBattlePlayerSpriteVisible(page: Page) {
+  const failures = await page
+    .locator(".marathon-player-battle-card.progression-card--sprite-full-body")
+    .evaluateAll((cards, alphaBounds) =>
+      cards
+        .map((card) => {
+          const area = card.getElementsByClassName("progression-sprite-area")[0];
+          const image = card.getElementsByClassName("trainer-sprite")[0];
+          if (!area || !(image instanceof HTMLImageElement)) {
+            return { reason: "missing player sprite" };
+          }
+
+          const areaRect = area.getBoundingClientRect();
+          const imageRect = image.getBoundingClientRect();
+          const url = new URL(image.currentSrc || image.src);
+          const alpha = (alphaBounds as Record<string, [number, number, number, number]>)[url.pathname];
+
+          if (!alpha) {
+            return { src: url.pathname, reason: "missing alpha bounds" };
+          }
+
+          const [left, top, right, bottom] = alpha;
+          const visibleRect = {
+            left: imageRect.left + (left / image.naturalWidth) * imageRect.width,
+            top: imageRect.top + (top / image.naturalHeight) * imageRect.height,
+            right: imageRect.left + (right / image.naturalWidth) * imageRect.width,
+            bottom: imageRect.top + (bottom / image.naturalHeight) * imageRect.height,
+          };
+
+          const topClipped = visibleRect.top < areaRect.top + 1;
+          const bottomClipped = visibleRect.bottom > areaRect.bottom - 1;
+          const sideClipped =
+            visibleRect.left < areaRect.left - 1 ||
+            visibleRect.right > areaRect.right + 1;
+          const visibleHeight = visibleRect.bottom - visibleRect.top;
+          const tooTiny = visibleHeight < areaRect.height * 0.74;
+
+          return topClipped || bottomClipped || sideClipped || tooTiny
+            ? { src: url.pathname, areaRect, visibleRect, topClipped, bottomClipped, sideClipped, tooTiny }
+            : null;
+        })
+        .filter(Boolean),
+      spriteAlphaBounds,
+    );
+
   expect(failures).toEqual([]);
 }
 
