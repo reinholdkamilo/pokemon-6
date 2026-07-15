@@ -35,6 +35,66 @@
   overflow: hidden !important;
 }
 
+/* A revealed Arcade Pokemon card is final until the one re-spin flow is opened.
+   Auto-picked cards use the same locked state. */
+.selection-screen .reveal-card.locked:disabled {
+  cursor: not-allowed;
+  filter: saturate(0.96);
+}
+
+.selection-screen .reveal-card.locked:disabled::after {
+  content: "LOCKED";
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 4;
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(17, 24, 39, 0.82);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Character selection must show the entire trainer artwork, including feet. */
+.arcade-character-grid {
+  align-items: stretch;
+}
+
+.arcade-character-select-screen .player-character-card {
+  min-height: 390px !important;
+  height: 390px !important;
+  grid-template-rows: auto minmax(250px, 1fr) auto !important;
+  overflow: visible !important;
+}
+
+.arcade-character-select-screen .player-character-card .progression-sprite-area {
+  min-height: 250px !important;
+  height: 250px !important;
+  padding: 8px 10px 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: visible !important;
+}
+
+.arcade-character-select-screen .player-character-card .trainer-sprite,
+.arcade-character-select-screen .player-character-card .stage-trainer-sprite {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 190px !important;
+  max-height: 240px !important;
+  margin: auto !important;
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center bottom !important;
+  transform: none !important;
+  transform-origin: center bottom !important;
+}
+
 .arcade-round-heading {
   justify-items: center;
   text-align: center;
@@ -83,6 +143,23 @@
     width: 132px !important;
     height: 132px !important;
     transform: scale(1.38) !important;
+  }
+
+  .arcade-character-select-screen .player-character-card {
+    min-height: 360px !important;
+    height: 360px !important;
+    grid-template-rows: auto minmax(225px, 1fr) auto !important;
+  }
+
+  .arcade-character-select-screen .player-character-card .progression-sprite-area {
+    min-height: 225px !important;
+    height: 225px !important;
+  }
+
+  .arcade-character-select-screen .player-character-card .trainer-sprite,
+  .arcade-character-select-screen .player-character-card .stage-trainer-sprite {
+    max-width: 175px !important;
+    max-height: 215px !important;
   }
 
   .arcade-matchup-grid {
