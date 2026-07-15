@@ -4,10 +4,10 @@ import { PNG } from "pngjs";
 
 const root = process.cwd();
 const expected = {
-  "Chaz.PNG": { width: 386, height: 732, bbox: [20, 39, 366, 693] },
-  "Laga.PNG": { width: 375, height: 725, bbox: [20, 38, 355, 687] },
-  "Kevin.PNG": { width: 338, height: 715, bbox: [18, 38, 320, 677] },
-  "GJ.PNG": { width: 358, height: 723, bbox: [19, 38, 339, 685] },
+  "Chaz.PNG": { width: 137, height: 260, bbox: [5, 12, 132, 248] },
+  "Laga.PNG": { width: 134, height: 260, bbox: [5, 11, 129, 249] },
+  "Kevin.PNG": { width: 123, height: 260, bbox: [4, 12, 119, 248] },
+  "GJ.PNG": { width: 129, height: 260, bbox: [5, 12, 124, 248] },
 };
 
 let failed = false;

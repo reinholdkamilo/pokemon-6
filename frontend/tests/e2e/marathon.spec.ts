@@ -16,10 +16,10 @@ const pokemon = [
 ];
 
 const spriteAlphaBounds: Record<string, [number, number, number, number]> = {
-  "/images/trainers/player/Chaz.PNG": [20, 39, 366, 693],
-  "/images/trainers/player/Laga.PNG": [20, 38, 355, 687],
-  "/images/trainers/player/Kevin.PNG": [18, 38, 320, 677],
-  "/images/trainers/player/GJ.PNG": [19, 38, 339, 685],
+  "/images/trainers/player/Chaz.PNG": [5, 12, 132, 248],
+  "/images/trainers/player/Laga.PNG": [5, 11, 129, 249],
+  "/images/trainers/player/Kevin.PNG": [4, 12, 119, 248],
+  "/images/trainers/player/GJ.PNG": [5, 12, 124, 248],
 };
 
 test.beforeEach(async ({ page }) => {
