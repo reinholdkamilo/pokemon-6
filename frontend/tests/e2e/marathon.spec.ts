@@ -91,7 +91,7 @@ for (const viewport of [
     await page.emulateMedia({ reducedMotion: "reduce" });
     await openMarathonRoundOne(page, viewport.name);
 
-    await expect(page.getByRole("heading", { name: "Round 1" })).toBeVisible();
+    await expect(page.getByText(/Round 1\s*\/\s*6/i)).toBeVisible();
     await expect(page.getByText(/0\s*\/\s*5 Trainers Defeated/i)).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
@@ -100,7 +100,7 @@ for (const viewport of [
 
     await page.getByRole("button", { name: "BATTLE" }).click();
     await page.getByRole("button", { name: /SKIP ANIMATION|CONTINUE/ }).click();
-    await expect(page.getByRole("heading", { name: "Round 1" })).toBeVisible();
+    await expect(page.getByText(/Round 2\s*\/\s*6/i)).toBeVisible();
 
     const cards = page.locator(".marathon-matchup-grid .progression-card");
     await expect(cards.nth(0).locator(".result-stamp")).toHaveCount(0);
@@ -109,8 +109,8 @@ for (const viewport of [
     await page.screenshot({ path: `test-results/screenshots/${viewport.name}-player-win-result.png`, fullPage: true });
 
     await page.getByRole("button", { name: "NEXT BATTLE" }).click();
-    await expect(page.getByRole("heading", { name: "Round 2" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Round 1" })).toHaveCount(0);
+    await expect(page.getByText(/Round 2\s*\/\s*6/i)).toBeVisible();
+    await expect(page.getByText(/Round 1\s*\/\s*6/i)).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
     await assertMarathonBattlePlayerSpriteVisible(page);
@@ -119,7 +119,7 @@ for (const viewport of [
     await page.getByRole("button", { name: "BATTLE" }).click();
     await page.getByRole("button", { name: /SKIP ANIMATION|CONTINUE/ }).click();
     await page.getByRole("button", { name: "NEXT BATTLE" }).click();
-    await expect(page.getByRole("heading", { name: "Round 3" })).toBeVisible();
+    await expect(page.getByText(/Round 3\s*\/\s*6/i)).toBeVisible();
     await assertNoHorizontalOverflow(page);
 
     const browserErrors = await page.evaluate(async () => (window as unknown as { __browserErrors: () => Promise<string[]> }).__browserErrors());
