@@ -17,6 +17,16 @@
   line-height: 1;
 }
 
+.marathon-matchup-grid .progression-card-role,
+.marathon-results-stage__grid .progression-card-role {
+  display: block !important;
+}
+
+.marathon-matchup-grid .trainer-card-name-label,
+.marathon-results-stage__grid .trainer-card-name-label {
+  text-align: center !important;
+}
+
 .progression-card-summary {
   display: block;
   width: 100%;
@@ -53,6 +63,20 @@
 }
 
 @media (max-width: 700px) {
+  .marathon-matchup-grid
+    > article.progression-card.marathon-player-battle-card,
+  .marathon-matchup-grid
+    > article.progression-card.marathon-opponent-battle-card {
+    aspect-ratio: auto !important;
+    height: clamp(292px, 84vw, 360px) !important;
+    min-height: clamp(292px, 84vw, 360px) !important;
+  }
+
+  .marathon-matchup-grid > .progression-card {
+    aspect-ratio: 0.56 !important;
+    min-height: clamp(280px, 80vw, 360px) !important;
+  }
+
   .progression-card-role {
     font-size: clamp(0.52rem, 2.1vw, 0.68rem);
   }
@@ -105,21 +129,89 @@
   margin: 0 auto !important;
 }
 
+.marathon-matchup-grid
+  .marathon-player-battle-card
+  .trainer-team-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: repeat(3, auto) !important;
+  grid-auto-flow: column !important;
+  column-gap: clamp(5px, 1.5vw, 9px) !important;
+  row-gap: 4px !important;
+  padding: 6px 2px 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.marathon-matchup-grid
+  .marathon-player-battle-card
+  .trainer-team-list
+  li {
+  grid-template-columns: 10px minmax(0, 1fr) !important;
+  gap: 3px !important;
+  font-size: clamp(0.42rem, 0.95vw, 0.58rem) !important;
+  line-height: 1.02 !important;
+}
+
+.marathon-matchup-grid
+  .marathon-player-battle-card
+  .trainer-team-pokeball {
+  width: 7px !important;
+  height: 7px !important;
+}
+
 @media (max-width: 700px) {
   .marathon-matchup-grid
     .marathon-player-battle-card.progression-card--sprite-full-body
     .progression-sprite-area {
-    min-height: clamp(190px, 52vw, 250px) !important;
-    height: clamp(190px, 52vw, 250px) !important;
+    min-height: clamp(170px, 47vw, 230px) !important;
+    height: clamp(170px, 47vw, 230px) !important;
     padding-top: 8px !important;
+  }
+
+  .marathon-matchup-grid
+    .marathon-player-battle-card
+    .trainer-team-list {
+    column-gap: 2px !important;
+    row-gap: 3px !important;
+    padding-top: 4px !important;
+  }
+
+  .marathon-matchup-grid
+    .marathon-player-battle-card
+    .trainer-team-list
+    li {
+    grid-template-columns: 7px minmax(0, 1fr) !important;
+    gap: 2px !important;
+    font-size: clamp(0.36rem, 1.55vw, 0.46rem) !important;
+  }
+
+  .marathon-matchup-grid
+    .marathon-player-battle-card
+    .trainer-team-pokeball {
+    width: 5px !important;
+    height: 5px !important;
   }
 }
 
 @media (max-width: 380px) {
   .marathon-matchup-grid
+    > article.progression-card.marathon-player-battle-card,
+  .marathon-matchup-grid
+    > article.progression-card.marathon-opponent-battle-card {
+    height: clamp(306px, 87vw, 372px) !important;
+    min-height: clamp(306px, 87vw, 372px) !important;
+  }
+
+  .marathon-matchup-grid > .progression-card {
+    aspect-ratio: 0.52 !important;
+    min-height: clamp(292px, 83vw, 372px) !important;
+  }
+
+  .marathon-matchup-grid
     .marathon-player-battle-card.progression-card--sprite-full-body
     .progression-sprite-area {
-    min-height: clamp(178px, 50vw, 220px) !important;
-    height: clamp(178px, 50vw, 220px) !important;
+    min-height: clamp(158px, 43vw, 205px) !important;
+    height: clamp(158px, 43vw, 205px) !important;
   }
 }

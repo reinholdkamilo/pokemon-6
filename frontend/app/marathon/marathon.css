@@ -155,7 +155,8 @@
     width: 100%;
     max-width: none;
     height: auto;
-    min-height: clamp(300px, 76vw, 390px);
+    aspect-ratio: 0.56 !important;
+    min-height: clamp(280px, 80vw, 360px);
   }
 
   .marathon-player-battle-card.progression-card--sprite-full-body .progression-sprite-area {
@@ -404,7 +405,8 @@
     width: 100%;
     max-width: none;
     height: auto;
-    min-height: clamp(300px, 78vw, 390px);
+    aspect-ratio: 0.56 !important;
+    min-height: clamp(280px, 80vw, 360px);
   }
 
   .marathon-versus {
@@ -452,6 +454,11 @@
       24px
       minmax(0, 1fr);
     gap: 2px;
+  }
+
+  .marathon-matchup-grid > .progression-card {
+    aspect-ratio: 0.52 !important;
+    min-height: clamp(292px, 83vw, 372px);
   }
 }
 
