@@ -264,7 +264,11 @@ export default function MarathonPage() {
     return (
       <main className="game-shell stage-shell marathon-shell">
         <section className="stage-screen marathon-stage-screen marathon-character-screen">
-          <GameTopBar modeLabel="Marathon Mode" onMainMenu={() => router.push("/")} />
+          <GameTopBar
+            modeLabel="Marathon Mode"
+            onMainMenu={() => router.push("/")}
+          />
+
           <div className="stage-hero marathon-character-hero">
             <p className="eyebrow">Marathon Mode</p>
             <h1>Choose Your Character</h1>
