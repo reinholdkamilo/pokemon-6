@@ -3,12 +3,6 @@
   min-height: 100dvh;
 }
 
-.marathon-character-grid {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-}
 
 .marathon-matchup-grid {
   width: min(100%, 880px);
@@ -108,12 +102,6 @@
   background: rgba(254, 226, 226, 0.96) !important;
 }
 
-@media (max-width: 980px) {
-  .marathon-character-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 700px) {
   html,
   body {
@@ -198,9 +186,271 @@
   }
 }
 
-@media (max-width: 600px) {
-  .marathon-character-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+
+
+/* ---------------------------------------------------------
+   Marathon page structure
+   --------------------------------------------------------- */
+
+.marathon-shell {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.marathon-stage-screen {
+  width: min(100%, 960px);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marathon-stage-screen > * {
+  width: 100%;
+}
+
+.marathon-character-screen {
+  text-align: center;
+}
+
+.marathon-character-hero {
+  width: 100%;
+  text-align: center;
+}
+
+.marathon-character-selector {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: clamp(44px, 8vw, 58px) minmax(0, 1fr) clamp(44px, 8vw, 58px);
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 16px);
+}
+
+.marathon-character-selector .player-character-selector__viewport {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.marathon-character-selector .player-character-card {
+  width: min(100%, 380px);
+  max-width: 380px;
+  margin-inline: auto;
+}
+
+.marathon-character-selector
+  .player-character-card.progression-card--sprite-full-body
+  .progression-sprite-area,
+.marathon-character-selector
+  .player-character-card
+  .progression-sprite-area {
+  min-height: clamp(260px, 48vw, 360px);
+  height: clamp(260px, 48vw, 360px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.marathon-character-selector .player-character-card .trainer-sprite,
+.marathon-character-selector .player-character-card .stage-trainer-sprite {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  margin: 0 auto;
+  transform: none;
+  clip-path: none;
+}
+
+.marathon-character-selector .player-character-selector__control {
+  align-self: center;
+  width: clamp(44px, 8vw, 58px);
+  min-width: 44px;
+  height: clamp(52px, 10vw, 68px);
+  display: grid;
+  place-items: center;
+}
+
+.marathon-continue-button {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+/* Keep VS at the true vertical and horizontal centre between both cards. */
+.marathon-matchup-grid {
+  position: relative;
+  margin-inline: auto;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.marathon-versus {
+  align-self: stretch;
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  line-height: 1;
+  z-index: 2;
+}
+
+.marathon-battle-screen .stage-action {
+  width: min(100%, 880px);
+  margin-inline: auto;
+}
+
+/* ---------------------------------------------------------
+   Phone browser optimisation
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .marathon-shell {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-inline:
+      max(4px, env(safe-area-inset-left))
+      max(4px, env(safe-area-inset-right));
+  }
+
+  .marathon-stage-screen {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      6px
+      max(14px, env(safe-area-inset-bottom));
+    align-items: center;
+    overflow-x: hidden;
+  }
+
+  .marathon-stage-screen > * {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .marathon-character-hero {
+    margin-bottom: 8px;
+  }
+
+  .marathon-character-hero h1 {
+    margin-inline: auto;
+    max-width: 11ch;
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 0.95;
+    text-align: center;
+  }
+
+  .marathon-character-selector {
+    width: 100%;
+    max-width: 430px;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 6px;
+    margin-inline: auto;
+  }
+
+  .marathon-character-selector .player-character-card {
+    width: 100%;
+    max-width: 310px;
+    min-width: 0;
+  }
+
+  .marathon-character-selector
+    .player-character-card
+    .progression-sprite-area {
+    min-height: clamp(240px, 68vw, 320px);
+    height: clamp(240px, 68vw, 320px);
+  }
+
+  .marathon-character-selector .player-character-selector__control {
+    width: 44px;
+    min-width: 44px;
+    height: 56px;
+    padding: 0;
+    font-size: 1.4rem;
+  }
+
+  .marathon-character-selector .player-character-selector__position {
+    margin-top: 6px;
+  }
+
+  .marathon-matchup-grid {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    grid-template-columns:
+      minmax(0, 1fr)
+      clamp(26px, 8vw, 38px)
+      minmax(0, 1fr);
+    align-items: stretch;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .marathon-matchup-grid > .progression-card {
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: clamp(300px, 78vw, 390px);
+  }
+
+  .marathon-versus {
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: clamp(1rem, 5vw, 1.35rem);
+  }
+
+  .marathon-round-hero {
+    width: 100%;
+    margin: 4px auto 10px;
+    text-align: center;
+  }
+
+  .marathon-round-hero h1 {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .marathon-battle-screen .stage-action,
+  .marathon-continue-button {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    min-height: 52px;
+  }
+}
+
+@media (max-width: 380px) {
+  .marathon-character-selector {
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    gap: 4px;
+  }
+
+  .marathon-character-selector .player-character-selector__control {
+    width: 40px;
+    min-width: 40px;
+  }
+
+  .marathon-matchup-grid {
+    grid-template-columns:
+      minmax(0, 1fr)
+      24px
+      minmax(0, 1fr);
+    gap: 2px;
   }
 }

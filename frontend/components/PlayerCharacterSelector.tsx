@@ -72,7 +72,7 @@ export function PlayerCharacterSelector({
 
       <div className="player-character-selector__viewport">
         <ProgressionCard
-          className="player-character-card"
+          className="player-character-card marathon-character-card"
           detailItems={selectedCharacter.detailItems}
           interactionRole="radio"
           isSelectable
