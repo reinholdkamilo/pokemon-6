@@ -17,6 +17,7 @@ type BattleSimulationScreenProps = {
   modeLabel: "Arcade Mode" | "Marathon Mode";
   onComplete: () => void;
   onMainMenu: () => void;
+  canSkipAnimation?: boolean;
 };
 
 type BattleFrame = {
@@ -62,6 +63,7 @@ export function BattleSimulationScreen({
   modeLabel,
   onComplete,
   onMainMenu,
+  canSkipAnimation = true,
 }: BattleSimulationScreenProps) {
   const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
   const [frameIndex, setFrameIndex] = useState(0);
@@ -160,10 +162,21 @@ export function BattleSimulationScreen({
             <button className="primary-action" type="button" onClick={onComplete}>
               CONTINUE
             </button>
-          ) : (
-            <button className="secondary-action" type="button" onClick={onComplete}>
+          ) : canSkipAnimation ? (
+            <button
+              className="secondary-action"
+              type="button"
+              onClick={onComplete}
+            >
               SKIP ANIMATION
             </button>
+          ) : (
+            <p
+              className="battle-sim-skip-required"
+              aria-live="polite"
+            >
+              GYM LEADER BATTLE — ANIMATION REQUIRED
+            </p>
           )}
         </div>
       </section>

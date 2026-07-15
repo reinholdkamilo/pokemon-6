@@ -248,9 +248,28 @@ export default function MarathonPage() {
 
   function battle() {
     if (!currentOpponent || !scoreResult) return;
-    const outcome = currentOpponent.type === "regular" || endpointId === "complete" || currentOpponent.id !== endpointId ? "Beat" : "Lost";
+    const outcome =
+      currentOpponent.type === "regular" ||
+      endpointId === "complete" ||
+      currentOpponent.id !== endpointId
+        ? "Beat"
+        : "Lost";
+
     setCurrentOutcome(outcome);
     setPhase("animating");
+  }
+
+  function skipTrainerBattle() {
+    if (
+      !currentOpponent ||
+      currentOpponent.type !== "regular" ||
+      phase !== "matchup"
+    ) {
+      return;
+    }
+
+    setCurrentOutcome("Beat");
+    finishBattle("Beat");
   }
 
   function finishBattle(outcome: "Beat" | "Lost") {
@@ -387,7 +406,18 @@ export default function MarathonPage() {
   }
 
   if (phase === "animating" && currentOpponent && currentOutcome) {
-    return <ArcadeBattleSimulation trainerProfile={trainerProfile} selectedPokemon={team} opponent={currentOpponent} opponentTeam={currentOpponentTeam} outcome={currentOutcome} onComplete={() => finishBattle(currentOutcome)} onMainMenu={() => router.push("/")} />;
+    return (
+      <ArcadeBattleSimulation
+        trainerProfile={trainerProfile}
+        selectedPokemon={team}
+        opponent={currentOpponent}
+        opponentTeam={currentOpponentTeam}
+        outcome={currentOutcome}
+        canSkipAnimation={currentOpponent.type !== "gym-leader"}
+        onComplete={() => finishBattle(currentOutcome)}
+        onMainMenu={() => router.push("/")}
+      />
+    );
   }
 
   if ((phase === "matchup" || phase === "result") && currentOpponent) {
@@ -571,19 +601,31 @@ export default function MarathonPage() {
             <ProgressionCard breakdown={breakdown} className="marathon-opponent-battle-card" detailItems={phase === "matchup" ? [`${currentOpponent.pokemonCount} hidden Pokemon`] : currentOpponentTeam.map((pokemon) => pokemon.name)} explicitResultStamp={opponentResultStamp} meta={currentOpponent} spritePresentation="pixel-trainer" spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)} status={opponentStatus} showBadge={currentOpponent.type === "gym-leader"} suppressAutomaticStamp={Boolean(opponentResultStamp)} />
           </div>
           {phase === "matchup" ? (
-            <button
-              className="primary-action stage-action"
-              type="button"
-              onClick={battle}
-            >
-              {isGymLeaderBattle
-                ? `BATTLE ${currentOpponent.name.toUpperCase()}`
-                : isChampionBattle
-                  ? "CHAMPION BATTLE"
-                  : isEliteFourBattle
-                    ? "ELITE FOUR BATTLE"
-                    : "BATTLE"}
-            </button>
+            <div className="marathon-battle-actions">
+              <button
+                className="primary-action stage-action"
+                type="button"
+                onClick={battle}
+              >
+                {isGymLeaderBattle
+                  ? `BATTLE ${currentOpponent.name.toUpperCase()}`
+                  : isChampionBattle
+                    ? "CHAMPION BATTLE"
+                    : isEliteFourBattle
+                      ? "ELITE FOUR BATTLE"
+                      : "BATTLE"}
+              </button>
+
+              {currentOpponent.type === "regular" ? (
+                <button
+                  className="secondary-action marathon-skip-trainer"
+                  type="button"
+                  onClick={skipTrainerBattle}
+                >
+                  SKIP TRAINER
+                </button>
+              ) : null}
+            </div>
           ) : currentOutcome === "Beat" ? (
             <button
               className="primary-action stage-action"
