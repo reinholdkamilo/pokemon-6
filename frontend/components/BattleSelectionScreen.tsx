@@ -16,6 +16,7 @@ type BattleSelectionScreenProps = {
   onRevealCard: (slotIndex: number, pokemon: Pokemon) => void;
   onResetRun: () => void;
   onSubmitTeam: () => void;
+  onSecretAutoPickTeam?: (team: Pokemon[]) => void;
 };
 
 const TEAM_SIZE = 6;
@@ -39,6 +40,7 @@ export function BattleSelectionScreen({
   onMainMenu,
   onRevealCard,
   onSubmitTeam,
+  onSecretAutoPickTeam,
 }: BattleSelectionScreenProps) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
   const [previewBySlot, setPreviewBySlot] = useState<(Pokemon | null)[]>(createEmptySlots);
@@ -196,6 +198,43 @@ export function BattleSelectionScreen({
     setLoadError("");
   }
 
+  function activateSecretAutoPickTeam() {
+    if (
+      !onSecretAutoPickTeam ||
+      isLoading ||
+      anyCardRevealing ||
+      isSelectingRespin ||
+      pokemon.length < TEAM_SIZE
+    ) {
+      return false;
+    }
+
+    clearAllRevealTimers();
+    clearHoldTimer();
+    activeHoldSlotRef.current = null;
+    completedHoldSlotRef.current = null;
+    setChargingCardIndex(null);
+    setRevealingSlots(new Set());
+    pendingPokemonBySlotRef.current.clear();
+    setPreviewBySlot(createEmptySlots());
+    setLoadError("");
+
+    onSecretAutoPickTeam(shufflePokemon(pokemon).slice(0, TEAM_SIZE));
+    return true;
+  }
+
+  function shouldUseSecretAutoPick(slotIndex: number) {
+    return Boolean(onSecretAutoPickTeam) && slotIndex === TEAM_SIZE - 1;
+  }
+
+  function revealOrSecretAutoPick(slotIndex: number) {
+    if (shouldUseSecretAutoPick(slotIndex) && activateSecretAutoPickTeam()) {
+      return;
+    }
+
+    revealCard(slotIndex);
+  }
+
   function handlePrimaryAction() {
     if (teamIsComplete) {
       onSubmitTeam();
@@ -249,6 +288,10 @@ export function BattleSelectionScreen({
       return;
     }
 
+    if (shouldUseSecretAutoPick(slotIndex)) {
+      return;
+    }
+
     clearHoldTimer();
     activeHoldSlotRef.current = slotIndex;
     completedHoldSlotRef.current = null;
@@ -263,6 +306,9 @@ export function BattleSelectionScreen({
 
   function finishHold(slotIndex: number) {
     if (activeHoldSlotRef.current !== slotIndex) {
+      if (shouldUseSecretAutoPick(slotIndex)) {
+        activateSecretAutoPickTeam();
+      }
       return;
     }
 
@@ -275,7 +321,7 @@ export function BattleSelectionScreen({
       completedHoldSlotRef.current = null;
       return;
     }
-    revealCard(slotIndex);
+    revealOrSecretAutoPick(slotIndex);
   }
 
   function cancelHold(slotIndex: number) {
@@ -389,7 +435,7 @@ export function BattleSelectionScreen({
               key={slotPokemon?.id ?? `slot-${index}`}
               onCancelHold={cancelHold}
               onFinishHold={finishHold}
-              onReveal={isSelectingRespin ? toggleRespinSlot : revealCard}
+              onReveal={isSelectingRespin ? toggleRespinSlot : revealOrSecretAutoPick}
               onStartHold={startHold}
               pokemon={slotPokemon}
               previewPokemon={previewBySlot[index]}

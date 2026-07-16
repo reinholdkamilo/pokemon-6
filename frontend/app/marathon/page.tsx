@@ -127,6 +127,7 @@ export default function MarathonPage() {
   const [pendingEvolution, setPendingEvolution] = useState<PendingEvolution | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isUndefeatedRun, setIsUndefeatedRun] = useState(false);
 
   const character = getPlayerCharacter(characterId);
   const isPokemonLeague = gymIndex >= MARATHON_STAGES.length;
@@ -189,17 +190,19 @@ export default function MarathonPage() {
     setRevealedCards(createEmptyCards());
     setTeam([]);
     setError("");
+    setIsUndefeatedRun(false);
   }
 
-  async function confirmTeam() {
-    if (team.length !== TEAM_SIZE) return;
+  async function startMarathonRun(selectedTeam: Pokemon[], undefeatedRun: boolean) {
+    if (selectedTeam.length !== TEAM_SIZE) return;
     setIsLoading(true);
     setError("");
     try {
-      const result = await scoreTeam(team.map((pokemon) => pokemon.name));
+      const result = await scoreTeam(selectedTeam.map((pokemon) => pokemon.name));
       const queue = shuffleTrainerCycle();
+      const runPower = getTeamPower(result, selectedTeam);
       setScoreResult(result);
-      setEndpointId(getStrictEndpointId(result));
+      setEndpointId(undefeatedRun ? "complete" : getStrictEndpointId(result));
       setRegularQueue(queue);
       setRegularWins(0);
       setGymIndex(0);
@@ -208,12 +211,23 @@ export default function MarathonPage() {
       setTotalBattles(0);
       setEarnedBadges([]);
       setEncounters([]);
-      prepareNextOpponent(result, 0, 0, queue, 0);
+      prepareNextOpponent(result, 0, 0, queue, 0, selectedTeam, runPower);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to score this team.");
     } finally {
       setIsLoading(false);
     }
+  }
+
+  async function confirmTeam() {
+    await startMarathonRun(team, isUndefeatedRun);
+  }
+
+  async function activateSecretAutoPickTeam(selectedTeam: Pokemon[]) {
+    setIsUndefeatedRun(true);
+    setRevealedCards(selectedTeam);
+    setTeam(selectedTeam);
+    await startMarathonRun(selectedTeam, true);
   }
 
   function prepareNextOpponent(
@@ -222,6 +236,8 @@ export default function MarathonPage() {
     nextRegularWins = regularWins,
     suppliedQueue = regularQueue,
     nextEliteIndex = eliteIndex,
+    runTeam = team,
+    runPlayerPower = playerPower || averagePower(runTeam),
   ) {
     if (!result) return;
     let opponent: ArcadeTrainer;
@@ -240,7 +256,7 @@ export default function MarathonPage() {
         opponentTeam = chooseOpponentTeam(
           catalogue,
           size,
-          playerPower || averagePower(team),
+          runPlayerPower,
           nextGymIndex,
         );
         opponent.pokemonCount = size;
@@ -265,6 +281,7 @@ export default function MarathonPage() {
   function battle() {
     if (!currentOpponent || !scoreResult) return;
     const outcome =
+      isUndefeatedRun ||
       currentOpponent.type === "regular" ||
       endpointId === "complete" ||
       currentOpponent.id !== endpointId
@@ -381,6 +398,7 @@ export default function MarathonPage() {
     setTotalBattles(0);
     setEarnedBadges([]);
     setPendingEvolution(null);
+    setIsUndefeatedRun(false);
     setPhase("pokemon");
   }
 
@@ -422,6 +440,7 @@ export default function MarathonPage() {
           onMainMenu={() => router.push("/")}
           onRevealCard={revealCard}
           onResetRun={resetPokemonSelection}
+          onSecretAutoPickTeam={activateSecretAutoPickTeam}
           onSubmitTeam={confirmTeam}
         />
       </main>
@@ -696,130 +715,132 @@ function MarathonResults({
           </div>
         </section>
 
-        {MARATHON_STAGES.map((stage, stageIndex) => {
-          const stageRegulars = regularEncounters.slice(
-            stageIndex * REGULAR_WINS_PER_GYM,
-            stageIndex * REGULAR_WINS_PER_GYM + REGULAR_WINS_PER_GYM,
-          );
-          const gymResult = majorResults.find(
-            ({ opponent }) =>
-              opponent.type === "gym-leader" && opponent.name === stage.gymLeader,
-          );
-          const gymEncounter = gymResult
-            ? encounters.find((entry) => entry.opponent.id === gymResult.opponent.id)
-            : undefined;
+        <div className="marathon-results-stage-row" aria-label="Marathon stages">
+          {MARATHON_STAGES.map((stage, stageIndex) => {
+            const stageRegulars = regularEncounters.slice(
+              stageIndex * REGULAR_WINS_PER_GYM,
+              stageIndex * REGULAR_WINS_PER_GYM + REGULAR_WINS_PER_GYM,
+            );
+            const gymResult = majorResults.find(
+              ({ opponent }) =>
+                opponent.type === "gym-leader" && opponent.name === stage.gymLeader,
+            );
+            const gymEncounter = gymResult
+              ? encounters.find((entry) => entry.opponent.id === gymResult.opponent.id)
+              : undefined;
 
-          return (
-            <section className="marathon-results-stage" key={stage.number}>
-              <div className="marathon-results-stage__heading">
-                <h2>Stage {stage.number}</h2>
-                <span>{stage.city}</span>
-              </div>
-              <div className="marathon-results-stage__grid">
-                {Array.from({ length: REGULAR_WINS_PER_GYM }, (_, slotIndex) => {
-                  const encounter = stageRegulars[slotIndex];
-                  if (!encounter) {
+            return (
+              <section className="marathon-results-stage" key={stage.number}>
+                <div className="marathon-results-stage__heading">
+                  <h2>Stage {stage.number}</h2>
+                  <span>{stage.city}</span>
+                </div>
+                <div className="marathon-results-stage__grid">
+                  {Array.from({ length: REGULAR_WINS_PER_GYM }, (_, slotIndex) => {
+                    const encounter = stageRegulars[slotIndex];
+                    if (!encounter) {
+                      return (
+                        <article className="marathon-results-placeholder" key={`stage-${stage.number}-trainer-${slotIndex}`}>
+                          <div><span>Trainer {slotIndex + 1}</span><strong>Not Reached</strong></div>
+                        </article>
+                      );
+                    }
+                    const isCurrent = lastEncounter?.id === encounter.id && encounter.outcome === "Lost";
                     return (
-                      <article className="marathon-results-placeholder" key={`stage-${stage.number}-trainer-${slotIndex}`}>
-                        <div><span>Trainer {slotIndex + 1}</span><strong>Not Reached</strong></div>
-                      </article>
+                      <ProgressionCard
+                        key={encounter.id}
+                        breakdown={createArcadeBreakdown(encounter.opponent, encounter.outcome, power)}
+                        className={`marathon-results-opponent-card ${isCurrent ? "marathon-results-opponent-card--current" : ""}`}
+                        locationLabel={stage.city}
+                        meta={encounter.opponent}
+                        roleLabel="Trainer"
+                        spritePresentation="pixel-trainer"
+                        spriteSrc={encounter.opponent.sprite || getTrainerSprite(encounter.opponent.name)}
+                        status={encounter.outcome === "Beat" ? "cleared" : "failed"}
+                        summaryLabel={opponentSummary(encounter.opponent)}
+                      />
                     );
-                  }
-                  const isCurrent = lastEncounter?.id === encounter.id && encounter.outcome === "Lost";
+                  })}
+
+                  {gymResult ? (
+                    <ProgressionCard
+                      breakdown={
+                        gymEncounter
+                          ? createArcadeBreakdown(gymResult.opponent, gymEncounter.outcome, power)
+                          : undefined
+                      }
+                      className={`marathon-results-opponent-card ${
+                        lastEncounter?.id === gymEncounter?.id && gymEncounter?.outcome === "Lost"
+                          ? "marathon-results-opponent-card--current"
+                          : !gymEncounter
+                            ? "marathon-results-opponent-card--locked"
+                            : ""
+                      }`}
+                      isLocked={!gymEncounter}
+                      detailItems={gymResult.opponent.pokemonTeam}
+                      locationLabel={gymResult.opponent.badge}
+                      meta={gymResult.opponent}
+                      roleLabel="Gym Leader"
+                      spritePresentation="pixel-trainer"
+                      status={
+                        gymEncounter
+                          ? gymEncounter.outcome === "Beat"
+                            ? "cleared"
+                            : "failed"
+                          : "not-reached"
+                      }
+                    />
+                  ) : null}
+                </div>
+              </section>
+            );
+          })}
+
+          <section className="marathon-results-stage marathon-results-stage--league">
+            <div className="marathon-results-stage__heading">
+              <h2>Pokémon League</h2>
+              <span>Elite Four & Champion</span>
+            </div>
+            <div className="marathon-results-stage__grid">
+              {majorResults
+                .filter(({ opponent }) => opponent.type === "elite-four" || opponent.type === "champion")
+                .map(({ opponent }) => {
+                  const encounter = encounters.find((entry) => entry.opponent.id === opponent.id);
+                  const isCurrent = lastEncounter?.id === encounter?.id && encounter?.outcome === "Lost";
                   return (
                     <ProgressionCard
-                      key={encounter.id}
-                      breakdown={createArcadeBreakdown(encounter.opponent, encounter.outcome, power)}
-                      className={`marathon-results-opponent-card ${isCurrent ? "marathon-results-opponent-card--current" : ""}`}
-                      locationLabel={stage.city}
-                      meta={encounter.opponent}
-                      roleLabel="Trainer"
+                      key={opponent.id}
+                      breakdown={
+                        encounter
+                          ? createArcadeBreakdown(opponent, encounter.outcome, power)
+                          : undefined
+                      }
+                      className={`marathon-results-opponent-card ${
+                        isCurrent
+                          ? "marathon-results-opponent-card--current"
+                          : !encounter
+                            ? "marathon-results-opponent-card--locked"
+                            : ""
+                      }`}
+                      isLocked={!encounter}
+                      locationLabel="Pokémon League"
+                      meta={opponent}
+                      roleLabel={opponentRole(opponent.type)}
                       spritePresentation="pixel-trainer"
-                      spriteSrc={encounter.opponent.sprite || getTrainerSprite(encounter.opponent.name)}
-                      status={encounter.outcome === "Beat" ? "cleared" : "failed"}
-                      summaryLabel={opponentSummary(encounter.opponent)}
+                      status={
+                        encounter
+                          ? encounter.outcome === "Beat"
+                            ? "cleared"
+                            : "failed"
+                          : "not-reached"
+                      }
+                      summaryLabel={opponentSummary(opponent)}
                     />
                   );
                 })}
-
-                {gymResult ? (
-                  <ProgressionCard
-                    breakdown={
-                      gymEncounter
-                        ? createArcadeBreakdown(gymResult.opponent, gymEncounter.outcome, power)
-                        : undefined
-                    }
-                    className={`marathon-results-opponent-card ${
-                      lastEncounter?.id === gymEncounter?.id && gymEncounter?.outcome === "Lost"
-                        ? "marathon-results-opponent-card--current"
-                        : !gymEncounter
-                          ? "marathon-results-opponent-card--locked"
-                          : ""
-                    }`}
-                    isLocked={!gymEncounter}
-                    detailItems={gymResult.opponent.pokemonTeam}
-                    locationLabel={gymResult.opponent.badge}
-                    meta={gymResult.opponent}
-                    roleLabel="Gym Leader"
-                    spritePresentation="pixel-trainer"
-                    status={
-                      gymEncounter
-                        ? gymEncounter.outcome === "Beat"
-                          ? "cleared"
-                          : "failed"
-                        : "not-reached"
-                    }
-                  />
-                ) : null}
-              </div>
-            </section>
-          );
-        })}
-
-        <section className="marathon-results-stage marathon-results-stage--league">
-          <div className="marathon-results-stage__heading">
-            <h2>Pokémon League</h2>
-            <span>Elite Four & Champion</span>
-          </div>
-          <div className="marathon-results-stage__grid">
-            {majorResults
-              .filter(({ opponent }) => opponent.type === "elite-four" || opponent.type === "champion")
-              .map(({ opponent }) => {
-                const encounter = encounters.find((entry) => entry.opponent.id === opponent.id);
-                const isCurrent = lastEncounter?.id === encounter?.id && encounter?.outcome === "Lost";
-                return (
-                  <ProgressionCard
-                    key={opponent.id}
-                    breakdown={
-                      encounter
-                        ? createArcadeBreakdown(opponent, encounter.outcome, power)
-                        : undefined
-                    }
-                    className={`marathon-results-opponent-card ${
-                      isCurrent
-                        ? "marathon-results-opponent-card--current"
-                        : !encounter
-                          ? "marathon-results-opponent-card--locked"
-                          : ""
-                    }`}
-                    isLocked={!encounter}
-                    locationLabel="Pokémon League"
-                    meta={opponent}
-                    roleLabel={opponentRole(opponent.type)}
-                    spritePresentation="pixel-trainer"
-                    status={
-                      encounter
-                        ? encounter.outcome === "Beat"
-                          ? "cleared"
-                          : "failed"
-                        : "not-reached"
-                    }
-                    summaryLabel={opponentSummary(opponent)}
-                  />
-                );
-              })}
-          </div>
-        </section>
+            </div>
+          </section>
+        </div>
 
         <div className="trainer-card-actions">
           <button className="primary-action" type="button" onClick={onTryAgain}>TRY AGAIN</button>
@@ -836,6 +857,15 @@ function namesToPokemon(names: string[], catalogue: Pokemon[]) {
       catalogue.find((pokemon) => pokemon.name.toLowerCase() === name.toLowerCase()),
     )
     .filter((pokemon): pokemon is Pokemon => Boolean(pokemon));
+}
+
+function getTeamPower(result: TeamScoreResult | null, team: Pokemon[]) {
+  return Math.round(
+    result?.total_score ??
+      result?.team_score ??
+      result?.score ??
+      averagePower(team),
+  );
 }
 
 function averagePower(team: Pokemon[]) {
