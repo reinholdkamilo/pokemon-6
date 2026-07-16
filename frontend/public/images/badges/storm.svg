@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Storm Badge">
+  <circle cx="32" cy="32" r="27" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="4"/>
+  <path d="M32 9l6.5 14.4L54 25l-11.8 10.4 3.4 15.2L32 42.7 18.4 50.6l3.4-15.2L10 25l15.5-1.6L32 9z" fill="white" opacity="0.72"/>
+  <text x="32" y="39" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#1d4ed8">S</text>
+</svg>

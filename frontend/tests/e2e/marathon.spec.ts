@@ -28,7 +28,9 @@ test.beforeEach(async ({ page }) => {
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
   });
-  await page.route(/http:\/\/[^/]+:8000\/pokemon$/, (route) => route.fulfill({ json: pokemon }));
+  await page.route(/http:\/\/[^/]+:8000\/pokemon$/, (route) =>
+    route.fulfill({ json: pokemon }),
+  );
   await page.route(/http:\/\/[^/]+:8000\/teams\/score$/, (route) =>
     route.fulfill({
       json: {
@@ -59,10 +61,14 @@ test.beforeEach(async ({ page }) => {
   await page.exposeFunction("__browserErrors", () => errors);
 });
 
-test("title screen exposes Arcade and Marathon only, with route mapping", async ({ page }) => {
+test("title screen exposes Arcade and Marathon only, with route mapping", async ({
+  page,
+}) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Arcade Mode" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Marathon Mode" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Marathon Mode" }),
+  ).toBeVisible();
   await expect(page.getByText("Adventure Mode")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Arcade Mode" }).click();
@@ -73,7 +79,9 @@ test("title screen exposes Arcade and Marathon only, with route mapping", async 
   await page.getByRole("button", { name: "Marathon Mode" }).click();
   await expect(page).toHaveURL(/\/marathon$/);
   await expect(page.getByText("Marathon Mode").first()).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Choose Your Character" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Choose Your Character" }),
+  ).toBeVisible();
 
   await page.goto("/arcade");
   await expect(page).toHaveURL(/\/marathon$/);
@@ -86,18 +94,25 @@ for (const viewport of [
   { name: "android-small", width: 360, height: 740 },
   { name: "android-standard", width: 412, height: 915 },
 ]) {
-  test(`Marathon mobile flow is stable at ${viewport.name}`, async ({ page }) => {
+  test(`Marathon mobile flow is stable at ${viewport.name}`, async ({
+    page,
+  }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await openMarathonRoundOne(page, viewport.name);
 
     await expect(page.getByText(/Round \d+\s*\/\s*6/i)).toHaveCount(0);
     await expect(page.getByText(/Overall \d+\s*\/\s*53/i)).toHaveCount(0);
-    await expect(page.getByText(/0\s*\/\s*5 Trainers Defeated/i)).toHaveCount(0);
+    await expect(page.getByText(/0\s*\/\s*5 Trainers Defeated/i)).toHaveCount(
+      0,
+    );
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
     await assertMarathonBattlePlayerSpriteVisible(page);
-    await page.screenshot({ path: `test-results/screenshots/${viewport.name}-round-1-matchup.png`, fullPage: true });
+    await page.screenshot({
+      path: `test-results/screenshots/${viewport.name}-round-1-matchup.png`,
+      fullPage: true,
+    });
 
     await page.getByRole("button", { name: "BATTLE" }).click();
     await page.getByRole("button", { name: /SKIP ANIMATION|CONTINUE/ }).click();
@@ -106,8 +121,13 @@ for (const viewport of [
     const cards = page.locator(".marathon-matchup-grid .progression-card");
     await expect(cards.nth(0).locator(".result-stamp")).toHaveCount(0);
     await expect(cards.nth(1).locator(".result-stamp")).toHaveText("DEFEATED");
-    await expect(cards.nth(1).locator(".result-stamp")).toHaveClass(/result-stamp--success/);
-    await page.screenshot({ path: `test-results/screenshots/${viewport.name}-player-win-result.png`, fullPage: true });
+    await expect(cards.nth(1).locator(".result-stamp")).toHaveClass(
+      /result-stamp--success/,
+    );
+    await page.screenshot({
+      path: `test-results/screenshots/${viewport.name}-player-win-result.png`,
+      fullPage: true,
+    });
 
     await page.getByRole("button", { name: "NEXT BATTLE" }).click();
     await expect(page.getByText(/Round \d+\s*\/\s*6/i)).toHaveCount(0);
@@ -115,7 +135,10 @@ for (const viewport of [
     await assertNoHorizontalOverflow(page);
     await assertFullBodySpritesInsideContainers(page);
     await assertMarathonBattlePlayerSpriteVisible(page);
-    await page.screenshot({ path: `test-results/screenshots/${viewport.name}-round-2-matchup.png`, fullPage: true });
+    await page.screenshot({
+      path: `test-results/screenshots/${viewport.name}-round-2-matchup.png`,
+      fullPage: true,
+    });
 
     await page.getByRole("button", { name: "BATTLE" }).click();
     await page.getByRole("button", { name: /SKIP ANIMATION|CONTINUE/ }).click();
@@ -123,7 +146,11 @@ for (const viewport of [
     await expect(page.getByText(/Round \d+\s*\/\s*6/i)).toHaveCount(0);
     await assertNoHorizontalOverflow(page);
 
-    const browserErrors = await page.evaluate(async () => (window as unknown as { __browserErrors: () => Promise<string[]> }).__browserErrors());
+    const browserErrors = await page.evaluate(async () =>
+      (
+        window as unknown as { __browserErrors: () => Promise<string[]> }
+      ).__browserErrors(),
+    );
     expect(browserErrors).toEqual([]);
   });
 }
@@ -131,48 +158,76 @@ for (const viewport of [
 async function openMarathonRoundOne(page: Page, viewportName: string) {
   await page.goto("/marathon");
   const characterCard = page.locator(".marathon-character-card");
-  const previousButton = page.getByRole("button", { name: "Previous player character" });
-  const nextButton = page.getByRole("button", { name: "Next player character" });
+  const previousButton = page.getByRole("button", {
+    name: "Previous player character",
+  });
+  const nextButton = page.getByRole("button", {
+    name: "Next player character",
+  });
 
   await expect(characterCard).toHaveCount(1);
   await expect(previousButton).toBeVisible();
   await expect(nextButton).toBeVisible();
-  await expect(page.locator(".player-character-selector__position")).toHaveText("1 / 4");
+  await expect(page.locator(".player-character-selector__position")).toHaveText(
+    "1 / 4",
+  );
 
   await nextButton.click();
-  await expect(page.locator(".player-character-selector__position")).toHaveText("2 / 4");
+  await expect(page.locator(".player-character-selector__position")).toHaveText(
+    "2 / 4",
+  );
 
   await nextButton.click();
-  await expect(page.locator(".player-character-selector__position")).toHaveText("3 / 4");
+  await expect(page.locator(".player-character-selector__position")).toHaveText(
+    "3 / 4",
+  );
 
   await nextButton.click();
-  await expect(page.locator(".player-character-selector__position")).toHaveText("4 / 4");
+  await expect(page.locator(".player-character-selector__position")).toHaveText(
+    "4 / 4",
+  );
 
   await nextButton.click();
-  await expect(page.locator(".player-character-selector__position")).toHaveText("1 / 4");
+  await expect(page.locator(".player-character-selector__position")).toHaveText(
+    "1 / 4",
+  );
 
   await assertNoHorizontalOverflow(page);
   await assertCardsFitViewport(page, ".marathon-character-card");
   await assertFullBodySpritesInsideContainers(page);
   await expect(page.getByRole("button", { name: "CONTINUE" })).toBeVisible();
-  await page.screenshot({ path: `test-results/screenshots/${viewportName}-character-select.png`, fullPage: true });
+  await page.screenshot({
+    path: `test-results/screenshots/${viewportName}-character-select.png`,
+    fullPage: true,
+  });
 
   await page.getByRole("button", { name: "CONTINUE" }).click();
-  await expect(page.getByRole("heading", { name: "Choose Your Region" })).toBeVisible();
-  const kantoPoolButton = page.getByRole("button", { name: "Choose Kanto Pokemon" });
-  await expect(kantoPoolButton).toBeVisible();
-  await expect(kantoPoolButton).toBeEnabled();
-  await expect(page.getByRole("button", { name: "Choose Johto Pokemon" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Choose Mixed Pokemon" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Choose Kanto Pokemon" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Choose Your Region" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Choose Johto Pokemon" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Choose Mixed Pokemon" }),
+  ).toHaveCount(0);
   await assertNoHorizontalOverflow(page);
-  await kantoPoolButton.click();
   await page.getByRole("button", { name: "AUTO PICK" }).click();
-  await expect(page.getByRole("button", { name: "I CHOOSE YOU!" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "I CHOOSE YOU!" }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "I CHOOSE YOU!" }).click();
 }
 
 async function assertNoHorizontalOverflow(page: Page) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
@@ -181,96 +236,141 @@ async function assertCardsFitViewport(page: Page, selector: string) {
     cards
       .map((card) => card.getBoundingClientRect())
       .filter((rect) => rect.left < -1 || rect.right > window.innerWidth + 1)
-      .map((rect) => ({ left: rect.left, right: rect.right, width: window.innerWidth })),
+      .map((rect) => ({
+        left: rect.left,
+        right: rect.right,
+        width: window.innerWidth,
+      })),
   );
   expect(failures).toEqual([]);
 }
 
 async function assertFullBodySpritesInsideContainers(page: Page) {
-  const failures = await page.locator(".progression-card--sprite-full-body").evaluateAll((cards, alphaBounds) =>
-    cards
-      .map((card) => {
-        const area = card.getElementsByClassName("progression-sprite-area")[0];
-        const image = card.getElementsByClassName("trainer-sprite")[0];
-        if (!area || !(image instanceof HTMLImageElement)) return null;
-        const areaRect = area.getBoundingClientRect();
-        const imageRect = image.getBoundingClientRect();
-        const naturalRatio = image.naturalWidth / image.naturalHeight;
-        const renderedRatio = imageRect.width / imageRect.height;
-        const url = new URL(image.currentSrc || image.src);
-        const alpha = (alphaBounds as Record<string, [number, number, number, number]>)[url.pathname];
-        if (!alpha) {
-          return { src: url.pathname, clipped: true, ratioChanged: false, intersectsBottom: true };
-        }
-        const [left, top, right, bottom] = alpha;
-        const visibleRect = {
-          left: imageRect.left + (left / image.naturalWidth) * imageRect.width,
-          top: imageRect.top + (top / image.naturalHeight) * imageRect.height,
-          right: imageRect.left + (right / image.naturalWidth) * imageRect.width,
-          bottom: imageRect.top + (bottom / image.naturalHeight) * imageRect.height,
-        };
-        return {
-          src: url.pathname,
-          areaRect,
-          visibleRect,
-          clipped:
-            visibleRect.left < areaRect.left - 1 ||
-            visibleRect.right > areaRect.right + 1 ||
-            visibleRect.top < areaRect.top - 1 ||
-            visibleRect.bottom > areaRect.bottom + 1,
-          ratioChanged: Math.abs(naturalRatio - renderedRatio) > 0.02,
-          intersectsBottom: Math.abs(visibleRect.bottom - areaRect.bottom) <= 1,
-        };
-      })
-      .filter(Boolean)
-      .filter((result) => result?.clipped || result?.ratioChanged || result?.intersectsBottom),
-    spriteAlphaBounds,
-  );
+  const failures = await page
+    .locator(".progression-card--sprite-full-body")
+    .evaluateAll(
+      (cards, alphaBounds) =>
+        cards
+          .map((card) => {
+            const area = card.getElementsByClassName(
+              "progression-sprite-area",
+            )[0];
+            const image = card.getElementsByClassName("trainer-sprite")[0];
+            if (!area || !(image instanceof HTMLImageElement)) return null;
+            const areaRect = area.getBoundingClientRect();
+            const imageRect = image.getBoundingClientRect();
+            const naturalRatio = image.naturalWidth / image.naturalHeight;
+            const renderedRatio = imageRect.width / imageRect.height;
+            const url = new URL(image.currentSrc || image.src);
+            const alpha = (
+              alphaBounds as Record<string, [number, number, number, number]>
+            )[url.pathname];
+            if (!alpha) {
+              return {
+                src: url.pathname,
+                clipped: true,
+                ratioChanged: false,
+                intersectsBottom: true,
+              };
+            }
+            const [left, top, right, bottom] = alpha;
+            const visibleRect = {
+              left:
+                imageRect.left + (left / image.naturalWidth) * imageRect.width,
+              top:
+                imageRect.top + (top / image.naturalHeight) * imageRect.height,
+              right:
+                imageRect.left + (right / image.naturalWidth) * imageRect.width,
+              bottom:
+                imageRect.top +
+                (bottom / image.naturalHeight) * imageRect.height,
+            };
+            return {
+              src: url.pathname,
+              areaRect,
+              visibleRect,
+              clipped:
+                visibleRect.left < areaRect.left - 1 ||
+                visibleRect.right > areaRect.right + 1 ||
+                visibleRect.top < areaRect.top - 1 ||
+                visibleRect.bottom > areaRect.bottom + 1,
+              ratioChanged: Math.abs(naturalRatio - renderedRatio) > 0.02,
+              intersectsBottom:
+                Math.abs(visibleRect.bottom - areaRect.bottom) <= 1,
+            };
+          })
+          .filter(Boolean)
+          .filter(
+            (result) =>
+              result?.clipped ||
+              result?.ratioChanged ||
+              result?.intersectsBottom,
+          ),
+      spriteAlphaBounds,
+    );
   expect(failures).toEqual([]);
 }
 
 async function assertMarathonBattlePlayerSpriteVisible(page: Page) {
   const failures = await page
     .locator(".marathon-player-battle-card.progression-card--sprite-full-body")
-    .evaluateAll((cards, alphaBounds) =>
-      cards
-        .map((card) => {
-          const area = card.getElementsByClassName("progression-sprite-area")[0];
-          const image = card.getElementsByClassName("trainer-sprite")[0];
-          if (!area || !(image instanceof HTMLImageElement)) {
-            return { reason: "missing player sprite" };
-          }
+    .evaluateAll(
+      (cards, alphaBounds) =>
+        cards
+          .map((card) => {
+            const area = card.getElementsByClassName(
+              "progression-sprite-area",
+            )[0];
+            const image = card.getElementsByClassName("trainer-sprite")[0];
+            if (!area || !(image instanceof HTMLImageElement)) {
+              return { reason: "missing player sprite" };
+            }
 
-          const areaRect = area.getBoundingClientRect();
-          const imageRect = image.getBoundingClientRect();
-          const url = new URL(image.currentSrc || image.src);
-          const alpha = (alphaBounds as Record<string, [number, number, number, number]>)[url.pathname];
+            const areaRect = area.getBoundingClientRect();
+            const imageRect = image.getBoundingClientRect();
+            const url = new URL(image.currentSrc || image.src);
+            const alpha = (
+              alphaBounds as Record<string, [number, number, number, number]>
+            )[url.pathname];
 
-          if (!alpha) {
-            return { src: url.pathname, reason: "missing alpha bounds" };
-          }
+            if (!alpha) {
+              return { src: url.pathname, reason: "missing alpha bounds" };
+            }
 
-          const [left, top, right, bottom] = alpha;
-          const visibleRect = {
-            left: imageRect.left + (left / image.naturalWidth) * imageRect.width,
-            top: imageRect.top + (top / image.naturalHeight) * imageRect.height,
-            right: imageRect.left + (right / image.naturalWidth) * imageRect.width,
-            bottom: imageRect.top + (bottom / image.naturalHeight) * imageRect.height,
-          };
+            const [left, top, right, bottom] = alpha;
+            const visibleRect = {
+              left:
+                imageRect.left + (left / image.naturalWidth) * imageRect.width,
+              top:
+                imageRect.top + (top / image.naturalHeight) * imageRect.height,
+              right:
+                imageRect.left + (right / image.naturalWidth) * imageRect.width,
+              bottom:
+                imageRect.top +
+                (bottom / image.naturalHeight) * imageRect.height,
+            };
 
-          const topClipped = visibleRect.top < areaRect.top + 1;
-          const bottomClipped = visibleRect.bottom > areaRect.bottom - 1;
-          const sideClipped =
-            visibleRect.left < areaRect.left - 1 ||
-            visibleRect.right > areaRect.right + 1;
-          const visibleHeight = visibleRect.bottom - visibleRect.top;
-          const tooTiny = visibleHeight < areaRect.height * 0.74;
+            const topClipped = visibleRect.top < areaRect.top + 1;
+            const bottomClipped = visibleRect.bottom > areaRect.bottom - 1;
+            const sideClipped =
+              visibleRect.left < areaRect.left - 1 ||
+              visibleRect.right > areaRect.right + 1;
+            const visibleHeight = visibleRect.bottom - visibleRect.top;
+            const tooTiny = visibleHeight < areaRect.height * 0.74;
 
-          return topClipped || bottomClipped || sideClipped || tooTiny
-            ? { src: url.pathname, areaRect, visibleRect, topClipped, bottomClipped, sideClipped, tooTiny }
-            : null;
-        })
-        .filter(Boolean),
+            return topClipped || bottomClipped || sideClipped || tooTiny
+              ? {
+                  src: url.pathname,
+                  areaRect,
+                  visibleRect,
+                  topClipped,
+                  bottomClipped,
+                  sideClipped,
+                  tooTiny,
+                }
+              : null;
+          })
+          .filter(Boolean),
       spriteAlphaBounds,
     );
 
@@ -296,5 +396,8 @@ function makePokemon(id: number, name: string, baseStatTotal: number) {
 }
 
 function slugifyPokemonName(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
