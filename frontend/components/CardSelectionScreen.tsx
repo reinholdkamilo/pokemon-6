@@ -13,7 +13,6 @@ import {
   spinLegendaryLocation,
   spinLocation,
 } from "@/lib/kantoEncounters";
-import { rollPokemonShiny } from "@/lib/pokemonSprites";
 import type { Pokemon } from "@/types/pokemon";
 
 type CardSelectionScreenProps = {
@@ -272,7 +271,7 @@ export function CardSelectionScreen({
     if (eligiblePokemon.length > 0) {
       return {
         location,
-        pokemon: rollPokemonShiny(pickRandomPokemon(eligiblePokemon)),
+        pokemon: pickRandomPokemon(eligiblePokemon),
       };
     }
 
@@ -294,7 +293,7 @@ export function CardSelectionScreen({
 
     return {
       location: fallbackLocation,
-      pokemon: rollPokemonShiny(pickRandomPokemon(fallbackPokemon)),
+      pokemon: pickRandomPokemon(fallbackPokemon),
     };
   }
 

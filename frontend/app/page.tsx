@@ -15,7 +15,6 @@ import { TitleScreen } from "@/components/TitleScreen";
 import { getPokemon, scoreTeam } from "@/lib/api";
 import { EVOLUTION_TRIGGER_WINS, getNextEvolutionName } from "@/lib/evolutions";
 import { DEFAULT_PLAYER_CHARACTER_ID } from "@/lib/playerCharacters";
-import { evolvePokemonSprite } from "@/lib/pokemonSprites";
 import {
   CHAMPION,
   ELITE_FOUR,
@@ -294,7 +293,7 @@ export default function Home() {
       return [
         {
           fromPokemon,
-          toPokemon: evolvePokemonSprite(fromPokemon, toPokemon),
+          toPokemon,
           teamIndex,
         },
       ];
