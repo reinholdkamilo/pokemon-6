@@ -5474,6 +5474,14 @@ button.team-progress-pokeball:disabled {
   width: min(100%, 240px);
 }
 
+.evolution-actions {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .evolution-pokemon-card {
   width: min(210px, 68vw);
   aspect-ratio: 0.72;

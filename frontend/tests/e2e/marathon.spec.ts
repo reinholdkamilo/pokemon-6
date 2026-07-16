@@ -87,6 +87,85 @@ test("title screen exposes Arcade and Marathon only, with route mapping", async 
   await expect(page).toHaveURL(/\/marathon$/);
 });
 
+test("checkpoint retry keeps the party and resumes battles after the last beaten gym leader", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+
+  await page.route(/http:\/\/[^/]+:8000\/teams\/score$/, (route) =>
+    route.fulfill({
+      json: {
+        score: 900,
+        team_score: 900,
+        total_score: 900,
+        badges_earned: ["Boulder Badge"],
+        badges_required: 8,
+        opponent_breakdown: {
+          gym_leaders: [
+            {
+              opponent_name: "Brock",
+              stage: "Gym Leader",
+              matchup_score: 900,
+              outcome: "Beat",
+              win_type: "normal",
+            },
+            {
+              opponent_name: "Misty",
+              stage: "Gym Leader",
+              matchup_score: 100,
+              outcome: "Lost",
+              win_type: "loss",
+            },
+          ],
+          elite_four: [],
+          champion: [],
+        },
+      },
+    }),
+  );
+
+  await openMarathonRoundOne(page, "checkpoint-retry");
+  await skipRegularTrainerWins(page, 5);
+
+  await page.getByRole("button", { name: "BATTLE BROCK" }).click();
+  await page.getByRole("button", { name: "CONTINUE" }).click({
+    timeout: 45_000,
+  });
+  await page.getByRole("button", { name: "NEXT STAGE" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Cerulean City" }),
+  ).toBeVisible();
+
+  await skipRegularTrainerWins(page, 5);
+  await page.getByRole("button", { name: "BATTLE MISTY" }).click();
+  await page.getByRole("button", { name: "CONTINUE" }).click({
+    timeout: 45_000,
+  });
+  await page.getByRole("button", { name: "RESULTS" }).click();
+  await page
+    .getByRole("button", { name: "CONTINUE FROM LAST GYM LEADER" })
+    .click();
+
+  await expect(
+    page.getByRole("heading", { name: "Continue from last Gym Leader" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "I CHOOSE YOU!" }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "RE SPIN" })).toBeVisible();
+
+  await page
+    .getByRole("button", { name: "I CHOOSE YOU!" })
+    .click({ force: true });
+  await expect(
+    page.getByRole("heading", { name: "Cerulean City" }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "BATTLE" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Continue from last Gym Leader" }),
+  ).toHaveCount(0);
+});
+
 for (const viewport of [
   { name: "iphone-se", width: 375, height: 667 },
   { name: "iphone-12-13", width: 390, height: 844 },
@@ -215,11 +294,26 @@ async function openMarathonRoundOne(page: Page, viewportName: string) {
     page.getByRole("button", { name: "Choose Mixed Pokemon" }),
   ).toHaveCount(0);
   await assertNoHorizontalOverflow(page);
-  await page.getByRole("button", { name: "AUTO PICK" }).click();
+  await page.getByRole("button", { name: "AUTO PICK" }).click({ force: true });
   await expect(
     page.getByRole("button", { name: "I CHOOSE YOU!" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "I CHOOSE YOU!" }).click();
+  await page
+    .getByRole("button", { name: "I CHOOSE YOU!" })
+    .click({ force: true });
+}
+
+async function skipRegularTrainerWins(page: Page, count: number) {
+  for (let index = 0; index < count; index += 1) {
+    await page.getByRole("button", { name: "SKIP TRAINER" }).click();
+    if ((await page.getByRole("dialog").count()) > 0) {
+      await page.getByRole("button", { name: "NEXT" }).click();
+      await page.getByRole("button", { name: "CONTINUE" }).click({
+        timeout: 10_000,
+      });
+    }
+    await page.getByRole("button", { name: "NEXT BATTLE" }).click();
+  }
 }
 
 async function assertNoHorizontalOverflow(page: Page) {

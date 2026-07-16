@@ -6,6 +6,7 @@ import type { Pokemon } from "@/types/pokemon";
 type EvolutionModalProps = {
   fromPokemon: Pokemon;
   toPokemon: Pokemon;
+  canSkipAnimation?: boolean;
   onComplete: () => void;
 };
 
@@ -14,6 +15,7 @@ type EvolutionStage = "intro" | "evolving" | "complete";
 export function EvolutionModal({
   fromPokemon,
   toPokemon,
+  canSkipAnimation = false,
   onComplete,
 }: EvolutionModalProps) {
   const [stage, setStage] = useState<EvolutionStage>("intro");
@@ -53,13 +55,24 @@ export function EvolutionModal({
             <p className="eyebrow">Evolution</p>
             <h2>What? {fromPokemon.name} is evolving!</h2>
             <EvolutionPokemonCard pokemon={fromPokemon} />
-            <button
-              className="primary-action evolution-action"
-              type="button"
-              onClick={() => setStage("evolving")}
-            >
-              NEXT
-            </button>
+            <div className="evolution-actions">
+              <button
+                className="primary-action evolution-action"
+                type="button"
+                onClick={() => setStage("evolving")}
+              >
+                NEXT
+              </button>
+              {canSkipAnimation ? (
+                <button
+                  className="secondary-action evolution-action"
+                  type="button"
+                  onClick={completeEvolution}
+                >
+                  SKIP EVOLUTION
+                </button>
+              ) : null}
+            </div>
           </>
         ) : null}
 
@@ -77,6 +90,15 @@ export function EvolutionModal({
                 className="evolution-card-flash evolution-card-to"
               />
             </div>
+            {canSkipAnimation ? (
+              <button
+                className="secondary-action evolution-action"
+                type="button"
+                onClick={completeEvolution}
+              >
+                SKIP EVOLUTION
+              </button>
+            ) : null}
           </>
         ) : null}
 

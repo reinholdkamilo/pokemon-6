@@ -457,16 +457,19 @@ export default function MarathonPage() {
   function skipTrainerBattle() {
     if (
       !currentOpponent ||
-      currentOpponent.type !== "regular" ||
+      (!isUndefeatedRun && currentOpponent.type !== "regular") ||
       phase !== "matchup"
     ) {
       return;
     }
     setCurrentOutcome("Beat");
-    finishBattle("Beat");
+    finishBattle("Beat", { skipEvolution: isUndefeatedRun });
   }
 
-  function finishBattle(outcome: "Beat" | "Lost") {
+  function finishBattle(
+    outcome: "Beat" | "Lost",
+    options: { skipEvolution?: boolean } = {},
+  ) {
     if (!currentOpponent) return;
     const nextBattleCount = totalBattles + 1;
     const nextWinCount = totalWins + (outcome === "Beat" ? 1 : 0);
@@ -498,7 +501,9 @@ export default function MarathonPage() {
           checkpoint: nextCheckpoint,
         });
       }
-      queueEvolution(nextWinCount);
+      if (!options.skipEvolution) {
+        queueEvolution(nextWinCount);
+      }
     }
     setPhase("result");
   }
@@ -613,6 +618,7 @@ export default function MarathonPage() {
   function tryAgain() {
     const currentCheckpoint =
       checkpoint?.region === activeRegion ? checkpoint : null;
+    const checkpointTeam = team;
 
     resetRunState();
 
@@ -625,7 +631,8 @@ export default function MarathonPage() {
     }
 
     setRetryCheckpoint(currentCheckpoint);
-    setRevealedCards(team);
+    setTeam(checkpointTeam);
+    setRevealedCards(checkpointTeam);
     setPhase("pokemon");
   }
 
@@ -924,7 +931,7 @@ export default function MarathonPage() {
         <BattleSelectionScreen
           description={
             isCheckpointRetry
-              ? "Use your one re-spin, then confirm your team to continue from the last Gym Leader."
+              ? "Keep your current party or use one re-spin to swap selected Pokemon before continuing from the last Gym Leader."
               : "Spin six Kanto Pokemon before starting Marathon Mode"
           }
           revealedCards={revealedCards}
@@ -942,7 +949,6 @@ export default function MarathonPage() {
           onResetRun={resetPokemonSelection}
           onSecretAutoPickTeam={activateSecretAutoPickTeam}
           onSubmitTeam={confirmTeam}
-          respinSelectionLimit={isCheckpointRetry ? 1 : undefined}
         />
       </main>
     );
@@ -956,7 +962,7 @@ export default function MarathonPage() {
         opponent={currentOpponent}
         opponentTeam={currentOpponentTeam}
         outcome={currentOutcome}
-        canSkipAnimation={currentOpponent.type === "regular"}
+        canSkipAnimation={isUndefeatedRun || currentOpponent.type === "regular"}
         onComplete={() => finishBattle(currentOutcome)}
         onMainMenu={() => router.push("/")}
       />
@@ -1022,13 +1028,15 @@ export default function MarathonPage() {
                       ? "ELITE FOUR BATTLE"
                       : "BATTLE"}
               </button>
-              {currentOpponent.type === "regular" ? (
+              {isUndefeatedRun || currentOpponent.type === "regular" ? (
                 <button
                   className="secondary-action marathon-skip-trainer"
                   type="button"
                   onClick={skipTrainerBattle}
                 >
-                  SKIP TRAINER
+                  {currentOpponent.type === "regular"
+                    ? "SKIP TRAINER"
+                    : "SKIP BATTLE"}
                 </button>
               ) : null}
             </div>
@@ -1137,6 +1145,7 @@ export default function MarathonPage() {
           <EvolutionModal
             fromPokemon={pendingEvolution.fromPokemon}
             toPokemon={pendingEvolution.toPokemon}
+            canSkipAnimation={isUndefeatedRun}
             onComplete={completeEvolution}
           />
         ) : null}
