@@ -5,6 +5,7 @@ import { GameTopBar } from "@/components/GameTopBar";
 import { PokeballProgress } from "@/components/PokeballProgress";
 import { RevealCard } from "@/components/RevealCard";
 import { getPokemon } from "@/lib/api";
+import { rollPokemonShiny } from "@/lib/pokemonSprites";
 import type { Pokemon } from "@/types/pokemon";
 
 type BattleSelectionScreenProps = {
@@ -129,8 +130,8 @@ export function BattleSelectionScreen({
     const normalSpinPool = preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
     const legendaryPokemon = preferredPokemon.filter(isLegendaryPokemon);
     const hasLegendaryPool = isLegendarySpin && legendaryPokemon.length > 0;
-    const finalPokemon = pickRandomPokemon(
-      hasLegendaryPool ? legendaryPokemon : normalSpinPool,
+    const finalPokemon = rollPokemonShiny(
+      pickRandomPokemon(hasLegendaryPool ? legendaryPokemon : normalSpinPool),
     );
     const previewPokemon = hasLegendaryPool ? legendaryPokemon : availablePokemon;
 

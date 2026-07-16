@@ -34,6 +34,7 @@ import {
   toPlayerCharacterMeta,
   type PlayerCharacterId,
 } from "@/lib/playerCharacters";
+import { evolvePokemonSprite } from "@/lib/pokemonSprites";
 import { CHAMPION, ELITE_FOUR, GYM_LEADERS } from "@/lib/progression";
 import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
@@ -313,7 +314,9 @@ export default function MarathonPage() {
       const toPokemon = nextName
         ? catalogue.find((pokemon) => pokemon.name.toLowerCase() === nextName.toLowerCase())
         : undefined;
-      return toPokemon ? [{ fromPokemon, toPokemon, teamIndex }] : [];
+      return toPokemon
+        ? [{ fromPokemon, toPokemon: evolvePokemonSprite(fromPokemon, toPokemon), teamIndex }]
+        : [];
     });
     if (eligible.length > 0) setPendingEvolution(eligible[0]);
   }
