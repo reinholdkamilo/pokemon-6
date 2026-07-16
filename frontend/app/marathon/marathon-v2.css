@@ -67,10 +67,10 @@
   order: 2;
   width: min(100%, 880px);
   margin: 14px auto 0;
-  padding: 12px 14px;
-  border: 2px solid rgba(30, 64, 175, 0.3);
-  border-radius: 16px;
-  background: rgba(239, 246, 255, 0.92);
+  padding: 0 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .marathon-progress-panel__dots {

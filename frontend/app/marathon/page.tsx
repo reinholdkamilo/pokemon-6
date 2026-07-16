@@ -52,7 +52,6 @@ type PendingEvolution = {
 };
 
 const TEAM_SIZE = 6;
-const TOTAL_MARATHON_BATTLES = 53;
 
 const MARATHON_STAGES = [
   { number: 1, city: "Pewter City", gymLeader: "Brock", badge: "Boulder Badge" },
@@ -146,12 +145,6 @@ export default function MarathonPage() {
         ? 1
         : 0),
   );
-  const stageRound = isGymLeaderBattle
-    ? REGULAR_WINS_PER_GYM + 1
-    : Math.min(trainerProgress + 1, REGULAR_WINS_PER_GYM);
-  const leagueRound = isChampionBattle
-    ? ELITE_FOUR.length + 1
-    : Math.min(eliteIndex + 1, ELITE_FOUR.length);
   const playerPower = Math.round(
     scoreResult?.total_score ??
       scoreResult?.team_score ??
@@ -475,12 +468,6 @@ export default function MarathonPage() {
           <header className="marathon-battle-header">
             <p className="eyebrow">{isPokemonLeague ? "Pokémon League" : `Stage ${currentStage?.number}`}</p>
             <h1>{isPokemonLeague ? "Pokémon League" : currentStage?.city}</h1>
-            <p className="marathon-battle-header__round">
-              {isPokemonLeague
-                ? `Battle ${leagueRound} / ${ELITE_FOUR.length + 1}`
-                : `Round ${stageRound} / ${REGULAR_WINS_PER_GYM + 1}`}
-              {` • Overall ${Math.min(totalBattles + (phase === "matchup" ? 1 : 0), TOTAL_MARATHON_BATTLES)} / ${TOTAL_MARATHON_BATTLES}`}
-            </p>
           </header>
 
           <BadgeStrip earnedBadges={earnedBadges} />
@@ -545,29 +532,33 @@ export default function MarathonPage() {
             <strong className="marathon-versus">VS</strong>
             <ProgressionCard
               breakdown={breakdown}
-              className="marathon-opponent-battle-card"
+              className={`marathon-opponent-battle-card marathon-opponent-battle-card--${currentOpponent.type}`}
               detailItems={
                 currentOpponent.type === "gym-leader"
                   ? currentOpponent.pokemonTeam
-                  : phase === "matchup"
-                  ? [`${currentOpponent.pokemonCount} hidden Pokemon`]
                   : currentOpponentTeam.map((pokemon) => pokemon.name)
               }
               explicitResultStamp={opponentResultStamp}
               locationLabel={
                 currentOpponent.type === "gym-leader"
                   ? currentOpponent.badge
-                  : location
+                  : undefined
               }
               meta={currentOpponent}
-              roleLabel={opponentRole(currentOpponent.type)}
+              roleLabel={
+                currentOpponent.type === "regular"
+                  ? null
+                  : opponentRole(currentOpponent.type)
+              }
               spritePresentation="pixel-trainer"
               spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)}
               status={opponentStatus}
               summaryLabel={
                 currentOpponent.type === "gym-leader"
                   ? undefined
-                  : opponentSummary(currentOpponent)
+                  : currentOpponent.type === "regular"
+                    ? undefined
+                    : opponentSummary(currentOpponent)
               }
               suppressAutomaticStamp={Boolean(opponentResultStamp)}
             />
