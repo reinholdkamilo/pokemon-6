@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getPokemon } from "@/lib/api";
+import { rollPokemonShiny } from "@/lib/pokemonSprites";
 import type { Pokemon } from "@/types/pokemon";
 
 type SpinSelectorProps = {
@@ -82,7 +83,7 @@ export function SpinSelector({
     setIsSpinning(true);
 
     const spinPool = availablePokemon;
-    const winningPokemon = pickRandomPokemon(spinPool);
+    const winningPokemon = rollPokemonShiny(pickRandomPokemon(spinPool));
     const spinDuration =
       MIN_SPIN_MS + Math.floor(Math.random() * (MAX_SPIN_MS - MIN_SPIN_MS));
 
