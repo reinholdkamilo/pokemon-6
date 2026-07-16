@@ -29,6 +29,12 @@ import {
   getPlayerTrainerSprite,
   getTrainerSprite,
 } from "@/lib/imagePaths";
+import { JOHTO_POKEMON } from "@/lib/johtoPokemon";
+import {
+  JOHTO_GYM_LEADERS,
+  JOHTO_REGULAR_TRAINERS,
+  JOHTO_STAGES,
+} from "@/lib/johtoRegion";
 import {
   getPlayerCharacter,
   toPlayerCharacterMeta,
@@ -44,7 +50,11 @@ type Phase =
   | "animating"
   | "result"
   | "results"
-  | "complete";
+  | "complete"
+  | "johto-transition"
+  | "johto-arrival"
+  | "johto-pokemon";
+type JohtoSelectionMode = "choice" | "keep" | "respin" | "ready";
 type PendingEvolution = {
   fromPokemon: Pokemon;
   toPokemon: Pokemon;
@@ -73,10 +83,6 @@ function opponentRole(type: ArcadeTrainer["type"]) {
   if (type === "elite-four") return "Elite Four";
   if (type === "champion") return "Champion";
   return "Trainer";
-}
-
-function opponentSummary(opponent: ArcadeTrainer) {
-  return `${opponent.pokemonCount} POKÉMON • ${opponentRole(opponent.type).toUpperCase()}`;
 }
 
 function BadgeStrip({ earnedBadges }: { earnedBadges: string[] }) {
@@ -128,6 +134,11 @@ export default function MarathonPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isUndefeatedRun, setIsUndefeatedRun] = useState(false);
+  const [johtoSelectionMode, setJohtoSelectionMode] =
+    useState<JohtoSelectionMode>("choice");
+  const [johtoRevealedCards, setJohtoRevealedCards] =
+    useState<(Pokemon | null)[]>(createEmptyCards);
+  const [johtoTeam, setJohtoTeam] = useState<Pokemon[]>([]);
 
   const character = getPlayerCharacter(characterId);
   const isPokemonLeague = gymIndex >= MARATHON_STAGES.length;
@@ -168,6 +179,16 @@ export default function MarathonPage() {
         setError(caught instanceof Error ? caught.message : "Unable to load Pokemon."),
       );
   }, []);
+
+  useEffect(() => {
+    if (phase !== "johto-transition") return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setPhase("johto-arrival");
+    }, 3600);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [phase]);
 
   function revealCard(slotIndex: number, pokemon: Pokemon) {
     setError("");
@@ -223,11 +244,9 @@ export default function MarathonPage() {
     await startMarathonRun(team, isUndefeatedRun);
   }
 
-  async function activateSecretAutoPickTeam(selectedTeam: Pokemon[]) {
+  function activateSecretAutoPickTeam() {
     setIsUndefeatedRun(true);
-    setRevealedCards(selectedTeam);
-    setTeam(selectedTeam);
-    await startMarathonRun(selectedTeam, true);
+    setError("");
   }
 
   function prepareNextOpponent(
@@ -402,6 +421,54 @@ export default function MarathonPage() {
     setPhase("pokemon");
   }
 
+  function beginJohtoTransition() {
+    setPhase("johto-transition");
+  }
+
+  function beginJohtoPokemonJourney() {
+    setJohtoSelectionMode("choice");
+    setJohtoRevealedCards(createEmptyCards());
+    setJohtoTeam([]);
+    setError("");
+    setPhase("johto-pokemon");
+  }
+
+  function keepKantoPartyForJohto() {
+    setJohtoSelectionMode("keep");
+    setJohtoRevealedCards(team);
+    setJohtoTeam(team);
+  }
+
+  function resetJohtoPokemonSelection() {
+    setJohtoSelectionMode("respin");
+    setJohtoRevealedCards(createEmptyCards());
+    setJohtoTeam([]);
+    setError("");
+  }
+
+  function revealJohtoCard(slotIndex: number, pokemon: Pokemon) {
+    setError("");
+    setJohtoRevealedCards((current) => {
+      const duplicate = current.some(
+        (selected, index) => index !== slotIndex && selected?.id === pokemon.id,
+      );
+      if (duplicate) {
+        setError(`${pokemon.name} is already on your Johto team.`);
+        return current;
+      }
+      const next = [...current];
+      next[slotIndex] = pokemon;
+      setJohtoTeam(next.filter((entry): entry is Pokemon => Boolean(entry)));
+      return next;
+    });
+  }
+
+  function confirmJohtoTeam() {
+    if (johtoTeam.length === TEAM_SIZE) {
+      setJohtoSelectionMode("ready");
+    }
+  }
+
   if (phase === "character") {
     return (
       <main className="game-shell stage-shell marathon-shell">
@@ -424,6 +491,202 @@ export default function MarathonPage() {
           >
             CONTINUE
           </button>
+        </section>
+      </main>
+    );
+  }
+
+  if (phase === "johto-transition") {
+    const travelPlan = getJohtoTravelPlan(team);
+
+    return (
+      <main className="game-shell stage-shell marathon-shell">
+        <section className={`stage-screen marathon-johto-transition marathon-johto-transition--${travelPlan.mode}`}>
+          <GameTopBar modeLabel="Johto Adventure" onMainMenu={() => router.push("/")} />
+          <div className="marathon-johto-transition__scene" aria-live="polite">
+            <LocalSprite
+              alt={character.label}
+              className="marathon-johto-transition__trainer"
+              fallback={character.fallback}
+              src={getPlayerTrainerSprite(character.id)}
+            />
+            {travelPlan.pokemon ? (
+              <img
+                alt={travelPlan.pokemon.name}
+                className="marathon-johto-transition__pokemon"
+                src={travelPlan.pokemon.image}
+              />
+            ) : null}
+          </div>
+          <div className="stage-hero marathon-johto-transition__copy">
+            <p className="eyebrow">Kanto Cleared</p>
+            <h1>{travelPlan.title}</h1>
+            <p>{travelPlan.description}</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (phase === "johto-arrival") {
+    const firstJohtoStage = JOHTO_STAGES[0];
+    const previewTrainers = firstJohtoStage.regularTrainerIds
+      .slice(0, 3)
+      .map((trainerId) =>
+        JOHTO_REGULAR_TRAINERS.find((trainer) => trainer.id === trainerId),
+      )
+      .filter((trainer): trainer is (typeof JOHTO_REGULAR_TRAINERS)[number] =>
+        Boolean(trainer),
+      );
+    const previewGymLeader = JOHTO_GYM_LEADERS.find(
+      (trainer) => trainer.id === firstJohtoStage.gymLeaderId,
+    );
+
+    return (
+      <main className="game-shell stage-shell marathon-shell">
+        <section className="stage-screen marathon-stage-screen marathon-johto-arrival">
+          <GameTopBar modeLabel="Johto Adventure" onMainMenu={() => router.push("/")} />
+          <div className="stage-hero">
+            <p className="eyebrow">New Region</p>
+            <h1>Welcome to Johto</h1>
+            <p>New trainers and Pokémon are waiting beyond New Bark Town.</p>
+          </div>
+
+          <div className="marathon-johto-preview" aria-label="Johto preview">
+            {previewTrainers.map((trainer) => (
+              <article className="marathon-johto-preview__trainer" key={trainer.id}>
+                <LocalSprite
+                  alt={trainer.name}
+                  className="marathon-johto-preview__sprite"
+                  fallback={trainer.name.slice(0, 2).toUpperCase()}
+                  src={trainer.sprite}
+                />
+                <strong>{trainer.name}</strong>
+              </article>
+            ))}
+            {previewGymLeader ? (
+              <article className="marathon-johto-preview__trainer marathon-johto-preview__trainer--leader">
+                <LocalSprite
+                  alt={previewGymLeader.name}
+                  className="marathon-johto-preview__sprite"
+                  fallback="FL"
+                  src={previewGymLeader.sprite}
+                />
+                <strong>{previewGymLeader.name}</strong>
+              </article>
+            ) : null}
+          </div>
+
+          <button
+            className="primary-action stage-action marathon-continue-button"
+            type="button"
+            onClick={beginJohtoPokemonJourney}
+          >
+            BEGIN POKEMON JOURNEY
+          </button>
+        </section>
+      </main>
+    );
+  }
+
+  if (phase === "johto-pokemon") {
+    if (johtoSelectionMode === "respin") {
+      return (
+        <main className="game-shell">
+          <BattleSelectionScreen
+            description="Spin six Johto Pokemon before the next region battles begin"
+            error={error}
+            heading="Choose your Johto Pokemon"
+            isSubmitting={false}
+            modeLabel="Johto Adventure"
+            pokemonPool={JOHTO_POKEMON}
+            revealedCards={johtoRevealedCards}
+            selectedPokemon={johtoTeam}
+            onMainMenu={() => router.push("/")}
+            onRevealCard={revealJohtoCard}
+            onResetRun={resetJohtoPokemonSelection}
+            onSubmitTeam={confirmJohtoTeam}
+          />
+        </main>
+      );
+    }
+
+    return (
+      <main className="game-shell stage-shell marathon-shell">
+        <section className="stage-screen marathon-stage-screen marathon-johto-pokemon-choice">
+          <GameTopBar modeLabel="Johto Adventure" onMainMenu={() => router.push("/")} />
+          <div className="stage-hero">
+            <p className="eyebrow">Johto Pokemon Select</p>
+            <h1>
+              {johtoSelectionMode === "ready"
+                ? "Johto Team Ready"
+                : "Choose Your Johto Party"}
+            </h1>
+            <p>
+              {johtoSelectionMode === "ready"
+                ? "Your Johto party is locked in for the next update."
+                : "Keep your Kanto champions or re-spin a new Johto team."}
+            </p>
+          </div>
+
+          <div className="marathon-johto-choice-actions">
+            <button
+              className="primary-action"
+              type="button"
+              onClick={keepKantoPartyForJohto}
+            >
+              KEEP KANTO PARTY
+            </button>
+            <button
+              className="secondary-action"
+              type="button"
+              onClick={resetJohtoPokemonSelection}
+            >
+              RE SPIN JOHTO PARTY
+            </button>
+          </div>
+
+          {johtoSelectionMode === "keep" || johtoSelectionMode === "ready" ? (
+            <section className="results-team-section marathon-johto-team-preview">
+              <h2>
+                {johtoSelectionMode === "keep"
+                  ? "Current Kanto Party"
+                  : "Selected Johto Party"}
+              </h2>
+              <div className="results-team-grid">
+                {(johtoTeam.length > 0 ? johtoTeam : team).map((pokemon) => (
+                  <article className="results-pokemon-summary-card" key={pokemon.id}>
+                    <div className="results-pokemon-summary-card__sprite-wrap">
+                      <img
+                        alt={pokemon.name}
+                        className="results-pokemon-summary-card__sprite"
+                        src={pokemon.image}
+                      />
+                    </div>
+                    <strong>{pokemon.name}</strong>
+                    <span>BST {pokemon.base_stat_total}</span>
+                  </article>
+                ))}
+              </div>
+              {johtoSelectionMode === "keep" ? (
+                <button
+                  className="primary-action stage-action"
+                  type="button"
+                  onClick={confirmJohtoTeam}
+                >
+                  BEGIN BATTLING
+                </button>
+              ) : (
+                <button
+                  className="secondary-action stage-action"
+                  type="button"
+                  disabled
+                >
+                  JOHTO BATTLES COMING NEXT
+                </button>
+              )}
+            </section>
+          ) : null}
         </section>
       </main>
     );
@@ -553,7 +816,9 @@ export default function MarathonPage() {
               breakdown={breakdown}
               className={`marathon-opponent-battle-card marathon-opponent-battle-card--${currentOpponent.type}`}
               detailItems={
-                currentOpponent.type === "gym-leader"
+                currentOpponent.type === "regular"
+                  ? currentOpponentTeam.map((pokemon) => pokemon.name)
+                  : currentOpponent.pokemonTeam.length > 0
                   ? currentOpponent.pokemonTeam
                   : currentOpponentTeam.map((pokemon) => pokemon.name)
               }
@@ -572,13 +837,6 @@ export default function MarathonPage() {
               spritePresentation="pixel-trainer"
               spriteSrc={currentOpponent.sprite || getTrainerSprite(currentOpponent.name)}
               status={opponentStatus}
-              summaryLabel={
-                currentOpponent.type === "gym-leader"
-                  ? undefined
-                  : currentOpponent.type === "regular"
-                    ? undefined
-                    : opponentSummary(currentOpponent)
-              }
               suppressAutomaticStamp={Boolean(opponentResultStamp)}
             />
           </div>
@@ -626,6 +884,7 @@ export default function MarathonPage() {
       totalWins={totalWins}
       totalBattles={totalBattles}
       completed={phase === "complete"}
+      onBeginJohto={beginJohtoTransition}
       onTryAgain={tryAgain}
       onMainMenu={() => router.push("/")}
     />
@@ -641,6 +900,7 @@ function MarathonResults({
   totalWins,
   totalBattles,
   completed,
+  onBeginJohto,
   onTryAgain,
   onMainMenu,
 }: {
@@ -652,6 +912,7 @@ function MarathonResults({
   totalWins: number;
   totalBattles: number;
   completed: boolean;
+  onBeginJohto: () => void;
   onTryAgain: () => void;
   onMainMenu: () => void;
 }) {
@@ -757,7 +1018,6 @@ function MarathonResults({
                         spritePresentation="pixel-trainer"
                         spriteSrc={encounter.opponent.sprite || getTrainerSprite(encounter.opponent.name)}
                         status={encounter.outcome === "Beat" ? "cleared" : "failed"}
-                        summaryLabel={opponentSummary(encounter.opponent)}
                       />
                     );
                   })}
@@ -826,6 +1086,7 @@ function MarathonResults({
                       locationLabel="Pokémon League"
                       meta={opponent}
                       roleLabel={opponentRole(opponent.type)}
+                      detailItems={opponent.pokemonTeam}
                       spritePresentation="pixel-trainer"
                       status={
                         encounter
@@ -834,7 +1095,6 @@ function MarathonResults({
                             : "failed"
                           : "not-reached"
                       }
-                      summaryLabel={opponentSummary(opponent)}
                     />
                   );
                 })}
@@ -843,7 +1103,13 @@ function MarathonResults({
         </div>
 
         <div className="trainer-card-actions">
-          <button className="primary-action" type="button" onClick={onTryAgain}>TRY AGAIN</button>
+          <button
+            className="primary-action"
+            type="button"
+            onClick={completed ? onBeginJohto : onTryAgain}
+          >
+            {completed ? "BEGIN JOHTO ADVENTURE" : "TRY AGAIN"}
+          </button>
           <button className="secondary-action" type="button" onClick={onMainMenu}>MAIN MENU</button>
         </div>
       </section>
@@ -866,6 +1132,51 @@ function getTeamPower(result: TeamScoreResult | null, team: Pokemon[]) {
       result?.score ??
       averagePower(team),
   );
+}
+
+function getJohtoTravelPlan(team: Pokemon[]) {
+  const flyingPokemon = team.find((pokemon) => hasType(pokemon, "Flying"));
+  if (flyingPokemon) {
+    return {
+      mode: "fly",
+      pokemon: flyingPokemon,
+      title: `${flyingPokemon.name} carries the trainer toward Johto`,
+      description: "The Kanto skyline drops away as the party flies west toward a new region.",
+    };
+  }
+
+  const waterPokemon = team.find((pokemon) => hasType(pokemon, "Water"));
+  if (waterPokemon) {
+    return {
+      mode: "surf",
+      pokemon: waterPokemon,
+      title: `${waterPokemon.name} surfs across to Johto`,
+      description: "The party crosses the water route, leaving Kanto behind for a fresh journey.",
+    };
+  }
+
+  const tunnelPokemon = team.find(
+    (pokemon) => hasType(pokemon, "Ground") || hasType(pokemon, "Rock"),
+  );
+  if (tunnelPokemon) {
+    return {
+      mode: "tunnel",
+      pokemon: tunnelPokemon,
+      title: `${tunnelPokemon.name} opens a path to Johto`,
+      description: "The team cuts through the mountain route and emerges near New Bark Town.",
+    };
+  }
+
+  return {
+    mode: "road",
+    pokemon: team[0],
+    title: "The trainer begins the road to Johto",
+    description: "With Kanto conquered, the party follows the long route into a new adventure.",
+  };
+}
+
+function hasType(pokemon: Pokemon, type: string) {
+  return pokemon.primary_type === type || pokemon.secondary_type === type;
 }
 
 function averagePower(team: Pokemon[]) {

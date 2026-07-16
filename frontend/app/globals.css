@@ -455,9 +455,11 @@ p {
 }
 
 .team-progress-pokeball {
+  appearance: none;
   position: relative;
   width: clamp(24px, 8vw, 38px);
   height: clamp(24px, 8vw, 38px);
+  padding: 0;
   border: 3px solid var(--border);
   border-radius: 999px;
   background:
@@ -465,6 +467,14 @@ p {
   filter: grayscale(1);
   opacity: 0.58;
   box-shadow: 0 3px 0 rgba(52, 42, 32, 0.34);
+}
+
+button.team-progress-pokeball {
+  cursor: pointer;
+}
+
+button.team-progress-pokeball:disabled {
+  cursor: default;
 }
 
 .team-progress-pokeball::after {
