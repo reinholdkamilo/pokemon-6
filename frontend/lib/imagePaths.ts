@@ -7,6 +7,14 @@ export const BADGE_IMAGE_PATHS: Record<string, string> = {
   "Marsh Badge": "/images/badges/marsh.svg",
   "Volcano Badge": "/images/badges/volcano.svg",
   "Earth Badge": "/images/badges/earth.svg",
+  "Zephyr Badge": "/images/badges/zephyr.svg",
+  "Hive Badge": "/images/badges/hive.svg",
+  "Plain Badge": "/images/badges/plain.svg",
+  "Fog Badge": "/images/badges/fog.svg",
+  "Storm Badge": "/images/badges/storm.svg",
+  "Mineral Badge": "/images/badges/mineral.svg",
+  "Glacier Badge": "/images/badges/glacier.svg",
+  "Rising Badge": "/images/badges/rising.svg",
 };
 
 export type PlayerTrainerGender =
@@ -19,7 +27,10 @@ export type PlayerTrainerGender =
   | "kevin"
   | "gj";
 
-const PLAYER_TRAINER_IMAGE_PATHS: Record<"male" | "female" | "chaz" | "laga" | "kevin" | "gj", string> = {
+const PLAYER_TRAINER_IMAGE_PATHS: Record<
+  "male" | "female" | "chaz" | "laga" | "kevin" | "gj",
+  string
+> = {
   male: "/images/trainers/player/Chaz.PNG",
   female: "/images/trainers/player/Laga.PNG",
   chaz: "/images/trainers/player/Chaz.PNG",
@@ -91,7 +102,9 @@ const CARD_FILENAME_OVERRIDES: Record<number, string> = {
   122: "122_mr_mime.png",
 };
 
-export function getPlayerTrainerSprite(gender: PlayerTrainerGender | null | undefined) {
+export function getPlayerTrainerSprite(
+  gender: PlayerTrainerGender | null | undefined,
+) {
   return PLAYER_TRAINER_IMAGE_PATHS[toPlayerTrainerKey(gender)];
 }
 
@@ -104,7 +117,10 @@ export function getEliteFourSprite(name: string | null | undefined) {
 }
 
 export function getChampionSprite(name: string | null | undefined) {
-  return getTrainerSpriteFromMap(CHAMPION_IMAGE_PATHS, name) ?? CHAMPION_IMAGE_PATHS.Gary;
+  return (
+    getTrainerSpriteFromMap(CHAMPION_IMAGE_PATHS, name) ??
+    CHAMPION_IMAGE_PATHS.Gary
+  );
 }
 
 export function getTrainerSprite(name: string | null | undefined) {
@@ -166,7 +182,12 @@ function toPlayerTrainerKey(
   if (trainer === "female" || trainer === "player-female") {
     return "laga";
   }
-  if (trainer === "chaz" || trainer === "laga" || trainer === "kevin" || trainer === "gj") {
+  if (
+    trainer === "chaz" ||
+    trainer === "laga" ||
+    trainer === "kevin" ||
+    trainer === "gj"
+  ) {
     return trainer;
   }
   return "chaz";

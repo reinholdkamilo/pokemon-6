@@ -21,6 +21,7 @@ type BattleSelectionScreenProps = {
   onResetRun: () => void;
   onSubmitTeam: () => void;
   onSecretAutoPickTeam?: () => void;
+  respinSelectionLimit?: number;
 };
 
 const TEAM_SIZE = 6;
@@ -49,11 +50,17 @@ export function BattleSelectionScreen({
   onRevealCard,
   onSubmitTeam,
   onSecretAutoPickTeam,
+  respinSelectionLimit,
 }: BattleSelectionScreenProps) {
   const [pokemon, setPokemon] = useState<Pokemon[]>([]);
-  const [previewBySlot, setPreviewBySlot] = useState<(Pokemon | null)[]>(createEmptySlots);
-  const [revealingSlots, setRevealingSlots] = useState<Set<number>>(() => new Set());
-  const [chargingCardIndex, setChargingCardIndex] = useState<number | null>(null);
+  const [previewBySlot, setPreviewBySlot] =
+    useState<(Pokemon | null)[]>(createEmptySlots);
+  const [revealingSlots, setRevealingSlots] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [chargingCardIndex, setChargingCardIndex] = useState<number | null>(
+    null,
+  );
   const [loadError, setLoadError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSelectingRespin, setIsSelectingRespin] = useState(false);
@@ -135,7 +142,8 @@ export function BattleSelectionScreen({
     const currentPokemon = revealedCards[slotIndex];
     const availablePokemon = pokemon.filter(
       (candidate) =>
-        !selectedIdsInOtherSlots.has(candidate.id) && !reservedIds.has(candidate.id),
+        !selectedIdsInOtherSlots.has(candidate.id) &&
+        !reservedIds.has(candidate.id),
     );
 
     if (availablePokemon.length === 0) {
@@ -144,15 +152,20 @@ export function BattleSelectionScreen({
     }
 
     const preferredPokemon = currentPokemon
-      ? availablePokemon.filter((candidate) => candidate.id !== currentPokemon.id)
+      ? availablePokemon.filter(
+          (candidate) => candidate.id !== currentPokemon.id,
+        )
       : availablePokemon;
-    const normalSpinPool = preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
+    const normalSpinPool =
+      preferredPokemon.length > 0 ? preferredPokemon : availablePokemon;
     const legendaryPokemon = preferredPokemon.filter(isLegendaryPokemon);
     const hasLegendaryPool = isLegendarySpin && legendaryPokemon.length > 0;
     const finalPokemon = pickRandomPokemon(
       hasLegendaryPool ? legendaryPokemon : normalSpinPool,
     );
-    const previewPokemon = hasLegendaryPool ? legendaryPokemon : availablePokemon;
+    const previewPokemon = hasLegendaryPool
+      ? legendaryPokemon
+      : availablePokemon;
 
     pendingPokemonBySlotRef.current.set(slotIndex, finalPokemon);
     setLoadError("");
@@ -239,7 +252,10 @@ export function BattleSelectionScreen({
 
     const selectedTeam = shufflePokemon(pokemon).slice(0, TEAM_SIZE);
     const previewPool = pokemon.length > 0 ? pokemon : selectedTeam;
-    const slotIndexes = Array.from({ length: TEAM_SIZE }, (_entry, index) => index);
+    const slotIndexes = Array.from(
+      { length: TEAM_SIZE },
+      (_entry, index) => index,
+    );
 
     setRevealingSlots(new Set(slotIndexes));
     onSecretAutoPickTeam();
@@ -254,20 +270,23 @@ export function BattleSelectionScreen({
       }, REVEAL_TICK_MS);
       intervalRefs.current.set(slotIndex, intervalId);
 
-      const timeoutId = window.setTimeout(() => {
-        clearRevealTimer(slotIndex);
-        setPreviewBySlot((currentSlots) => {
-          const nextSlots = [...currentSlots];
-          nextSlots[slotIndex] = null;
-          return nextSlots;
-        });
-        setRevealingSlots((currentSlots) => {
-          const nextSlots = new Set(currentSlots);
-          nextSlots.delete(slotIndex);
-          return nextSlots;
-        });
-        onRevealCard(slotIndex, selectedTeam[slotIndex]);
-      }, REVEAL_DURATION_MS + slotIndex * 90);
+      const timeoutId = window.setTimeout(
+        () => {
+          clearRevealTimer(slotIndex);
+          setPreviewBySlot((currentSlots) => {
+            const nextSlots = [...currentSlots];
+            nextSlots[slotIndex] = null;
+            return nextSlots;
+          });
+          setRevealingSlots((currentSlots) => {
+            const nextSlots = new Set(currentSlots);
+            nextSlots.delete(slotIndex);
+            return nextSlots;
+          });
+          onRevealCard(slotIndex, selectedTeam[slotIndex]);
+        },
+        REVEAL_DURATION_MS + slotIndex * 90,
+      );
       timeoutRefs.current.set(slotIndex, timeoutId);
     });
 
@@ -296,6 +315,14 @@ export function BattleSelectionScreen({
       if (nextSlots.has(slotIndex)) {
         nextSlots.delete(slotIndex);
       } else {
+        if (respinSelectionLimit === 1) {
+          nextSlots.clear();
+        } else if (
+          respinSelectionLimit &&
+          nextSlots.size >= respinSelectionLimit
+        ) {
+          return currentSlots;
+        }
         nextSlots.add(slotIndex);
       }
       return nextSlots;
@@ -315,7 +342,11 @@ export function BattleSelectionScreen({
     }
 
     if (selectedRespinSlots.size === 0) {
-      setLoadError("Select at least one card to re-spin.");
+      setLoadError(
+        respinSelectionLimit === 1
+          ? "Select one card to re-spin."
+          : "Select at least one card to re-spin.",
+      );
       return;
     }
 
@@ -400,7 +431,10 @@ export function BattleSelectionScreen({
   }
 
   return (
-    <section className="selection-screen" aria-label={`${modeLabel} team selection`}>
+    <section
+      className="selection-screen"
+      aria-label={`${modeLabel} team selection`}
+    >
       <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
 
       <div className="selection-header">
@@ -422,12 +456,18 @@ export function BattleSelectionScreen({
         }
         count={selectedPokemon.length}
         label="Revealed Pokemon"
-        onFinalPokeballHold={onSecretAutoPickTeam ? activateSecretAutoPickTeam : undefined}
+        onFinalPokeballHold={
+          onSecretAutoPickTeam ? activateSecretAutoPickTeam : undefined
+        }
       />
 
       <div className="selection-card-toolbar">
         <button
-          className={teamIsComplete ? "primary-action auto-pick-action" : "secondary-action auto-pick-action"}
+          className={
+            teamIsComplete
+              ? "primary-action auto-pick-action"
+              : "secondary-action auto-pick-action"
+          }
           type="button"
           disabled={
             isLoading ||
@@ -461,7 +501,9 @@ export function BattleSelectionScreen({
             : teamIsComplete
               ? respinUsed
                 ? "Your one re-spin has been used"
-                : "Confirm your team or use your one re-spin"
+                : respinSelectionLimit === 1
+                  ? "Confirm your team or re-spin one Pokemon"
+                  : "Confirm your team or use your one re-spin"
               : "Instantly reveal every remaining card"}
         </span>
       </div>
@@ -480,7 +522,9 @@ export function BattleSelectionScreen({
               key={slotPokemon?.id ?? `slot-${index}`}
               onCancelHold={cancelHold}
               onFinishHold={finishHold}
-              onReveal={isSelectingRespin ? toggleRespinSlot : revealOrSecretAutoPick}
+              onReveal={
+                isSelectingRespin ? toggleRespinSlot : revealOrSecretAutoPick
+              }
               onStartHold={startHold}
               pokemon={slotPokemon}
               previewPokemon={previewBySlot[index]}
