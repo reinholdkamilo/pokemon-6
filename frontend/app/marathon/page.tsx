@@ -45,6 +45,7 @@ import type { Pokemon, TeamScoreResult, TrainerProfile } from "@/types/pokemon";
 
 type Phase =
   | "character"
+  | "region-select"
   | "pokemon"
   | "matchup"
   | "animating"
@@ -55,6 +56,7 @@ type Phase =
   | "johto-arrival"
   | "johto-pokemon";
 type JohtoSelectionMode = "choice" | "keep" | "respin" | "ready";
+type PokemonRegionPool = "kanto" | "johto" | "mixed";
 type PendingEvolution = {
   fromPokemon: Pokemon;
   toPokemon: Pokemon;
@@ -62,6 +64,32 @@ type PendingEvolution = {
 };
 
 const TEAM_SIZE = 6;
+
+const POKEMON_REGION_OPTIONS = [
+  {
+    id: "kanto",
+    title: "Kanto Pokemon",
+    detail: "Spin from the original 151 Pokemon.",
+    stat: "151",
+  },
+  {
+    id: "johto",
+    title: "Johto Pokemon",
+    detail: "Spin from the newly added Gen 2 Pokemon.",
+    stat: "100",
+  },
+  {
+    id: "mixed",
+    title: "Mixed Pokemon",
+    detail: "Spin from Kanto and Johto together.",
+    stat: "251",
+  },
+] as const satisfies readonly {
+  id: PokemonRegionPool;
+  title: string;
+  detail: string;
+  stat: string;
+}[];
 
 const MARATHON_STAGES = [
   { number: 1, city: "Pewter City", gymLeader: "Brock", badge: "Boulder Badge" },
@@ -134,6 +162,8 @@ export default function MarathonPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [isUndefeatedRun, setIsUndefeatedRun] = useState(false);
+  const [pokemonRegionPool, setPokemonRegionPool] =
+    useState<PokemonRegionPool>("kanto");
   const [johtoSelectionMode, setJohtoSelectionMode] =
     useState<JohtoSelectionMode>("choice");
   const [johtoRevealedCards, setJohtoRevealedCards] =
@@ -418,6 +448,12 @@ export default function MarathonPage() {
     setEarnedBadges([]);
     setPendingEvolution(null);
     setIsUndefeatedRun(false);
+    setPhase("region-select");
+  }
+
+  function choosePokemonRegionPool(regionPool: PokemonRegionPool) {
+    setPokemonRegionPool(regionPool);
+    resetPokemonSelection();
     setPhase("pokemon");
   }
 
@@ -487,10 +523,55 @@ export default function MarathonPage() {
           <button
             className="primary-action stage-action marathon-continue-button"
             type="button"
-            onClick={() => setPhase("pokemon")}
+            onClick={() => setPhase("region-select")}
           >
             CONTINUE
           </button>
+        </section>
+      </main>
+    );
+  }
+
+  if (phase === "region-select") {
+    const kantoPokemon = catalogue.filter((pokemon) => pokemon.generation === 1);
+    const canUseKanto = kantoPokemon.length >= TEAM_SIZE;
+
+    return (
+      <main className="game-shell stage-shell marathon-shell">
+        <section className="stage-screen marathon-stage-screen marathon-region-screen">
+          <GameTopBar modeLabel="Marathon Mode" onMainMenu={() => router.push("/")} />
+          <div className="stage-hero marathon-region-hero">
+            <p className="eyebrow">Pokemon Pool</p>
+            <h1>Choose Your Region</h1>
+            <p>
+              Pick which Pokemon generation can appear when your six cards spin.
+            </p>
+          </div>
+
+          <div className="marathon-region-options" role="list">
+            {POKEMON_REGION_OPTIONS.map((option) => {
+              const disabled = option.id === "mixed" && !canUseKanto;
+
+              return (
+                <button
+                  aria-label={`Choose ${option.title}`}
+                  className="marathon-region-option"
+                  disabled={disabled}
+                  key={option.id}
+                  type="button"
+                  onClick={() => choosePokemonRegionPool(option.id)}
+                >
+                  <span className="marathon-region-option__stat">
+                    {option.stat}
+                  </span>
+                  <strong>{option.title}</strong>
+                  <span>
+                    {disabled ? "Loading Kanto Pokemon for mixed spins..." : option.detail}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </section>
       </main>
     );
@@ -693,13 +774,22 @@ export default function MarathonPage() {
   }
 
   if (phase === "pokemon") {
+    const pokemonPool =
+      pokemonRegionPool === "kanto"
+        ? undefined
+        : getPokemonRegionPool(catalogue, pokemonRegionPool);
+    const pokemonPoolLabel = getPokemonRegionPoolLabel(pokemonRegionPool);
+
     return (
       <main className="game-shell">
         <BattleSelectionScreen
+          description={`Spin six Pokemon from the ${pokemonPoolLabel} pool before starting Marathon Mode`}
           revealedCards={revealedCards}
           selectedPokemon={team}
           error={error}
+          heading={`Choose ${pokemonPoolLabel} Pokemon`}
           isSubmitting={isLoading}
+          pokemonPool={pokemonPool}
           onMainMenu={() => router.push("/")}
           onRevealCard={revealCard}
           onResetRun={resetPokemonSelection}
@@ -1123,6 +1213,29 @@ function namesToPokemon(names: string[], catalogue: Pokemon[]) {
       catalogue.find((pokemon) => pokemon.name.toLowerCase() === name.toLowerCase()),
     )
     .filter((pokemon): pokemon is Pokemon => Boolean(pokemon));
+}
+
+function getPokemonRegionPool(
+  catalogue: Pokemon[],
+  pokemonRegionPool: PokemonRegionPool,
+) {
+  const kantoPokemon = catalogue.filter((pokemon) => pokemon.generation === 1);
+
+  if (pokemonRegionPool === "johto") {
+    return JOHTO_POKEMON;
+  }
+
+  if (pokemonRegionPool === "mixed") {
+    return [...kantoPokemon, ...JOHTO_POKEMON];
+  }
+
+  return kantoPokemon;
+}
+
+function getPokemonRegionPoolLabel(pokemonRegionPool: PokemonRegionPool) {
+  if (pokemonRegionPool === "johto") return "Johto";
+  if (pokemonRegionPool === "mixed") return "Kanto + Johto";
+  return "Kanto";
 }
 
 function getTeamPower(result: TeamScoreResult | null, team: Pokemon[]) {

@@ -64,6 +64,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 GYM_LEADERS_PATH = DATA_DIR / "gym_leaders.json"
 ELITE_FOUR_PATH = DATA_DIR / "elite_four.json"
 CHAMPION_PATH = DATA_DIR / "champion.json"
+GEN2_POKEMON_PATH = DATA_DIR / "gen2_pokemon.json"
 
 TYPE_WEAKNESSES = {
     "Normal": {"Fighting"},
@@ -215,9 +216,7 @@ def _validate_team(pokemon_names: list[str]) -> list[dict]:
         raise ValueError("Team cannot contain duplicate Pokemon.")
 
     pokemon_by_name = {
-        pokemon["name"].lower(): pokemon
-        for pokemon in get_all_pokemon()
-        if pokemon["generation"] == 1
+        pokemon["name"].lower(): pokemon for pokemon in _get_scoreable_pokemon()
     }
 
     selected_pokemon = []
@@ -228,6 +227,11 @@ def _validate_team(pokemon_names: list[str]) -> list[dict]:
         selected_pokemon.append(pokemon)
 
     return selected_pokemon
+
+
+@lru_cache
+def _get_scoreable_pokemon() -> list[dict]:
+    return [*get_all_pokemon(), *_load_json(GEN2_POKEMON_PATH)]
 
 
 def _score_progression(
