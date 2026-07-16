@@ -4993,6 +4993,54 @@ button.team-progress-pokeball:disabled {
   background: rgba(254, 226, 226, 0.96) !important;
 }
 
+/* Marathon battle result cards should keep stamps out of the trainer artwork. */
+.marathon-battle-screen .marathon-matchup-grid .progression-card > .result-stamp {
+  top: 9px !important;
+  right: 9px !important;
+  left: auto !important;
+  z-index: 8 !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 18px) !important;
+  padding: 5px 8px !important;
+  border-width: 3px !important;
+  border-radius: 8px !important;
+  transform: rotate(-6deg) !important;
+  transform-origin: center !important;
+  font-size: clamp(0.7rem, 2.3vw, 0.95rem) !important;
+  line-height: 1 !important;
+  letter-spacing: 0.04em !important;
+  box-shadow: 0 3px 0 rgba(52, 42, 32, 0.28) !important;
+}
+
+.marathon-battle-screen .marathon-matchup-grid .progression-card.cleared > .result-stamp {
+  color: #15803d !important;
+  background: rgba(220, 252, 231, 0.96) !important;
+}
+
+.marathon-battle-screen .marathon-matchup-grid .progression-card.failed > .result-stamp {
+  color: #b91c1c !important;
+  background: rgba(254, 226, 226, 0.96) !important;
+}
+
+.marathon-battle-screen .marathon-matchup-grid .progression-sprite-area {
+  padding-top: 8px !important;
+}
+
+@media (max-width: 560px) {
+  .marathon-battle-screen .marathon-matchup-grid .progression-card > .result-stamp {
+    top: 7px !important;
+    right: 7px !important;
+    max-width: calc(100% - 14px) !important;
+    padding: 4px 7px !important;
+    border-width: 2px !important;
+    font-size: clamp(0.58rem, 2.6vw, 0.78rem) !important;
+  }
+
+  .marathon-battle-screen .marathon-opponent-battle-card .progression-sprite-area {
+    padding-top: 16px !important;
+  }
+}
+
 
 /* Two-button battle choice layout */
 .battle-choice-panel {
