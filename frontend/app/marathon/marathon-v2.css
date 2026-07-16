@@ -138,6 +138,24 @@
   margin: 0 auto 20px;
 }
 
+.marathon-results-stage-row {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(620px, 760px);
+  gap: clamp(12px, 2vw, 18px);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 2px 2px 14px;
+  scroll-padding-inline: 2px;
+  scroll-snap-type: x proximity;
+}
+
+.marathon-results-stage-row > .marathon-results-stage {
+  margin: 0;
+  scroll-snap-align: start;
+}
+
 .marathon-results-stage {
   width: 100%;
   margin: 0 auto 24px;
@@ -233,6 +251,13 @@
 
   .marathon-results-stage {
     padding: 10px 7px;
+  }
+
+  .marathon-results-stage-row {
+    grid-auto-columns: minmax(88vw, 88vw);
+    gap: 10px;
+    margin-inline: calc(var(--mobile-safe-padding, 0px) * -1);
+    padding-inline: var(--mobile-safe-padding, 0px);
   }
 
   .marathon-results-stage__heading {
