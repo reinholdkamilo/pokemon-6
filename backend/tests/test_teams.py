@@ -109,6 +109,36 @@ def test_score_valid_six_pokemon_team_keeps_api_shape(monkeypatch) -> None:
     assert isinstance(data["warnings"], list)
 
 
+def test_score_valid_johto_pokemon_team(monkeypatch) -> None:
+    monkeypatch.setattr(team_scoring.random, "random", lambda: 0.0)
+
+    response = client.post(
+        "/teams/score",
+        json={
+            "pokemon_names": [
+                "Meganium",
+                "Typhlosion",
+                "Feraligatr",
+                "Ampharos",
+                "Espeon",
+                "Tyranitar",
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert [pokemon["generation"] for pokemon in data["selected_pokemon"]] == [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+    ]
+    assert data["total_score"] > 0
+
+
 def test_scoring_includes_battle_diagnostics(monkeypatch) -> None:
     monkeypatch.setattr(team_scoring.random, "random", lambda: 0.0)
 

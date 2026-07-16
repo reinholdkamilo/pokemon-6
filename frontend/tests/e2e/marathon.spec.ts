@@ -158,6 +158,14 @@ async function openMarathonRoundOne(page: Page, viewportName: string) {
   await page.screenshot({ path: `test-results/screenshots/${viewportName}-character-select.png`, fullPage: true });
 
   await page.getByRole("button", { name: "CONTINUE" }).click();
+  await expect(page.getByRole("heading", { name: "Choose Your Region" })).toBeVisible();
+  const kantoPoolButton = page.getByRole("button", { name: "Choose Kanto Pokemon" });
+  await expect(kantoPoolButton).toBeVisible();
+  await expect(kantoPoolButton).toBeEnabled();
+  await expect(page.getByRole("button", { name: "Choose Johto Pokemon" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Choose Mixed Pokemon" })).toBeVisible();
+  await assertNoHorizontalOverflow(page);
+  await kantoPoolButton.click();
   await page.getByRole("button", { name: "AUTO PICK" }).click();
   await expect(page.getByRole("button", { name: "I CHOOSE YOU!" })).toBeVisible();
   await page.getByRole("button", { name: "I CHOOSE YOU!" }).click();
