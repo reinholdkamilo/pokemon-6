@@ -12,11 +12,15 @@ type BattleSelectionScreenProps = {
   selectedPokemon: Pokemon[];
   error: string;
   isSubmitting: boolean;
+  description?: string;
+  heading?: string;
+  modeLabel?: "Arcade Mode" | "Marathon Mode" | "Johto Adventure";
+  pokemonPool?: Pokemon[];
   onMainMenu: () => void;
   onRevealCard: (slotIndex: number, pokemon: Pokemon) => void;
   onResetRun: () => void;
   onSubmitTeam: () => void;
-  onSecretAutoPickTeam?: (team: Pokemon[]) => void;
+  onSecretAutoPickTeam?: () => void;
 };
 
 const TEAM_SIZE = 6;
@@ -37,6 +41,10 @@ export function BattleSelectionScreen({
   selectedPokemon,
   error,
   isSubmitting,
+  description = "Tap multiple cards to reveal your Pokemon at the same time",
+  heading = "Choose your Pokemon",
+  modeLabel = "Arcade Mode",
+  pokemonPool,
   onMainMenu,
   onRevealCard,
   onSubmitTeam,
@@ -65,6 +73,16 @@ export function BattleSelectionScreen({
   const anyCardRevealing = revealingSlots.size > 0;
 
   useEffect(() => {
+    if (pokemonPool) {
+      setPokemon(pokemonPool);
+      setLoadError("");
+      setIsLoading(false);
+      return () => {
+        clearAllRevealTimers();
+        clearHoldTimer();
+      };
+    }
+
     let ignoreResult = false;
 
     getPokemon()
@@ -94,7 +112,7 @@ export function BattleSelectionScreen({
       clearAllRevealTimers();
       clearHoldTimer();
     };
-  }, []);
+  }, [pokemonPool]);
 
   function revealCard(slotIndex: number, isLegendarySpin = false) {
     if (isLoading || revealingSlots.has(slotIndex) || pokemon.length === 0) {
@@ -219,19 +237,44 @@ export function BattleSelectionScreen({
     setPreviewBySlot(createEmptySlots());
     setLoadError("");
 
-    onSecretAutoPickTeam(shufflePokemon(pokemon).slice(0, TEAM_SIZE));
+    const selectedTeam = shufflePokemon(pokemon).slice(0, TEAM_SIZE);
+    const previewPool = pokemon.length > 0 ? pokemon : selectedTeam;
+    const slotIndexes = Array.from({ length: TEAM_SIZE }, (_entry, index) => index);
+
+    setRevealingSlots(new Set(slotIndexes));
+    onSecretAutoPickTeam();
+
+    slotIndexes.forEach((slotIndex) => {
+      const intervalId = window.setInterval(() => {
+        setPreviewBySlot((currentSlots) => {
+          const nextSlots = [...currentSlots];
+          nextSlots[slotIndex] = pickRandomPokemon(previewPool);
+          return nextSlots;
+        });
+      }, REVEAL_TICK_MS);
+      intervalRefs.current.set(slotIndex, intervalId);
+
+      const timeoutId = window.setTimeout(() => {
+        clearRevealTimer(slotIndex);
+        setPreviewBySlot((currentSlots) => {
+          const nextSlots = [...currentSlots];
+          nextSlots[slotIndex] = null;
+          return nextSlots;
+        });
+        setRevealingSlots((currentSlots) => {
+          const nextSlots = new Set(currentSlots);
+          nextSlots.delete(slotIndex);
+          return nextSlots;
+        });
+        onRevealCard(slotIndex, selectedTeam[slotIndex]);
+      }, REVEAL_DURATION_MS + slotIndex * 90);
+      timeoutRefs.current.set(slotIndex, timeoutId);
+    });
+
     return true;
   }
 
-  function shouldUseSecretAutoPick(slotIndex: number) {
-    return Boolean(onSecretAutoPickTeam) && slotIndex === TEAM_SIZE - 1;
-  }
-
   function revealOrSecretAutoPick(slotIndex: number) {
-    if (shouldUseSecretAutoPick(slotIndex) && activateSecretAutoPickTeam()) {
-      return;
-    }
-
     revealCard(slotIndex);
   }
 
@@ -288,10 +331,6 @@ export function BattleSelectionScreen({
       return;
     }
 
-    if (shouldUseSecretAutoPick(slotIndex)) {
-      return;
-    }
-
     clearHoldTimer();
     activeHoldSlotRef.current = slotIndex;
     completedHoldSlotRef.current = null;
@@ -305,12 +344,7 @@ export function BattleSelectionScreen({
   }
 
   function finishHold(slotIndex: number) {
-    if (activeHoldSlotRef.current !== slotIndex) {
-      if (shouldUseSecretAutoPick(slotIndex)) {
-        activateSecretAutoPickTeam();
-      }
-      return;
-    }
+    if (activeHoldSlotRef.current !== slotIndex) return;
 
     const completedHoldSlot = completedHoldSlotRef.current;
     clearHoldTimer();
@@ -366,19 +400,30 @@ export function BattleSelectionScreen({
   }
 
   return (
-    <section className="selection-screen" aria-label="Arcade Mode team selection">
-      <GameTopBar modeLabel="Arcade Mode" onMainMenu={onMainMenu} />
+    <section className="selection-screen" aria-label={`${modeLabel} team selection`}>
+      <GameTopBar modeLabel={modeLabel} onMainMenu={onMainMenu} />
 
       <div className="selection-header">
-        <h1>Choose your Pokemon</h1>
+        <h1>{heading}</h1>
         <p>
           {isSelectingRespin
             ? "Select the cards you want to re-spin, then confirm"
-            : "Tap multiple cards to reveal your Pokemon at the same time"}
+            : description}
         </p>
       </div>
 
-      <PokeballProgress count={selectedPokemon.length} label="Revealed Pokemon" />
+      <PokeballProgress
+        canUseFinalPokeballHold={
+          Boolean(onSecretAutoPickTeam) &&
+          !teamIsComplete &&
+          !isLoading &&
+          !anyCardRevealing &&
+          !isSelectingRespin
+        }
+        count={selectedPokemon.length}
+        label="Revealed Pokemon"
+        onFinalPokeballHold={onSecretAutoPickTeam ? activateSecretAutoPickTeam : undefined}
+      />
 
       <div className="selection-card-toolbar">
         <button

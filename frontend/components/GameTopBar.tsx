@@ -1,5 +1,5 @@
 type GameTopBarProps = {
-  modeLabel: "Arcade Mode" | "Marathon Mode";
+  modeLabel: "Arcade Mode" | "Marathon Mode" | "Johto Adventure";
   onMainMenu: () => void;
 };
 

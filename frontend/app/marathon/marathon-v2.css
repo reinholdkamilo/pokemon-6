@@ -229,6 +229,145 @@
   font-size: 1.05rem;
 }
 
+.marathon-johto-transition {
+  min-height: min(760px, calc(100vh - 34px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.marathon-johto-transition__scene {
+  position: relative;
+  width: min(100%, 760px);
+  min-height: clamp(260px, 44vw, 420px);
+  margin: 0 auto clamp(16px, 3vw, 28px);
+  border: 3px solid rgba(30, 64, 175, 0.28);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(219, 234, 254, 0.9), rgba(240, 253, 244, 0.92)),
+    repeating-linear-gradient(90deg, transparent 0 42px, rgba(255, 255, 255, 0.34) 42px 44px);
+}
+
+.marathon-johto-transition__trainer,
+.marathon-johto-transition__pokemon {
+  position: absolute;
+  bottom: 12%;
+  left: 12%;
+  width: auto;
+  height: clamp(120px, 26vw, 220px);
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation: johto-travel 3.4s ease-in-out both;
+}
+
+.marathon-johto-transition__pokemon {
+  bottom: 24%;
+  left: 46%;
+  height: clamp(72px, 17vw, 150px);
+  animation-name: johto-travel-pokemon;
+}
+
+.marathon-johto-transition--surf .marathon-johto-transition__scene {
+  background:
+    linear-gradient(180deg, rgba(219, 234, 254, 0.96) 0 45%, rgba(59, 130, 246, 0.62) 45% 100%);
+}
+
+.marathon-johto-transition--tunnel .marathon-johto-transition__scene {
+  background:
+    linear-gradient(180deg, rgba(254, 243, 199, 0.95), rgba(120, 113, 108, 0.48));
+}
+
+.marathon-johto-transition__copy {
+  max-width: 760px;
+}
+
+.marathon-johto-preview {
+  width: min(100%, 760px);
+  margin: 0 auto 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.marathon-johto-preview__trainer {
+  min-width: 0;
+  padding: 12px 8px;
+  border: 2px solid rgba(30, 41, 59, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  text-align: center;
+  font-weight: 1000;
+}
+
+.marathon-johto-preview__trainer--leader {
+  border-color: rgba(217, 119, 6, 0.52);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2);
+}
+
+.marathon-johto-preview__sprite {
+  display: block;
+  width: auto;
+  height: 86px;
+  max-width: 100%;
+  margin: 0 auto 6px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.marathon-johto-choice-actions {
+  width: min(100%, 760px);
+  margin: 0 auto 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.marathon-johto-team-preview {
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+
+@keyframes johto-travel {
+  0% {
+    transform: translateX(-18%) translateY(4px) scale(0.94);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(92%) translateY(-8px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes johto-travel-pokemon {
+  0% {
+    transform: translateX(-32%) translateY(10px) scale(0.9);
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(70%) translateY(-20px) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marathon-johto-transition__trainer,
+  .marathon-johto-transition__pokemon {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 @media (max-width: 700px) {
   .marathon-battle-header h1 {
     font-size: clamp(1.8rem, 9vw, 2.7rem);
@@ -299,5 +438,22 @@
 
   .marathon-results-placeholder strong {
     font-size: 0.78rem;
+  }
+
+  .marathon-johto-transition__scene {
+    min-height: 260px;
+  }
+
+  .marathon-johto-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .marathon-johto-preview__sprite {
+    height: 74px;
+  }
+
+  .marathon-johto-choice-actions {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
