@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Download Gen 2 Pokemon data and sprites for the Johto foundation.
+"""Download Gen 2 Pokemon data and modern sprites for the Johto foundation.
 
-Structured stats/types come from PokeAPI. Pixel sprites come from PokemonDB's
-Generation 2 sprite archive. The script writes data and assets without changing
-the current Gen 1 gameplay endpoints.
+Structured stats/types come from PokeAPI. Modern Pokemon sprites come from
+PokemonDB's Home sprite archive. The script writes data and assets without
+changing the current Gen 1 gameplay endpoints.
 """
 
 from __future__ import annotations
@@ -14,16 +14,14 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 import json
+import re
 import time
 
 
 POKEAPI_POKEMON_URL = "https://pokeapi.co/api/v2/pokemon/{id}"
-POKEMONDB_SPRITE_TEMPLATE = (
-    "https://img.pokemondb.net/sprites/{version}/normal/{slug}.png"
-)
+POKEMONDB_PAGE_URL = "https://pokemondb.net/sprites/{slug}"
 USER_AGENT = "Mozilla/5.0 (compatible; pokemon-6-johto-foundation/1.0)"
 GEN2_RANGE = range(152, 252)
-SPRITE_VERSIONS = ("silver", "crystal", "gold")
 DATA_PATH = Path("backend/app/data/gen2_pokemon.json")
 SPRITE_DIR = Path("frontend/public/images/pokemon-gen2")
 MANIFEST_PATH = SPRITE_DIR / "manifest.json"
@@ -65,6 +63,19 @@ def request_bytes(url: str, attempts: int = 3) -> bytes:
     raise RuntimeError(f"Failed to fetch bytes from {url}")
 
 
+def request_text(url: str, attempts: int = 3) -> str:
+    for attempt in range(1, attempts + 1):
+        try:
+            request = Request(url, headers={"User-Agent": USER_AGENT})
+            with urlopen(request, timeout=30) as response:
+                return response.read().decode("utf-8")
+        except (HTTPError, URLError, TimeoutError):
+            if attempt == attempts:
+                raise
+            time.sleep(0.75 * attempt)
+    raise RuntimeError(f"Failed to fetch text from {url}")
+
+
 def display_name(api_name: str) -> str:
     special = {
         "ho-oh": "Ho-Oh",
@@ -87,6 +98,32 @@ def png_dimensions(data: bytes) -> tuple[int | None, int | None]:
     return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
 
 
+def fetch_sprite_url(slug: str) -> str:
+    page_html = request_text(POKEMONDB_PAGE_URL.format(slug=slug))
+    candidates = sorted(
+        set(
+            re.findall(
+                r"https://img\.pokemondb\.net/sprites/[^\"']+\.png",
+                page_html,
+            )
+        )
+    )
+    preferences = [
+        f"/sprites/home/normal/1x/{slug}.png",
+        f"/sprites/home/normal/{slug}.png",
+    ]
+
+    for preference in preferences:
+        for candidate in candidates:
+            if candidate.endswith(preference):
+                return candidate
+
+    if slug == "unown":
+        return "https://img.pokemondb.net/sprites/home/normal/1x/unown.png"
+
+    raise RuntimeError(f"No PokemonDB modern sprite found for {slug}")
+
+
 def fetch_pokemon(pokemon_id: int) -> tuple[dict, dict]:
     data = request_json(POKEAPI_POKEMON_URL.format(id=pokemon_id))
     stats = {item["stat"]["name"]: item["base_stat"] for item in data["stats"]}
@@ -96,23 +133,8 @@ def fetch_pokemon(pokemon_id: int) -> tuple[dict, dict]:
     name = display_name(data["name"])
     slug = sprite_slug(data["name"])
 
-    sprite_source = None
-    sprite_data = None
-
-    for version in SPRITE_VERSIONS:
-        candidate = POKEMONDB_SPRITE_TEMPLATE.format(version=version, slug=slug)
-        try:
-            candidate_data = request_bytes(candidate, attempts=2)
-        except Exception:
-            continue
-
-        if candidate_data[:8] == b"\x89PNG\r\n\x1a\n":
-            sprite_source = candidate
-            sprite_data = candidate_data
-            break
-
-    if sprite_data is None or sprite_source is None:
-        raise RuntimeError(f"No PokemonDB Gen 2 sprite found for {pokemon_id} {name}")
+    sprite_source = fetch_sprite_url(slug)
+    sprite_data = request_bytes(sprite_source)
 
     destination = SPRITE_DIR / f"{pokemon_id}.png"
     destination.write_bytes(sprite_data)
@@ -154,9 +176,11 @@ def write_attribution(manifest_items: list[dict]) -> None:
         "# Gen 2 Pokemon Sprite Attribution",
         "",
         "Pokemon data source: https://pokeapi.co/",
-        "Pokemon sprite source: https://pokemondb.net/sprites#gen2",
+        "Pokemon sprite source: https://pokemondb.net/sprites",
         "",
-        "Sprites were downloaded from PokemonDB's Generation 2 sprite archive.",
+        "Sprites were downloaded from PokemonDB's Home-style normal sprite archive.",
+        "",
+        "Pokemon assets remain subject to their original rights holders.",
         "",
         f"Sprites downloaded: {len(manifest_items)}",
         "",
@@ -208,7 +232,7 @@ def main() -> None:
             {
                 "source": {
                     "pokemonData": "https://pokeapi.co/",
-                    "pokemonSprites": "https://pokemondb.net/sprites#gen2",
+                    "pokemonSprites": "https://pokemondb.net/sprites",
                 },
                 "total": len(manifest_items),
                 "sprites": manifest_items,

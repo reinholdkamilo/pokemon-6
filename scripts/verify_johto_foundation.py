@@ -41,6 +41,8 @@ def main() -> None:
         width, height = assert_png(GEN2_SPRITES / f"{item['id']}.png")
         if width <= 0 or height <= 0:
             raise AssertionError(f"{item['id']} has invalid sprite dimensions")
+        if width < 96 or height < 96:
+            raise AssertionError(f"{item['id']} sprite is not a modern-scale asset")
 
     region_source = JOHTO_REGION.read_text()
     direct_paths = set(re.findall(r"/images/trainers/showdown/raw/[^`\"']+\\.png", region_source))
